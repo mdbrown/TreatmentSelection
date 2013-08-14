@@ -1,0 +1,118 @@
+\name{trtsel}
+\alias{trtsel}
+
+\title{
+create a trtsel object
+}
+\description{
+Creates an object of class "trtsel" given a data.frame containing marker, treatment, and disease status information.   The functions "plot", "evaltrtsel", and "calibrate" can then be used to plot risk and treatment effect curves, estimate summary measures, and check model calibration. The function "compare" can also be used to compare two treatment selection markers.  
+
+}
+\usage{
+trtsel(disease, trt, marker, thresh = 0, 
+                             study.design = "randomized cohort",
+                             cohort.attributes = NULL, 
+                             marker.bounds =NULL,
+                             link = "logit" ,
+                             allow.switch = TRUE)
+}
+
+\arguments{
+  \item{disease}{
+   vector of binary outcomes, called "disease status". Coded 1 for "diseased" and 0 for "non-diseased."   
+
+  }
+
+  \item{trt}{
+  Vector of same length as "disease" indicating treatment status. Coded 1 for "treated" and 0 for "un-treated." 
+  }
+
+  \item{marker}{
+  Values of the marker to be evaluated. This should be a numeric vector of the same length as "disease." 
+  }
+
+  \item{thresh}{
+  The treatment effect threshold used to define the treatment rule: Do not treat if the marker-specific treatment effect is less than "thresh". This is a numeric constant with a default value of 0.  
+  }
+
+  \item{study.design}{
+  Character string indicating the study design used to collect the data. The three options are "randomized cohort" (default), "nested case-control", or "stratified nested case-control".  A "randomized cohort" design is simply a randomized trial comparing T = 0 to T = 1 with the marker measured at baseline.  A nested case-control or stratified nested case-control study samples cases and controls for marker measurement, perhaps stratified on treatment assignment, from a randomized trial comparing T = 0 to T = 1.  See Janes et al. (2013) for a full description of these designs.
+
+  If a "nested case-control" or "stratified nested case-control" design is specified,  "cohort.attributes"" must be provided (see below).  
+  }
+
+  \item{cohort.attributes}{
+  If a "nested case-control" or "stratified nested case-control" design is specified, "cohort.attributes" must be provided. Order does matter. 
+
+    For the "nested case-control" design, specify the following attributes of the randomized trial "cohort" from which the case-control sample was selected: \cr
+    \cr
+        cohort.attributes = c(cohort sample size, \cr
+                              proportion treated in cohort (Pr(trt==1)), \cr
+                              disease prevalance in cohort (Pr(disease==1)), \cr 
+                              fraction of cases sampled from cohort) \cr \cr
+
+    For the "stratitified nested case-control" design, specify the following attributes of the randomized trial "cohort" from which the stratified case-control sample was selected: \cr
+    \cr
+        cohort.attributes = c(cohort sample size, \cr
+                              Pr(trt==0 & disease==0) in cohort, \cr
+                              Pr(trt==0 & disease==1) in cohort, \cr
+                              Pr(trt==1 & disease==0) in cohort, \cr
+                              fraction of cases with trt == 0 sampled from cohort, \cr
+                              fraction of cases with trt == 1 sampled from cohort )\cr \cr
+}
+
+ \item{marker.bounds}{
+  For bounded markers, a vector of lower and upper bounds.
+ }
+ \item{link}{
+  Link function used to fit the risk model. Options are "logit"(default), "probit", "cauchit", "log" and "cloglog." Link functions other than "logit" are available only when study.design = "randomized cohort". 
+  
+ } 
+
+ \item{allow.switch}{
+   TRUE (default)/ or FALSE. Allow for the switching of trt labels if Pr(disease = 1 | trt = 1) > Pr(disease = 1 | trt = 0). See details for more information.  
+
+  }
+ 
+}
+\details{
+ We assume Pr(disease = 1 | trt = 1) < Pr(disease = 1 | trt = 0), if this is not the case, a warning will be produced and the function redefines trt labels 'trt <- 1-trt'.  To not allow trt labels to be changed, set allow.switch = FALSE. 
+
+}
+
+\value{
+
+ An object of class "trtsel," which is a list containing: 
+
+ \item{model.fit }{ A list containing 
+  "coefficients" -- a 4 x 4 matrix with columns for coefficient estimates, standard errors, t-statistics, and two-sided p-values. 
+  "cohort.attributes" -- the vector of cohort.attributes provided
+  "study.design" -- character string of study.design provided   }
+ \item{derived.data }{ A data.frame with "disease", "trt", "marker", "fittedrisk.t0" (risk estimates given no treatment), "fittedrisk.t1" (risk estimates given treatment), "trt.effect" (treatment effect estimates), and "marker.neg" (indicator of trt.effect < thresh) columns.   }
+ \item{functions}{ For internal package use only }
+
+}
+\references{
+
+Janes, Holly; Brown, Marshall D.; Pepe, Margaret; and Huang, Ying, "Statistical Methods for Evaluating and Comparing Biomarkers for Patient Treatment Selection" (January 2013). UW Biostatistics Working Paper Series. Working Paper 389.
+http://biostats.bepress.com/uwbiostat/paper389
+}
+
+\seealso{
+\code{\link{plot.trtsel}} for plotting risk curves and more, \code{\link{eval.trtsel}} for evaluating marker performance,  \code{\link{calibrate.trtsel}} for assessing model calibration, and \code{\link{compare.trtsel}} to compare two trtsel object. 
+}
+
+\examples{
+
+data(tsdata)
+
+attach(tsdata)
+
+trtsel.Y1 <- trtsel( disease = disease, trt = trt, marker = Y1, study.design = "randomized cohort")
+trtsel.Y1
+
+
+detach(tsdata)
+
+
+}

@@ -1,0 +1,4 @@
+is.TrtSel <-
+function(x){
+   inherits(x, "TrtSel")
+}

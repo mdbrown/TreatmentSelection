@@ -1,0 +1,27 @@
+one.boot.compare <-
+function(data1, data2, rho, study.design, obe.boot.sample, obe.get.summary.measures, link){
+
+  
+  myboot.sample <- obe.boot.sample( data1$disease, data1$trt, rho)
+
+  rho.b <- myboot.sample[1:7]
+  ind   <- myboot.sample[-c(1:7)]
+
+  disease.b  <- data1$disease[ind]
+  trt.b  <- data1$trt[ind]
+
+  x1.b <- trtsel.boot( disease = disease.b, trt = trt.b, marker = data1$marker[ind], study.design = study.design, rho = rho.b, link = link)
+ 
+  coefs1 <- x1.b$model$coefficients[,1]
+  sm1.b <- obe.get.summary.measures(x1.b$derived.data, rho.b)
+
+  x2.b <- trtsel.boot( disease = disease.b, trt = trt.b, marker = data2$marker[ind], study.design = study.design, rho = rho.b, link = link)
+ 
+  coefs2 <- x1.b$model$coefficients[,1]
+  sm2.b <- obe.get.summary.measures(x2.b$derived.data, rho.b)
+
+  c(unlist(coefs1), unlist(coefs2), unlist(sm1.b), unlist(sm2.b))
+
+
+
+}

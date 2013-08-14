@@ -1,0 +1,116 @@
+\name{tsdata}
+\alias{tsdata}
+\docType{data}
+\title{
+%%   ~~ data name/kind ... ~~
+sample data for R package TreatmentSelection
+}
+\description{
+   Simulated data set consisting of two continuous markers, treatment, and event status.
+}
+\usage{data(tsdata)}
+\format{
+  A data frame with 1000 simulated observations reflecting the following clinical context.  Markers Y1 and Y2 are candidates for identifying a subset of women with estrogen-receptor positive breast cancer who do not benefit from adjuvant chemotherapy over and above tamoxifen.  The clinical outcome of interest, termed "event", is 5-year breast cancer recurrence or death.  Data come from a hypothetical randomized trial where subjects are randomly assigned to tamoxifen alone or tamoxifen plus chemotherapy and followed to ascertain this outcome; markers Y1 and Y2 are measured at baseline.
+  \describe{
+    \item{\code{trt}}{a numeric vector distinguishing chemotherapy-treated individuals (trt = 1) vs individuals treated with tamoxifen alone (trt = 0)}
+    \item{\code{event}}{a numeric vector indicating event status  (1 for recurrence or death within 5 years, 0 otherwise)}
+    \item{\code{Y1}}{a numeric vector of values for marker 1. This marker has relatively weak performance.}
+    \item{\code{Y2}}{a numeric vector of values for marker 2. This marker has strong performance. }
+  }
+}
+
+\references{
+
+Janes, Holly; Brown, Marshall D.; Pepe, Margaret; and Huang, Ying, "Statistical Methods for Evaluating and Comparing Biomarkers for Patient Treatment Selection" (January 2013). UW Biostatistics Working Paper Series. Working Paper 389.
+http://biostats.bepress.com/uwbiostat/paper389
+}
+
+\seealso{
+\code{\link{trtsel}} for creating trtsel objects, \code{\link{plot.trtsel}} for plotting risk curves and more, \code{\link{eval.trtsel}} for evaluating marker performance,  \code{\link{calibrate.trtsel}} for assessing model calibration, and \code{\link{compare.trtsel}} to compare two trtsel object. 
+}
+
+
+\examples{
+data(tsdata)
+
+tsdata[1:10, ]
+
+###########################
+## Create trtsel objects 
+###########################
+
+trtsel.Y1 <- trtsel( event = "event",
+                     trt = "trt",
+                     marker = "Y1",
+                     data = tsdata,
+                     study.design = "randomized cohort")
+trtsel.Y1
+
+trtsel.Y2 <- trtsel( event = "event",
+                     trt = "trt",
+                     marker = "Y2",
+                     data = tsdata,
+                     study.design = "randomized cohort")
+trtsel.Y2
+
+#############################################
+## Plot fitted risks and treatment effects
+#############################################
+
+# Plot risk curves
+tmp <- plot.trtsel(trtsel.Y1, main = "Marker Y1", 
+                       plot.type = "risk", bootstraps = 500,
+                       trt.names=c("chemo.","no chemo."))
+
+plot.trtsel(trtsel.Y2, main = "Marker Y2",  
+                       plot.type = "risk", bootstraps = 500,
+                       trt.names=c("chemo.","no chemo."))
+
+# Plot treatment effect curves
+plot.trtsel(trtsel.Y1, main = "Marker Y1", 
+                       plot.type = "treatment effect", 
+                       ci = "vertical",  bootstraps = 500 )
+
+plot.trtsel(trtsel.Y2, main = "Marker Y2",
+                       plot.type = "treatment effect",
+                       ci = "vertical", bootstraps = 500)
+
+
+
+##############################
+## Assess model calibration
+##############################
+
+ 
+cali.Y1 <- calibrate.trtsel(trtsel.Y1)
+cali.Y1
+
+cali.Y2 <- calibrate.trtsel(trtsel.Y2)
+cali.Y2
+
+
+#########################################
+## Evaluate performance of each marker 
+#########################################
+
+estimates.Y1 <- eval.trtsel(trtsel.Y1, bootstraps = 50)
+estimates.Y1
+
+estimates.Y2 <- eval.trtsel(trtsel.Y2, bootstraps = 50)
+estimates.Y2
+
+
+###############################
+## Compare marker performance
+###############################
+
+
+# Compare the markers based on summary measures
+mycompare <- compare.trtsel(trtsel1 = trtsel.Y1, 
+                            trtsel2 = trtsel.Y2,
+                                bootstraps = 50)
+mycompare
+
+
+}
+\keyword{datasets}

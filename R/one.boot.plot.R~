@@ -1,0 +1,58 @@
+one.boot.plot <-
+function(disease, trt, marker, rho = rho, study.design, obp.boot.sample, obp.get.F, fixed.values, fix.ind, out.ind, link){
+
+  myboot.sample <- obp.boot.sample( disease, trt, rho)
+
+  rho.b <- myboot.sample[1:7]
+  ind   <- myboot.sample[-c(1:7)]
+
+  disease.b  <- disease[ind]
+  trt.b  <- trt[ind]
+  marker.b  <- marker[ind] 
+
+  coef <- unname(get.coef(disease.b, trt.b, marker.b, study.design, rho.b, link = link)[,1])
+
+  linkinvfun <- binomial(link = link)$linkinv
+  obsrisk.t0.b  <-  get.risk.t0(coef,  marker.b, linkinvfun)#c(ifelse(coef[3]>0, 0,1),        get.risk.t0(coef,  marker.b, linkinvfun))
+  obsrisk.t1.b  <-  get.risk.t1(coef,  marker.b, linkinvfun)#c(ifelse(sum(coef[3:4])>0, 0,1), get.risk.t1(coef,  marker.b, linkinvfun))
+
+  obsdelta.b <- obsrisk.t0.b - obsrisk.t1.b#c(-1, obsrisk.t0.b[-1] - obsrisk.t1.b[-1])
+
+  F.Y <- obp.get.F( marker.b,        disease.b, trt.b, rho.b)#c(0, obp.get.F( marker.b,        disease.b, trt.b, rho.b))
+  F.D <- obp.get.F( obsdelta.b, disease.b, trt.b, rho.b)#c(0, obp.get.F( obsdelta.b[-1], disease.b, trt.b, rho.b))  
+
+  #all 
+  all  <- cbind( F.Y, obsrisk.t0.b, obsrisk.t1.b, F.D, obsdelta.b)
+  #browser()
+  if(length(fix.ind) > 1){
+  myorder <- apply(all[,fix.ind], 2, order)
+  
+  out <- matrix(0, ncol = length(fixed.values), nrow = length(fix.ind))
+  
+  for( i in 1:length(fix.ind)){
+
+  tmpind <- sum.I(fixed.values, ">=", all[myorder[,i],fix.ind[i]])
+  tmpind[tmpind==0] <- NA
+  tmpall <- all[myorder[,i],out.ind[i]]
+  out[i, ] <- tmpall[tmpind]
+  
+  }
+
+  }else{
+  myorder <- order(all[,fix.ind])
+  
+  out <- numeric( length(fixed.values))
+  
+  
+
+  tmpind <- sum.I(fixed.values, ">=", all[myorder,fix.ind])
+  tmpind[tmpind==0] <- NA
+  tmpall <- all[myorder,out.ind]
+  out <- tmpall[tmpind]
+  
+  
+
+  }
+
+  out
+}

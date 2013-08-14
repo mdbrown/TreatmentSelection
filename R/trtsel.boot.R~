@@ -1,0 +1,32 @@
+trtsel.boot <-
+function(disease, trt, marker, d=0, rho = NULL, study.design, link){
+  
+  # model.fit
+  
+  coef <- get.coef( disease, trt, marker, study.design, rho, link) #glm object
+  
+  model.fit <- list( "coefficients" = coef,  "cohort.attributes" = rho, "study.design" = study.design, "link" = link)
+  linkinvfun <- binomial(link = link)$linkinv
+  
+  # derived.data
+
+  fittedrisk.t0 <- get.risk.t0(coef, marker, linkinvfun)
+  fittedrisk.t1 <- get.risk.t1(coef, marker, linkinvfun)
+
+  trt.effect <- fittedrisk.t0 - fittedrisk.t1
+  marker.neg <- ifelse( trt.effect < d, 1, 0) # indicator of being marker negative
+
+
+  derived.data <- data.frame( disease = disease, trt=trt, fittedrisk.t0 = fittedrisk.t0, 
+                                          fittedrisk.t1 = fittedrisk.t1,
+                                              trt.effect = trt.effect,
+                                             marker.neg = marker.neg)
+
+
+
+  out <- list(derived.data=derived.data, model.fit = model.fit)
+
+  
+  out
+
+}

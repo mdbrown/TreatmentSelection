@@ -1,0 +1,23 @@
+\name{is.TrtSel}
+\alias{is.TrtSel}
+%- Also NEED an '\alias' for EACH other topic documented here.
+\title{
+
+is x a TrtSel object?
+}
+\description{
+ Function to check if an object is of class "TrtSel"
+}
+\usage{
+is.TrtSel(x)
+}
+
+\arguments{
+  \item{x}{
+  Any R object. 
+}
+}
+
+\value{
+ Returns TRUE or FALSE depending on whether x is a "TrtSel" object or not. 
+}

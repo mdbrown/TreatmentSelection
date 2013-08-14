@@ -1,0 +1,165 @@
+\name{compare.trtsel}
+\alias{compare.trtsel}
+%- Also NEED an '\alias' for EACH other topic documented here.
+\title{
+
+compare the performance of two treatment selection markers
+}
+\description{
+ Evaluates and compares the performance of two treatment selection markers measured in the same data.  Summary measures of the performance of each marker are estimated and confidence intervals are provided.  Differences in measures of performance between markers are estimated along with confidence intervals, and the results of tests comparing marker performance measures are returned.  "Treatment effect curves" for each marker are overlaid on the same plot.  An object of class 'trtsel' must first be created for each marker using the function 'trtsel' by supplying a data.frame containing marker, treatment, and event status information; treatment and event data must be identical for the two markers.   
+ 
+
+}
+\usage{
+compare.trtsel(trtsel1, trtsel2, bootstraps = 500, 
+                                 alpha = .05,
+                                 plot = TRUE, 
+                                 ci   = "horizontal",
+                                 fixed.values =  NULL, 
+                                 offset = .01,
+                                 conf.bands = FALSE, 
+                                 conf.bandsN =100,  
+                                 marker.names = c("Marker 1", "Marker 2"), 
+                                 xlab = NULL, 
+                                 ylab = NULL, 
+                                 xlim = NULL, 
+                                 ylim = NULL, 
+                                 main = NULL, 
+                                 mar  = NULL, ...)
+}
+
+\arguments{
+  \item{trtsel1}{
+  An object of class "trtsel" created by using function "trtsel". This is created using data for the first marker.  Note: event and treatment vectors provided to create this trtsel object must be identical to those used to create the trtsel2 object.  
+}
+  \item{trtsel2}{
+ An object of class "trtsel" created by using function "trtsel". This is created using data for the second marker.
+}
+  \item{bootstraps}{
+  Number of bootstrap replicates for creating confidence intervals and bands. Default value is 500. Set bootstraps=0 if no confidence intervals or bands are desired.  
+}
+\item{alpha}{
+  (1-alpha)*100\% confidence intervals are calculated. Default value is alpha = 0.05 which yields 95\% CI's.
+ }
+ \item{plot}{
+   Indication of whether a plot showing treatment effect curves for the two markers should be created.  TRUE (default) or FALSE.
+ }
+ \item{ci}{
+   If plot = TRUE, indication of whether horizontal or vertical confidence intervals be plotted.  Character string of either "horizontal" (default) or "vertical." Only applies if plot = TRUE.
+}  
+  \item{fixed.values}{
+   A numeric vector indicating fixed values on the x- or y-axes at which bootstrap confidence intervals are provided. If "fixed.values" are provided, point-wise confidence intervals will be printed (i.e. conf.bands will be taken as FALSE).  This option applies to the plot only.  
+  
+}    
+   \item{offset}{
+    If confidence intervals are to be plotted for specified fixed.values, offset is the amount of distance to offset confidence intervals so that they do not overlap on the plot. The default value is 0.01. Only applies if plot = TRUE. 
+       
+   }
+   \item{conf.bands}{
+    Indication of whether pointwise confidence intervals are shown for the curve(s).  TRUE (default) or FALSE. If "fixed.values" are input, this option is ignored and no confidence bands are produced. Only applies if plot = TRUE.
+      
+}
+\item{conf.bandsN}{
+   If conf.bands = TRUE, the number of points along the x- or y-axis at which to calculate the pointwise confidence intervals. The default is 100. Only applies if plot = TRUE.
+
+}
+  \item{marker.names}{
+   A vector of length 2 indicating the names for the two markers in trtsel1, and trtsel2, respectively, for the plot legend. This option is only used when plot=TRUE. The default value is c("Marker 1", "Marker 2"). 
+   
+}
+  \item{xlab}{
+    A label for the x-axis. Default values depend on plot.type. Only applies if plot = TRUE.
+}
+  \item{ylab}{
+   A label for the y-axis. Default values depend on plot.type. Only applies if plot = TRUE. 
+} 
+  \item{xlim}{
+   The limits for the x-axisof the plot, in the form c(x1,x2). Only applies if plot = TRUE.
+}
+  \item{ylim}{
+   The limits for the y-axis of the plot, in the form c(y1,y2). Only applies if plot = TRUE. 
+}
+  \item{main}{
+   The main title for the plot. Only applies if plot = TRUE.
+}
+
+  \item{mar}{
+   A numerical vector of the form "c(bottom, left, top, right)" which gives the number of lines of margin to be specified on the four sides of the plot.  The default is c(5.1, 4.1, 4.1, 9).  
+}
+  \item{\dots}{
+   other parameters to be passed to "plot."  
+}
+
+}
+
+
+\value{
+  A list with components (see Janes et al. (2013) for a description of the summary measures and estimators):
+  
+  \item{estimates.marker1}{ Point estimates of the summary measures: p.neg, p.pos, B.neg, B.pos, Theta, Var.Delta, TG and event rates for marker 1. }
+  \item{estimates.marker2}{ Point estimates for the same summary measures for marker 2.}
+  \item{estimates.diff}{ Estimated difference in summary measures (marker 1 - marker 2).}
+  \item{ci.marker1}{ 2x9 data.frame with confidence intervals for marker 1 performance measures.}
+  \item{ci.marker2}{ 2x9 data.frame with confidence intervals for marker 2 performance measures.}
+  \item{ci.diff}{ 2x9 data.frame with confidence intervals for differences in performance measures.}
+  \item{p.values}{1x9 data.frame with p-values for each difference corresponding to a test of H0: marker 1 performance = marker 2 performance.}
+  \item{bootstraps}{ bootstraps value provided.}
+  
+  In addition, if plot = TRUE:
+  \item{plot.marker1}{  which consists of component "curves" -- A dataframe containing the x and y points of the estimated treatment effect curve for marker 1, and component "ci.bounds"--a data.frame containing the bounds of the bootstrap-based confidence intervals, along with the fixed.values they are centered around, where applicable. }
+    \item{plot.marker2}{  which consists of component "curves" -- A dataframe containing the x and y points of the estimated treatment effect curve for marker 2, and component "ci.bounds"--a data.frame containing the bounds of the bootstrap-based confidence intervals, along with the fixed.values they are centered around, where applicable. }
+    
+
+}
+\references{
+
+Janes, Holly; Brown, Marshall D.; Pepe, Margaret; and Huang, Ying, "Statistical Methods for Evaluating and Comparing Biomarkers for Patient Treatment Selection" (January 2013). UW Biostatistics Working Paper Series. Working Paper 389.
+http://biostats.bepress.com/uwbiostat/paper389
+
+}
+
+\seealso{
+\code{\link{trtsel}} for creating trtsel objects, \code{\link{plot.trtsel}} for plotting risk curves and more, \code{\link{eval.trtsel}} for evaluating marker performance, and \code{\link{calibrate.trtsel}} for assessing model calibration.. 
+}
+
+
+
+
+\examples{
+data(tsdata)
+
+###########################
+## Create trtsel objects 
+###########################
+
+trtsel.Y1 <- trtsel( event = "event",
+                     trt = "trt",
+                     marker = "Y1",
+                     data = tsdata,
+                     study.design = "randomized cohort")
+trtsel.Y1
+
+trtsel.Y2 <- trtsel( event = "event",
+                     trt = "trt",
+                     marker = "Y2",
+                     data = tsdata,
+                     study.design = "randomized cohort")
+trtsel.Y2
+
+
+###############################
+## Compare marker performance
+###############################
+
+
+# Compare the markers based on summary measures 
+mycompare <- compare.trtsel(trtsel1 = trtsel.Y1,trtsel2 = trtsel.Y2,
+                            bootstraps = 50, plot = FALSE)
+mycompare
+
+# Plot treatment effect curves with pointwise confidence intervals
+compare.trtsel(trtsel1 = trtsel.Y1, trtsel2 = trtsel.Y2,
+                                bootstraps = 50, plot = TRUE, 
+                                ci = "horizontal",  conf.bands = TRUE)
+
+}

@@ -1,0 +1,103 @@
+plot.trtsel <-
+function(x, bootstraps = 500,  
+            plot.type = "risk", 
+            ci = "horizontal", 
+            alpha = .05, 
+            fixed.values = NULL,  
+            offset = 0.01, 
+            conf.bands = TRUE, 
+            conf.bandsN = 100, 
+            trt.names = c("Treatment", "No Treatment"), 
+            xlab = NULL, ylab = NULL, xlim = NULL, ylim = NULL, main = NULL, mar = NULL, ...)
+
+{
+
+  if(!is.trtsel(x)) stop("x must be an object of class 'trtsel' created by using the function 'trtsel' see ?trtsel for more help")
+ 
+  if(!is.element(plot.type, c("risk", "treatment effect", "cdf"))){ 
+    stop("plot.type must be one of \"risk\", \"treatment effect\", or \"cdf\"")
+  }
+  stopifnot(length(plot.type) ==1)
+
+  if(alpha<0 | alpha > 1) stop("Error: alpha should be between 0 and 1")
+  if(bootstraps < 2) warning("Number of bootstraps must be greater than 1, bootstrap confidence intervals will not be computed") 
+  	
+
+  #save the current plot parameters
+  #old.par <- par(no.readonly = TRUE)
+
+
+
+#extract the needed data from x, which is our TrtSel object
+    
+  marker <- x$derived.data$marker
+  trt <- x$derived.data$trt
+  event <- x$derived.data$event
+
+  n <- length(marker)
+  rho  <- x$model.fit$cohort.attributes
+  study.design <- x$model.fit$study.design
+  link <- x$model.fit$link
+  boot.sample <- x$functions$boot.sample
+  get.F <- x$functions$get.F
+  delta <- x$derived.data$trt.effect   
+  plot.functions <- list(  predcurvePLOT_gg, trteffectPLOT, CDFdeltaPLOT)
+
+  if(length(fixed.values)!=0) conf.bands = FALSE
+  if(conf.bands & length(fixed.values)==0 ){
+   #create fixed values
+
+   if(substr(ci, 1,1 )=="v"){
+       
+      if(is.element(substr(plot.type, 1,3), c("tre", "ris"))) fixed.values = seq(from = 0.001, to = 1, length.out = conf.bandsN)
+      else if(substr(plot.type, 1,3)=="cdf") fixed.values = seq(from = min(delta), to = max(delta), length.out = conf.bandsN)
+      
+   }else{
+      
+      if(is.element(substr(plot.type, 1,3), c("cdf"))) fixed.values = seq(from = 0.001, to = 1, length.out = conf.bandsN)
+      else if(substr(plot.type, 1,3)=="tre") fixed.values = seq(from = min(delta), to = max(delta), length.out = conf.bandsN)
+      else if(substr(plot.type, 1,3)=="ris"){
+       allrisks <- c(x$derived.data$fittedrisk.t0, x$derived.data$fittedrisk.t1)
+       fixed.values = seq(from = min(allrisks), to = max(allrisks), length.out = conf.bandsN)
+
+      }
+
+   }
+   offset = 0
+   }
+##Bootstrap for confidence intervals...
+ #bootstrapping done by fixing response and strapping marker 
+
+  if((conf.bands & bootstraps>1) | (length(fixed.values)>0 & bootstraps > 1)){ 
+    ci.bounds <- get.plot.ci(marker, trt, event, study.design, rho, plot.type, ci, bootstraps, fixed.values =fixed.values, obp.boot.sample = boot.sample, obp.get.F = get.F, link = link)
+  }else{ 
+    ci.bounds <- NULL
+    conf.bands = FALSE
+  }
+## end Bootstrap
+
+  tmp.plotfun <- plot.functions[[match(plot.type, c("risk", "treatment effect", "cdf"))]]
+   
+  if(substring(plot.type, 1, 4) == "risk"){
+
+  curves <- tmp.plotfun(x, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, trt.names, xlab, ylab, xlim, ylim, main, offset = offset,mar,  ...)
+
+  if(!is.null(ci.bounds)){
+    ci.bounds <- data.frame(t(ci.bounds))
+    ci.bounds <- cbind(fixed.values, ci.bounds)
+    names(ci.bounds) <- c("fixed.values", "trt0.lower", "trt0.upper", "trt1.lower", "trt1.upper")
+    }
+  }else{
+
+    curves <- tmp.plotfun(x, ci, ci.bounds, get.F, fixed.values, conf.bands, rho, xlab, ylab, xlim, ylim, main, mar = mar,  ...)
+    if(!is.null(ci.bounds)){
+      ci.bounds <- data.frame(t(ci.bounds))
+      ci.bounds <- cbind(fixed.values, ci.bounds)
+      names(ci.bounds) <- c("fixed.values", "lower", "upper")
+    }
+  }
+
+#par(old.par)
+
+invisible(list("curves" = curves, "ci.bounds" = ci.bounds))
+}

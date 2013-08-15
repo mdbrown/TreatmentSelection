@@ -7,7 +7,7 @@ function(x, bootstraps = 500,
             offset = 0.01, 
             conf.bands = TRUE, 
             conf.bandsN = 100, 
-            trt.names = c("Treatment", "No Treatment"), 
+            trt.names = c("Treatment", "    No \nTreatment"), 
             xlab = NULL, ylab = NULL, xlim = NULL, ylim = NULL, main = NULL, mar = NULL, ...)
 
 {
@@ -18,7 +18,11 @@ function(x, bootstraps = 500,
     stop("plot.type must be one of \"risk\", \"treatment effect\", or \"cdf\"")
   }
   stopifnot(length(plot.type) ==1)
-
+  
+  if(!is.element(ci, c("horizontal", "vertical"))){ 
+    stop("ci must be one of \"horizontal\", or  \"vertical\" ")
+  }
+  
   if(alpha<0 | alpha > 1) stop("Error: alpha should be between 0 and 1")
   if(bootstraps < 2) warning("Number of bootstraps must be greater than 1, bootstrap confidence intervals will not be computed") 
   	
@@ -41,7 +45,7 @@ function(x, bootstraps = 500,
   boot.sample <- x$functions$boot.sample
   get.F <- x$functions$get.F
   delta <- x$derived.data$trt.effect   
-  plot.functions <- list(  predcurvePLOT_gg, trteffectPLOT, CDFdeltaPLOT)
+  plot.functions <- list(  predcurvePLOT_gg, trteffectPLOT_gg, CDFdeltaPLOT)
 
   if(length(fixed.values)!=0) conf.bands = FALSE
   if(conf.bands & length(fixed.values)==0 ){
@@ -99,5 +103,5 @@ function(x, bootstraps = 500,
 
 #par(old.par)
 
-invisible(list("curves" = curves, "ci.bounds" = ci.bounds))
+invisible(list("plot" = curves, "ci.bounds" = ci.bounds))
 }

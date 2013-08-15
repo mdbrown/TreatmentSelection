@@ -185,6 +185,6 @@ trtsel.Y4 <- trtsel( event ="event", trt = "trt", marker = "Y4", data = tsdata[1
 
 trtsel.Y4
 eval.trtsel(trtsel.Y4, bootstrap = 50)
-plot.trtsel(trtsel.Y4)
+tmp <- plot.trtsel(trtsel.Y4, bootstrap = 50, ci = "vertical")
 
 

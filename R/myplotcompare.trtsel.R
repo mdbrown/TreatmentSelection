@@ -110,8 +110,8 @@ function(x, bootstraps = 500, alpha = .05,
     }
 
 
-    ts1.curves <- trteffectPLOT(ts1, ci = ci, ci.bounds = bounds.delta.y1, get.F = get.F, fixed.values = fixeddeltas.y1, conf.bands = conf.bands, rho=rho, xlab=xlab, ylab = ylab, xlim=xlim, ylim = ylim, main = main, mar = mar,...) 
-    ts2.curves <-trteffectPLOT(ts2, ci = ci, ci.bounds = bounds.delta.y2, get.F = get.F, fixed.values = fixeddeltas.y2+offset, conf.bands = conf.bands, rho=rho, xlab=xlab, ylab = ylab, xlim=xlim, ylim = ylim, main = main, markerTWO=TRUE, lty= 2, mar = mar,  ...) 
+    ts1.curves <- trteffectPLOT(x =NULL, ci = ci, ci.bounds = bounds.delta.y1, get.F = get.F, fixed.values = fixeddeltas.y1, conf.bands = conf.bands, rho=rho, xlab=xlab, ylab = ylab, xlim=xlim, ylim = ylim, main = main, mar = mar,...) 
+    ts2.curves <- trteffectPLOT(ts2, ci = ci, ci.bounds = bounds.delta.y2, get.F = get.F, fixed.values = fixeddeltas.y2+offset, conf.bands = conf.bands, rho=rho, xlab=xlab, ylab = ylab, xlim=xlim, ylim = ylim, main = main, markerTWO=TRUE, lty= 2, mar = mar,  ...) 
     if(is.null(xlim)) xlim = c(0,1)
     legend(x=xlim[2]+diff(xlim)/15, y = quantile(ylim, prob = .5), legend = marker.names, lty = c(1,2), col = c("black", "black"), bty="n", cex = 1, xpd = TRUE, lwd=c(2,2))
 

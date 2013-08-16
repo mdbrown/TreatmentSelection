@@ -1,49 +1,51 @@
-predcurvePLOT_gg <-
+predcurvePLOT_gg_disc <-
 function(x, ci, ci.bounds, get.F, fixed.values, conf.bands, rho, trt.names, xlab, ylab, xlim, ylim, main, offset = .01, mar,...){ 
 
-
+  
   fittedrisk.t0 <- x$derived.data$fittedrisk.t0
   fittedrisk.t1 <- x$derived.data$fittedrisk.t1
   marker <- x$derived.data$marker
   event <- x$derived.data$event
   trt <- x$derived.data$trt
   F.Y <- get.F(marker, event, trt, rho = rho)
-  mydata <- data.frame(risk = fittedrisk.t0*(1-trt)+fittedrisk.t1*trt, trt = 1-trt, Fy = F.Y)
+  mydata <- data.frame(risk = fittedrisk.t0*(1-trt)+fittedrisk.t1*trt, trt = 1-trt, Fy = F.Y, marker)
   mydata <- mydata[with(mydata, order(Fy)),]
-  
+  mydata <- unique(mydata)
+  mydata$lower <- rep(NA, nrow(mydata))
+  mydata$upper <- rep(NA, nrow(mydata))
 
-#browser()
-  #legend(x=xlim[2]+diff(xlim)/15, y = quantile(ylim, prob = .75), legend = trt.names, lty = c(2, 1),lwd=c(2,2), bty="n", cex = 1, xpd = TRUE)
-  
-  #x.t0 <- stepF.Y
-  #x.t1 <- stepF.Y  
-
-  #y.t0 <- fittedrisk.t0[rep(order(F.Y),c(1, rep(2, n-1)))]
-  #y.t1 <- fittedrisk.t1[rep(order(F.Y),c(1, rep(2, n-1)))]
-
+   
   if(!is.null(ci.bounds)){
     
-  ci.bounds <- matrix(ci.bounds, ncol=length(fixed.values), nrow = 4)
+  
+  mval = sort(unique(marker))
+  #order matters here!
+  mydata[mydata$trt==0 & mydata$marker==mval[1], 5:6] <- ci.bounds[,1]
+  mydata[mydata$trt==1 & mydata$marker==mval[1], 5:6] <- ci.bounds[,2]
+  mydata[mydata$trt==0 & mydata$marker==mval[2], 5:6] <- ci.bounds[,3]
+  mydata[mydata$trt==1 & mydata$marker==mval[2], 5:6] <- ci.bounds[,4]
+  
   
   if(substr(ci, 1,1)=="h"){
-  #the indices of fixed values that fall between min(fittedrisk.t0) and max(fittedrisk.t0) ...same for t1
-  index.fix.t0   <- (fixed.values<= max(fittedrisk.t0[trt==0]) & fixed.values >= min(fittedrisk.t0[trt==0])) 
-  index.fix.t1   <- (fixed.values<= max(fittedrisk.t1[trt==1]) & fixed.values >= min(fittedrisk.t1[trt==1])) 
-
+   p <- ggplot(mydata, aes(y = Fy, x = risk, ymin = lower, ymax = upper, group = factor(trt), shape = factor(trt), linetype = factor(trt) ))
+   p <- p + geom_pointrange(size = 1)
+   p <- p + coord_flip()
   }else{
-
-  index.fix.t0   <- (fixed.values<= max(F.Y[trt==0]) & fixed.values >= min(F.Y[trt==0])) 
-  index.fix.t1   <- (fixed.values<= max(F.Y[trt==1]) & fixed.values >= min(F.Y[trt==1])) 
+    p <- ggplot(mydata, aes(x = Fy, y = risk, ymin = lower, ymax = upper, group = factor(trt), shape = factor(trt), linetype = factor(trt) ))
+    p <- p + geom_pointrange(size = 1)
+    p <- p 
   }
   
-
-  p <- shade_gg(ggplot(mydata), ci.bounds[1:2,index.fix.t0], fixed.values[index.fix.t0], type = substr(ci, 1, 1), bands = conf.bands)
-  p <- shade_gg(p, ci.bounds[3:4,index.fix.t1], fixed.values[index.fix.t1] +offset, type = substr(ci, 1, 1), bands = conf.bands, lty = 2)
-
   }else{
-    
-    p <- ggplot(mydata)
-    if(substr(ci, 1,1) =="h") p <- p + coord_flip()
+    if(substr(ci, 1,1)=="h"){
+      p <- ggplot(mydata, aes(y = Fy, x = risk, ymin = lower, ymax = upper, group = factor(trt), shape = factor(trt), linetype = factor(trt) ))
+      p <- p + geom_point(size = 3)
+      p <- p + coord_flip()
+    }else{
+      p <- ggplot(mydata, aes(x = Fy, y = risk, ymin = lower, ymax = upper, group = factor(trt), shape = factor(trt), linetype = factor(trt) ))
+      p <- p + geom_point(size = 3)
+
+    }
   }
 
   if(is.null(xlab)) xlab <- "% population below marker value"
@@ -51,41 +53,40 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands, rho, trt.names, xlab
   if(is.null(xlim)) xlim <- c(0,1)
   if(is.null(ylim)) ylim <- c(0,1)
   if(is.null(main)) main <- "Risk curves by treatment"
-  breaks = seq(xlim[1], xlim[2], length.out = 5)
+  breaks = sort(unique(mydata$Fy))
   
   if(substr(ci, 1, 1)=="h"){
     #we used coord_flip, so we switch x and y, otherwise dont
-    p <- p+geom_step(data = mydata, aes(y = Fy, x = risk, linetype = factor(trt)), direction = "hv", size = 1)
-    
+
     #add x/y labels and main
     p <- p + ylab(xlab) + xlab(ylab)  + xlim(ylim[1], ylim[2]) + ggtitle(main) 
     #change the names for the legend
-    p <- p + scale_linetype_manual(values = c(2, 1), labels = trt.names) +
+    p <- p + scale_shape_manual(values = c(16, 17), labels = trt.names) +
+             scale_linetype_manual(values = c(1, 1), labels = trt.names)+
       theme(legend.title = element_blank(),  text = element_text(size=18))
            # legend.text = element_text(size = 16))
     p <- p + scale_y_continuous(breaks = breaks,limits = xlim) 
     p <- p + theme(plot.margin = unit(c(1,1,4,1), "lines"))
  
-    p <- p + annotation_custom(grob = xaxisGrob( at = breaks, label = round(quantile(marker, prob = breaks), 1), gp = gpar(col = gray(.55), fontsize=15)), 
+    p <- p + annotation_custom(grob = xaxisGrob( at = breaks, label = mval, gp = gpar(col = gray(.55), fontsize=15)), 
                                ymin = 0, ymax = 1, xmin = ylim[1]-diff(ylim)*.25, xmax = ylim[1]-diff(ylim)*.25)
     p <- p + annotation_custom(grob = textGrob( label = "marker value", gp = gpar( fontsize=18)), 
                                ymin = mean(xlim), ymax = mean(xlim), xmin = ylim[1]-diff(ylim)*.4, xmax = ylim[1]-diff(ylim)*.4)
     
   }else{
 
-  p <- p+geom_step(data = mydata, aes(x = Fy, y = risk, linetype = factor(trt)), direction = "vh", size = 1)
-
   #add x/y labels and main
   p <- p + xlab(xlab) + ylab(ylab) + ylim(ylim[1], ylim[2]) + ggtitle(main) 
   #change the names for the legend
-  p <- p + scale_linetype_manual(values = c(2, 1), labels = trt.names)+
-    theme(legend.title = element_blank(),  text = element_text(size=18)) #, 
-          #legend.text = element_text(size = 16))
+  p <- p + scale_shape_manual(values = c(16, 17), labels = trt.names) +
+    scale_linetype_manual(values = c(1, 1), labels = trt.names)+
+    theme(legend.title = element_blank(),  text = element_text(size=18))
+  #legend.text = element_text(size = 16))
   p <- p + scale_x_continuous(breaks = breaks, limits = xlim)
   
   p <- p + theme(plot.margin = unit(c(1,1,4,1), "lines"))
   
-  p <- p + annotation_custom(grob = xaxisGrob( at = breaks, label = round(quantile(marker, prob = breaks), 1), gp = gpar(col = gray(.55), fontsize=15)), 
+  p <- p + annotation_custom(grob = xaxisGrob( at = breaks, label = mval, gp = gpar(col = gray(.55), fontsize=15)), 
                              xmin = 0, xmax = 1, ymin = ylim[1]-diff(ylim)*.25, ymax = ylim[1]-diff(ylim)*.25)
   p <- p + annotation_custom(grob = textGrob( label = "marker value", gp = gpar( fontsize=18)), 
                              xmin = mean(xlim), xmax = mean(xlim), ymin = ylim[1]-diff(ylim)*.4, ymax = ylim[1]-diff(ylim)*.4)
@@ -99,5 +100,5 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands, rho, trt.names, xlab
   
 
   
-  return(p)
+  return(list(p, mydata))
 }

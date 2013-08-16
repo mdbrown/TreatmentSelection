@@ -88,7 +88,7 @@ function(x, bootstraps = 1000, alpha = .05){
   }else{
 
   summary.measures <- data.frame(get.summary.measures(data, rho))
-  if(any(data$marker.neg==0) & any(data$marker.neg==1)){
+  if(any(data$marker.neg==0) & any(data$marker.neg==1) & is.null(x$model.fit$disc.marker.neg)){
   summary.measures$Marker.Thresh <- max(data$marker[data$marker.neg == 1])
   }else{
   summary.measures$Marker.Thresh <- NA

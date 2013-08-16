@@ -7,3 +7,4 @@ Author: Marshall Brown and Holly Janes
 Maintainer:  <mdbrown@fhcrc.org>
 Description:Evaluate the performance of markers used to guide treatment selection decisions. Package includes functions to plot risk curves, evaluate marker performance, assess model calibration, and compare markers.  
 License: GPL-2
+Depends: ggplot2, grid

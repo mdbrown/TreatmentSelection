@@ -166,7 +166,7 @@ compare.trtsel(trtsel1 = trtsel.Y3, trtsel2 = trtsel.Y2,
 
 
 
-tsdata$Y3 <- as.numeric(!(tsdata$Y2>0))
+tsdata$Y3 <- as.numeric(!(tsdata$Y2>-.5))+1
 
 trtsel.Y3 <- trtsel( event ="event", trt = "trt", marker = "Y3", data = tsdata,
                      study.design = "randomized cohort", link = "logit", 
@@ -185,6 +185,8 @@ trtsel.Y4 <- trtsel( event ="event", trt = "trt", marker = "Y4", data = tsdata[1
 
 trtsel.Y4
 eval.trtsel(trtsel.Y4, bootstrap = 50)
-tmp <- plot.trtsel(trtsel.Y4, bootstrap = 50, ci = "vertical")
+
+
+plot.trtsel(trtsel.Y3, ci = "vertical", xlim = c(.4,1) ,bootstrap = 50)
 
 

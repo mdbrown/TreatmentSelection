@@ -8,7 +8,8 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands, rho, trt.names, xlab
   event <- x$derived.data$event
   trt <- x$derived.data$trt
   F.Y <- get.F(marker, event, trt, rho = rho)*100
-  mydata <- data.frame(risk = fittedrisk.t0*(1-trt)+fittedrisk.t1*trt, trt = 1-trt, Fy = F.Y)
+  n = length(fittedrisk.t0)
+  mydata <- data.frame(risk = c(fittedrisk.t0, fittedrisk.t1), trt = c(rep(1, n ), rep(0,n)), Fy = rep(F.Y,2))
   mydata <- mydata[with(mydata, order(Fy)),]
   
 

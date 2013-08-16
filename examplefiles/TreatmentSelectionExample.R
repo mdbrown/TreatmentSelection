@@ -174,7 +174,7 @@ trtsel.Y3 <- trtsel( event ="event", trt = "trt", marker = "Y3", data = tsdata,
                      default.trt = "trt all")
 
 trtsel.Y3
-eval.trtsel(trtsel.Y3, bootstrap = 50)
+tmp = eval.trtsel(trtsel.Y3, bootstrap = 50)
 plot.trtsel(trtsel.Y3)
 
 
@@ -185,10 +185,23 @@ trtsel.Y4 <- trtsel( event ="event", trt = "trt", marker = "Y4", data = tsdata[1
                      default.trt = "trt all")
 
 trtsel.Y4
-eval.trtsel(trtsel.Y4, bootstrap = 50)
+eval.trtsel(trtsel.Y5, bootstrap = 50)
 
 tmp <- plot(trtsel.Y3, bootstrap = 50, ci = "horizontal")
 
 tmp <- plot.trtsel(trtsel.Y3,bootstrap = 50, plot = "cdf", ci = "vertical")
 
+plot.trtsel(trtsel.Y1, bootstrap = 50, plot = "treatment effect")
+plot.trtsel(trtsel.Y5, bootstrap = 50, plot = "treatment effect")
+
+
+tsdata$Y5 <- -tsdata$Y1 
+trtsel.Y5 <- trtsel( event ="event", trt = "trt", marker = "Y5", data = tsdata,
+                     study.design = "randomized cohort", link = "logit", 
+                     default.trt = "trt all")
+
+trtsel.Y1
+
+compare.trtsel(trtsel1 = trtsel.Y1, trtsel2 = trtsel.Y5,
+               bootstraps = 50, plot = TRUE, ci = "horizontal", conf.bands = TRUE)
 

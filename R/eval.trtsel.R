@@ -16,7 +16,7 @@ function(x, bootstraps = 1000, alpha = .05){
   test.Null.val <- test.Null(x, alpha = alpha)
   
   link <- x$model.fit$link
-  
+
   if(bootstraps > 1){
   #get bootstrap data
 
@@ -30,8 +30,12 @@ function(x, bootstraps = 1000, alpha = .05){
   summary.measures <- data.frame(get.summary.measures(data, rho))
   #marker threshold st delta(mthresh) = 0
   if(any(data$marker.neg==0) & any(data$marker.neg==1) &is.null(x$model.fit$disc.marker.neg)){
-    
-  summary.measures$Marker.Thresh <- max(data$marker[data$marker.neg == 1])
+
+    summary.measures$Marker.Thresh <-ifelse( with(data, trt.effect[which.min(marker)]) < 0 , 
+                                             max(data$marker[data$marker.neg == 1]), 
+                                             min(data$marker[data$marker.neg == 1]))
+
+
   }else{
   summary.measures$Marker.Thresh <- NA
   }
@@ -89,7 +93,10 @@ function(x, bootstraps = 1000, alpha = .05){
 
   summary.measures <- data.frame(get.summary.measures(data, rho))
   if(any(data$marker.neg==0) & any(data$marker.neg==1) & is.null(x$model.fit$disc.marker.neg)){
-  summary.measures$Marker.Thresh <- max(data$marker[data$marker.neg == 1])
+
+    summary.measures$Marker.Thresh <-ifelse( with(data, trt.effect[which.min(marker)]) < 0 , 
+                                             max(data$marker[data$marker.neg == 1]), 
+                                             min(data$marker[data$marker.neg == 1]))
   }else{
   summary.measures$Marker.Thresh <- NA
   }

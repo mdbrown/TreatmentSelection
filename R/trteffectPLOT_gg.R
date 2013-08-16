@@ -7,7 +7,7 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, xlab, ylab, xl
   trt <- x$derived.data$trt
   n = length(trt.effect)
   
-  F.D <- get.F(trt.effect, event, trt, rho = rho)
+  F.D <- get.F(trt.effect, event, trt, rho = rho)*100
   
   mydata = data.frame(trt.effect, F.D )
   mydata = mydata[with(mydata, order(F.D)),]
@@ -25,7 +25,7 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, xlab, ylab, xl
    
    if(is.null(xlab)) xlab <- "% population below treatment effect"
    if(is.null(ylab)) ylab <- "treatment effect"
-   if(is.null(xlim)) xlim <- c(0,1)
+   if(is.null(xlim)) xlim <- c(0,100)
    if(is.null(ylim)) ylim <- mylim
    if(is.null(main)) main <- "Treatment effect distribution"
    p <- ggplot(mydata)     
@@ -37,8 +37,10 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, xlab, ylab, xl
   ci.bounds <- matrix(ci.bounds, ncol=length(fixed.values), nrow = 2)
 
   if(substr(ci, 1,1)=="v"){
+    fixed.values = fixed.values*100
     index.fix  <- (fixed.values<= max(F.D) & fixed.values >= min(F.D)) 
   }else{
+    ci.bounds = ci.bounds*100
     index.fix  <- (fixed.values<= max(trt.effect) & fixed.values >= min(trt.effect)) 
   }
   
@@ -87,5 +89,5 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, xlab, ylab, xl
 
   print(p) 
     
-  return(p)
+  return(list(p, ci.bounds))
 }

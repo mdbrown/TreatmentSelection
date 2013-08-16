@@ -13,13 +13,13 @@ function(event, trt, marker, rho = rho, study.design, obp.boot.sample, obp.get.F
   coef <- unname(get.coef(event.b, trt.b, marker.b, study.design, rho.b, link = link)[,1])
 
   linkinvfun <- binomial(link = link)$linkinv
-  obsrisk.t0.b  <-  c(ifelse(coef[3]>0, 0,1), get.risk.t0(coef,  marker.b, linkinvfun))#c(ifelse(coef[3]>0, 0,1),        get.risk.t0(coef,  marker.b, linkinvfun))
-  obsrisk.t1.b  <-  c(ifelse(sum(coef[3:4])>0, 0,1),get.risk.t1(coef,  marker.b, linkinvfun))#c(ifelse(sum(coef[3:4])>0, 0,1), get.risk.t1(coef,  marker.b, linkinvfun))
+  obsrisk.t0.b  <-  get.risk.t0(coef,  marker.b, linkinvfun)
+  obsrisk.t1.b  <-  get.risk.t1(coef,  marker.b, linkinvfun)
 
-  obsdelta.b <- c(-1, obsrisk.t0.b[-1] - obsrisk.t1.b[-1])#obsrisk.t0.b - obsrisk.t1.b#
+  obsdelta.b <-obsrisk.t0.b - obsrisk.t1.b#
 
-  F.Y <- c(0, obp.get.F( marker.b,        event.b, trt.b, rho.b))#obp.get.F( marker.b,        event.b, trt.b, rho.b)#
-  F.D <- c(0, obp.get.F( obsdelta.b[-1], event.b, trt.b, rho.b))# obp.get.F( obsdelta.b, event.b, trt.b, rho.b)#  
+  F.Y <- obp.get.F( marker.b,        event.b, trt.b, rho.b)#
+  F.D <- obp.get.F( obsdelta.b, event.b, trt.b, rho.b)#  
 
   #all 
   all  <- cbind( F.Y, obsrisk.t0.b, obsrisk.t1.b, F.D, obsdelta.b)

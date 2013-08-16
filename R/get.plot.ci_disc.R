@@ -27,7 +27,10 @@ function( marker, trt, event, rho = rho, plot.type, ci, bootstraps, obp.boot.sam
            mean.trt0.mkr0 = Fy(mval[1]), 
            mean.trt1.mkr0 = Fy(mval[1]), 
            mean.trt0.mkr1 = Fy(mval[2]),
-           mean.trt1.mkr1 = Fy(mval[2]))
+           mean.trt1.mkr1 = Fy(mval[2]), 
+           trteff.mkr0 =mean(event.b[trt.b==0 & marker.b ==mval[1]]) - mean(event.b[trt.b==1 & marker.b ==mval[1]]), 
+           trteff.mkr1 =mean(event.b[trt.b==0 & marker.b ==mval[2]]) - mean(event.b[trt.b==1 & marker.b ==mval[2]])
+           )
 
     }
 
@@ -35,17 +38,18 @@ function( marker, trt, event, rho = rho, plot.type, ci, bootstraps, obp.boot.sam
   # now bootstrap
 
   boot.data <- replicate(bootstraps, one.boot.plot_disc( event, trt, marker, rho,obp.boot.sample, obp.get.F))
-
+  
   if(substr(ci, 1, 1) =="h"){
-    #return F.y so the last four rows of boot.data output
     
-    myconf.ints <- apply(boot.data[5:8,], 1, quantile, probs = c(alpha/2, 1-alpha/2))
+    if(substr(plot.type, 1, 3) =="ris") myconf.ints <- apply(boot.data[5:8,], 1, quantile, probs = c(alpha/2, 1-alpha/2))
+    if(substr(plot.type, 1, 3) =="tre") myconf.ints <- apply(boot.data[c(5,7),], 1, quantile, probs = c(alpha/2, 1-alpha/2))
+    if(substr(plot.type, 1, 3) =="cdf") myconf.ints <- apply(boot.data[c(9:10),], 1, quantile, probs = c(alpha/2, 1-alpha/2))
     
-  }else{
-    
-    #return F.y so the last four rows of boot.data output
-    
-    myconf.ints <- apply(boot.data[1:4,], 1, quantile, probs = c(alpha/2, 1-alpha/2))
+    }else{
+
+    if(substr(plot.type, 1, 3) =="ris") myconf.ints <- apply(boot.data[1:4,], 1, quantile, probs = c(alpha/2, 1-alpha/2))
+    if(substr(plot.type, 1, 3) =="tre") myconf.ints <- apply(boot.data[c(9:10),], 1, quantile, probs = c(alpha/2, 1-alpha/2))
+    if(substr(plot.type, 1, 3) =="cdf") myconf.ints <- apply(boot.data[c(5,7),], 1, quantile, probs = c(alpha/2, 1-alpha/2))
     
   }
   

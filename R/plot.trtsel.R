@@ -90,7 +90,7 @@ function(x, bootstraps = 500,
   }else{
     #discrete marker...ignore fixed values and ci bands, we only need ci's around the observed points
     
-    plot.functions <- list(  predcurvePLOT_gg_disc, trteffectPLOT_gg, CDFdeltaPLOT_gg)
+    plot.functions <- list(  predcurvePLOT_gg_disc, trteffectPLOT_gg_disc, CDFdeltaPLOT_gg_disc)
     ci.bounds = NULL
     conf.bands = FALSE
     if(substr(ci, 1,1 )=="v"){
@@ -113,8 +113,9 @@ function(x, bootstraps = 500,
     
     ##Bootstrap for confidence intervals...
     #much simpler for a discrete marker
-    
-    if((conf.bands & bootstraps>1) | (length(fixed.values)>0 & bootstraps > 1)){ 
+
+    if(( bootstraps>1)){ 
+      
       ci.bounds <- get.plot.ci_disc(marker, trt, event, rho, plot.type, ci, bootstraps, obp.boot.sample = boot.sample, obp.get.F = get.F, alpha = alpha)
  
       }else{ 
@@ -128,12 +129,14 @@ function(x, bootstraps = 500,
 
   tmp.plotfun <- plot.functions[[match(plot.type, c("risk", "treatment effect", "cdf"))]]
    
+  
+if(is.null(x$model.fit$disc.marker.neg)){
   if(substring(plot.type, 1, 4) == "risk"){
 
   curves <- tmp.plotfun(x, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, trt.names, xlab, ylab, xlim, ylim, main, offset = offset,mar,  ...)
 
     if(!is.null(ci.bounds)){
-      ci.bounds <- data.frame(t(ci.bounds))
+      ci.bounds <- data.frame(t(curves[[2]]))
       ci.bounds <- cbind(fixed.values, ci.bounds)
       names(ci.bounds) <- c("fixed.values", "trt0.lower", "trt0.upper", "trt1.lower", "trt1.upper")
       }
@@ -141,16 +144,34 @@ function(x, bootstraps = 500,
 
       curves <- tmp.plotfun(x, ci, ci.bounds, get.F, fixed.values, conf.bands, rho, xlab, ylab, xlim, ylim, main, mar = mar,  ...)
       if(!is.null(ci.bounds)){
-        ci.bounds <- data.frame(t(ci.bounds))
+        ci.bounds <- data.frame(t(curves[[2]]))
         ci.bounds <- cbind(fixed.values, ci.bounds)
         names(ci.bounds) <- c("fixed.values", "lower", "upper")
       }
     }
   
-    
-    
+}else{
   
+  if(substring(plot.type, 1, 4) == "risk"){
+    
+    curves <- tmp.plotfun(x, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, trt.names, xlab, ylab, xlim, ylim, main, offset = offset,mar,  ...)
+    
+    if(!is.null(ci.bounds)){
+      ci.bounds <- data.frame(curves[[2]])
+    }
+  }else{
+    
+    curves <- tmp.plotfun(x, ci, ci.bounds, get.F, fixed.values, conf.bands, rho, xlab, ylab, xlim, ylim, main, mar = mar,  ...)
+   
+    if(!is.null(ci.bounds)){
+      ci.bounds <- data.frame(curves[[2]])
+
+    }
+  }
+  
+}    
+
   #par(old.par)
-if(substr(plot.type, 1,4) !="risk") print(curves)
-invisible(list("plot" = curves, "ci.bounds" = ci.bounds))
+
+invisible(list("plot" = curves[[1]], "ci.bounds" = ci.bounds))
 }

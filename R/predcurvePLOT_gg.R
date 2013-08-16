@@ -7,12 +7,12 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands, rho, trt.names, xlab
   marker <- x$derived.data$marker
   event <- x$derived.data$event
   trt <- x$derived.data$trt
-  F.Y <- get.F(marker, event, trt, rho = rho)
+  F.Y <- get.F(marker, event, trt, rho = rho)*100
   mydata <- data.frame(risk = fittedrisk.t0*(1-trt)+fittedrisk.t1*trt, trt = 1-trt, Fy = F.Y)
   mydata <- mydata[with(mydata, order(Fy)),]
   
 
-#browser()
+
   #legend(x=xlim[2]+diff(xlim)/15, y = quantile(ylim, prob = .75), legend = trt.names, lty = c(2, 1),lwd=c(2,2), bty="n", cex = 1, xpd = TRUE)
   
   #x.t0 <- stepF.Y
@@ -26,14 +26,15 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands, rho, trt.names, xlab
   ci.bounds <- matrix(ci.bounds, ncol=length(fixed.values), nrow = 4)
   
   if(substr(ci, 1,1)=="h"){
+    ci.bounds <- ci.bounds*100
   #the indices of fixed values that fall between min(fittedrisk.t0) and max(fittedrisk.t0) ...same for t1
   index.fix.t0   <- (fixed.values<= max(fittedrisk.t0[trt==0]) & fixed.values >= min(fittedrisk.t0[trt==0])) 
   index.fix.t1   <- (fixed.values<= max(fittedrisk.t1[trt==1]) & fixed.values >= min(fittedrisk.t1[trt==1])) 
 
   }else{
 
-  index.fix.t0   <- (fixed.values<= max(F.Y[trt==0]) & fixed.values >= min(F.Y[trt==0])) 
-  index.fix.t1   <- (fixed.values<= max(F.Y[trt==1]) & fixed.values >= min(F.Y[trt==1])) 
+  index.fix.t0   <- (fixed.values*100<= max(F.Y[trt==0]) & fixed.values*100 >= min(F.Y[trt==0])) 
+  index.fix.t1   <- (fixed.values*100<= max(F.Y[trt==1]) & fixed.values*100 >= min(F.Y[trt==1])) 
   }
   
 
@@ -48,7 +49,7 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands, rho, trt.names, xlab
 
   if(is.null(xlab)) xlab <- "% population below marker value"
   if(is.null(ylab)) ylab <- "risk given marker"
-  if(is.null(xlim)) xlim <- c(0,1)
+  if(is.null(xlim)) xlim <- c(0,100)
   if(is.null(ylim)) ylim <- c(0,1)
   if(is.null(main)) main <- "Risk curves by treatment"
   breaks = seq(xlim[1], xlim[2], length.out = 5)
@@ -66,7 +67,7 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands, rho, trt.names, xlab
     p <- p + scale_y_continuous(breaks = breaks,limits = xlim) 
     p <- p + theme(plot.margin = unit(c(1,1,4,1), "lines"))
  
-    p <- p + annotation_custom(grob = xaxisGrob( at = breaks, label = round(quantile(marker, prob = breaks), 1), gp = gpar(col = gray(.55), fontsize=15)), 
+    p <- p + annotation_custom(grob = xaxisGrob( at = breaks, label = round(quantile(marker, prob = breaks/100), 1), gp = gpar(col = gray(.55), fontsize=15)), 
                                ymin = 0, ymax = 1, xmin = ylim[1]-diff(ylim)*.25, xmax = ylim[1]-diff(ylim)*.25)
     p <- p + annotation_custom(grob = textGrob( label = "marker value", gp = gpar( fontsize=18)), 
                                ymin = mean(xlim), ymax = mean(xlim), xmin = ylim[1]-diff(ylim)*.4, xmax = ylim[1]-diff(ylim)*.4)
@@ -85,7 +86,7 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands, rho, trt.names, xlab
   
   p <- p + theme(plot.margin = unit(c(1,1,4,1), "lines"))
   
-  p <- p + annotation_custom(grob = xaxisGrob( at = breaks, label = round(quantile(marker, prob = breaks), 1), gp = gpar(col = gray(.55), fontsize=15)), 
+  p <- p + annotation_custom(grob = xaxisGrob( at = breaks, label = round(quantile(marker, prob = breaks/100), 1), gp = gpar(col = gray(.55), fontsize=15)), 
                              xmin = 0, xmax = 1, ymin = ylim[1]-diff(ylim)*.25, ymax = ylim[1]-diff(ylim)*.25)
   p <- p + annotation_custom(grob = textGrob( label = "marker value", gp = gpar( fontsize=18)), 
                              xmin = mean(xlim), xmax = mean(xlim), ymin = ylim[1]-diff(ylim)*.4, ymax = ylim[1]-diff(ylim)*.4)
@@ -99,5 +100,5 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands, rho, trt.names, xlab
   
 
   
-  return(p)
+  return(list(p, ci.bounds))
 }

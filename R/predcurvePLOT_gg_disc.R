@@ -7,7 +7,7 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands, rho, trt.names, xlab
   marker <- x$derived.data$marker
   event <- x$derived.data$event
   trt <- x$derived.data$trt
-  F.Y <- get.F(marker, event, trt, rho = rho)
+  F.Y <- get.F(marker, event, trt, rho = rho)*100
   mydata <- data.frame(risk = fittedrisk.t0*(1-trt)+fittedrisk.t1*trt, trt = 1-trt, Fy = F.Y, marker)
   mydata <- mydata[with(mydata, order(Fy)),]
   mydata <- unique(mydata)
@@ -27,6 +27,7 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands, rho, trt.names, xlab
   
   
   if(substr(ci, 1,1)=="h"){
+    mydata[,5:6] <- mydata[,5:6]*100
    p <- ggplot(mydata, aes(y = Fy, x = risk, ymin = lower, ymax = upper, group = factor(trt), shape = factor(trt), linetype = factor(trt) ))
    p <- p + geom_pointrange(size = 1)
    p <- p + coord_flip()
@@ -50,7 +51,7 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands, rho, trt.names, xlab
 
   if(is.null(xlab)) xlab <- "% population below marker value"
   if(is.null(ylab)) ylab <- "risk given marker"
-  if(is.null(xlim)) xlim <- c(0,1)
+  if(is.null(xlim)) xlim <- c(0,100)
   if(is.null(ylim)) ylim <- c(0,1)
   if(is.null(main)) main <- "Risk curves by treatment"
   breaks = sort(unique(mydata$Fy))

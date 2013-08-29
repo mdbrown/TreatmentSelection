@@ -48,7 +48,7 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, xlab, ylab, xl
   }
 
   
-  F.D <- get.F(trt.effect, event, trt, rho = rho)
+  F.D <- get.F(trt.effect, event, trt, rho = rho)*100
 
  
   if(!is.null(ci.bounds)){

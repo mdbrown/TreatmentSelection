@@ -78,12 +78,12 @@ function(x, bootstraps = 500,
 
    if(substr(ci, 1,1 )=="v"){
        
-      if(is.element(substr(plot.type, 1,3), c("tre", "ris"))) fixed.values = seq(from = 0.001, to = 1, length.out = conf.bandsN)
+      if(is.element(substr(plot.type, 1,3), c("tre", "ris"))) fixed.values = seq(from = 1, to = 100, length.out = conf.bandsN)
       else if(substr(plot.type, 1,3)=="cdf") fixed.values = seq(from = min(delta), to = max(delta), length.out = conf.bandsN)
       
    }else{
       
-      if(is.element(substr(plot.type, 1,3), c("cdf"))) fixed.values = seq(from = 0.001, to = 1, length.out = conf.bandsN)
+      if(is.element(substr(plot.type, 1,3), c("cdf"))) fixed.values = seq(from = 1, to = 100, length.out = conf.bandsN)
       else if(substr(plot.type, 1,3)=="tre") fixed.values = seq(from = min(delta), to = max(delta), length.out = conf.bandsN)
       else if(substr(plot.type, 1,3)=="ris"){
        allrisks <- c(x$derived.data$fittedrisk.t0, x$derived.data$fittedrisk.t1)

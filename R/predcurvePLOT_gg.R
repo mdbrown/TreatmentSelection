@@ -23,19 +23,19 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands, rho, trt.names, xlab
   #y.t1 <- fittedrisk.t1[rep(order(F.Y),c(1, rep(2, n-1)))]
 
   if(!is.null(ci.bounds)){
-    
+
   ci.bounds <- matrix(ci.bounds, ncol=length(fixed.values), nrow = 4)
   
   if(substr(ci, 1,1)=="h"){
-    ci.bounds <- ci.bounds*100
+
   #the indices of fixed values that fall between min(fittedrisk.t0) and max(fittedrisk.t0) ...same for t1
   index.fix.t0   <- (fixed.values<= max(fittedrisk.t0[trt==0]) & fixed.values >= min(fittedrisk.t0[trt==0])) 
   index.fix.t1   <- (fixed.values<= max(fittedrisk.t1[trt==1]) & fixed.values >= min(fittedrisk.t1[trt==1])) 
 
   }else{
-
-  index.fix.t0   <- (fixed.values*100<= max(F.Y[trt==0]) & fixed.values*100 >= min(F.Y[trt==0])) 
-  index.fix.t1   <- (fixed.values*100<= max(F.Y[trt==1]) & fixed.values*100 >= min(F.Y[trt==1])) 
+  
+  index.fix.t0   <- (fixed.values<= max(F.Y[trt==0]) & fixed.values >= min(F.Y[trt==0])) 
+  index.fix.t1   <- (fixed.values<= max(F.Y[trt==1]) & fixed.values >= min(F.Y[trt==1])) 
   }
   
 

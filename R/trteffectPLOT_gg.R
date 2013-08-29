@@ -37,10 +37,10 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, xlab, ylab, xl
   ci.bounds <- matrix(ci.bounds, ncol=length(fixed.values), nrow = 2)
 
   if(substr(ci, 1,1)=="v"){
-    fixed.values = fixed.values*100
+
     index.fix  <- (fixed.values<= max(F.D) & fixed.values >= min(F.D)) 
   }else{
-    ci.bounds = ci.bounds*100
+
     index.fix  <- (fixed.values<= max(trt.effect) & fixed.values >= min(trt.effect)) 
   }
   

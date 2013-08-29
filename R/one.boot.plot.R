@@ -18,8 +18,8 @@ function(event, trt, marker, rho = rho, study.design, obp.boot.sample, obp.get.F
 
   obsdelta.b <-obsrisk.t0.b - obsrisk.t1.b#
 
-  F.Y <- obp.get.F( marker.b,        event.b, trt.b, rho.b)#
-  F.D <- obp.get.F( obsdelta.b, event.b, trt.b, rho.b)#  
+  F.Y <- obp.get.F( marker.b,        event.b, trt.b, rho.b)*100#
+  F.D <- obp.get.F( obsdelta.b, event.b, trt.b, rho.b)*100#  
 
   #all 
   all  <- cbind( F.Y, obsrisk.t0.b, obsrisk.t1.b, F.D, obsdelta.b)

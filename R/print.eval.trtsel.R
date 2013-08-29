@@ -83,11 +83,15 @@ cat("\n")
                  round(unname(x$conf.intervals[2,6]), 3), ") ", sep = ""))
   cat("\n\n\n")
 
-
+  
+  
+  if(is.null(x$discrete.marker)){
   cat("  Variance in estimated treatment effect: \n  ")
   cat(paste("  ", round(x$estimates$Var.Delta,  3), " (",
                  round(unname(x$conf.intervals[1,9]), 3), ",",
                  round(unname(x$conf.intervals[2,9]), 3), ") ", sep = ""))
+  
+
   cat("\n")
   cat("  Total Gain: \n")
   cat(paste("    ", round(x$estimates$TG,  3), " (",
@@ -97,6 +101,8 @@ cat("\n")
   cat("\n\n")
   cat("  Marker positivity threshold:  "); cat(round( x$estimates$Marker.Thresh, 3))
   cat("\n\n")
+  
+  }
   
   cat("  Event Rates:\n")
   cat(" --------------------\n")  
@@ -111,8 +117,8 @@ cat("\n")
             sprintf(" (%.3f,%.3f)  ",     round(unname(x$c[1,13]), 3), round(unname(x$c[2,13]), 3)), 
             sprintf(" (%.3f,%.3f) ",      round(unname(x$c[1,15]), 3),round(unname(x$c[2,15]), 3)), sep = ""))
   
-  cat("\n Modeled:   ")
-  cat(paste(" ", sprintf("   %.3f      ", round(x$estimates$ER.trt0.mod,  3)),  
+  cat("\n Model Based:   ")
+  cat(paste("", sprintf("%.3f      ", round(x$estimates$ER.trt0.mod,  3)),  
             sprintf("     %.3f     ",round(x$estimates$ER.trt1.mod,  3)), 
             sprintf("     %.3f    ", round(x$estimates$ER.mkrbased.mod,  3)), sep=""))
   cat("\n          ")

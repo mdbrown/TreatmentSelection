@@ -6,11 +6,9 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, xlab, ylab, xl
   event <- x$derived.data$event
   trt <- x$derived.data$trt
   n = length(trt.effect)
-  
-  F.D <- get.F(trt.effect, event, trt, rho = rho)*100
-  
-  mydata = data.frame(trt.effect, F.D,  marker )
-  mydata = mydata[with(mydata, order(F.D)),]
+  mval = sort(unique(marker))
+
+  mydata = data.frame(trt.effect, marker )
 
   mydata <- unique(mydata)
   mydata$lower <- rep(NA, nrow(mydata))
@@ -26,64 +24,33 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, xlab, ylab, xl
    ran <- ran*1.1
    mylim <- c(cen-ran/2, cen+ran/2)
    
-   if(is.null(xlab)) xlab <- "% population below treatment effect"
+   if(is.null(xlab)) xlab <- "marker value"
    if(is.null(ylab)) ylab <- "treatment effect"
    if(is.null(xlim)) xlim <- c(0,100)
    if(is.null(ylim)) ylim <- mylim
    if(is.null(main)) main <- "Treatment effect distribution"
    p <- ggplot(mydata)     
-   if(substr(ci, 1,1) =="h") p <- p + coord_flip()
+
   }
 
   if(!is.null(ci.bounds)){
-    mval = sort(unique(marker))
+
     #order matters here!
-    mydata[mydata$marker==mval[1], 4:5] <- ci.bounds[,1]
-    mydata[ mydata$marker==mval[2], 4:5] <- ci.bounds[,2]
+    mydata[mydata$marker==mval[1], 3:4] <- ci.bounds[,1]
+    mydata[ mydata$marker==mval[2], 3:4] <- ci.bounds[,2]
 
     
  
-  if(substr(ci, 1,1)=="v"){
-    fixed.values = fixed.values*100
-    index.fix  <- (fixed.values<= max(F.D) & fixed.values >= min(F.D)) 
-  }else{
-    ci.bounds = ci.bounds*100
-    index.fix  <- (fixed.values<= max(trt.effect) & fixed.values >= min(trt.effect)) 
-  }
+
+
+
+      p <- ggplot(mydata, aes(x = factor(marker), y =trt.effect, ymin = lower, ymax = upper ))
+      p <- p + geom_errorbar(size = 1, width = .1) + geom_point(size = 4)
+      
     
-    if(substr(ci, 1,1)=="h"){
-      mydata[,4:5] <- mydata[,4:5]*100
-      p <- ggplot(mydata, aes(y = F.D, x =trt.effect, ymin = lower, ymax = upper ))
-      p <- p + geom_pointrange(size = 1)
-      p <- p + coord_flip()
-    }else{
-      p <- ggplot(mydata, aes(x = F.D, y =trt.effect, ymin = lower, ymax = upper ))
-      p <- p + geom_pointrange(size = 1)
-      p <- p 
-    }
 }
   
   
-
-  if(substr(ci, 1, 1)=="h"){
-    #we used coord_flip, so we switch x and y, otherwise dont
-
-        #add x/y labels and main
-    
-    p <- p + ylab(xlab) + xlab(ylab) + xlim(ylim[1], ylim[2]) + ggtitle(main) 
-    
-    #add vlines 
-    #tmpdat <- data.frame( value = c(0, mean(event[trt==0])-mean(event[trt==1])), line = c(4, 3))
-    p <- p + stat_vline(xintercept  = mean(trt.effect), aes(linetype = factor(3)))+
-             stat_vline(xintercept = 0, aes( linetype = factor(4))) + scale_linetype_manual(name = "Treatment Effect", breaks = c("3", "4"), values = c(3, 4), labels = c("Mean", "Zero"))
-    
-    #p + scale_linetype_discrete(breaks = c("3", "4"), labels = c("a", "b"))
-    #add the legend, increase text size
-    p <- p + theme( text = element_text(size=18))
-
-    p <- p + scale_y_continuous(limits = xlim) 
-
-  }else{
 
 
     #add x/y labels and main
@@ -94,11 +61,10 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, xlab, ylab, xl
       stat_hline(yintercept = 0, aes( linetype = factor(4))) + scale_linetype_manual(name = "Treatment Effect",breaks = c("3", "4"), values = c(3, 4), labels = c("Mean", "Zero"))
     
     p <- p + theme( text = element_text(size=18)) #, 
+  p <- p + scale_x_discrete(labels = c(paste(mval[1], "\n(", round(mean(marker==mval[1])*100, 1),"%)", sep = ""), 
+                                       paste(mval[2], "\n(", round(mean(marker==mval[2])*100, 1),"%)", sep = "")))
+  
 
-    
-    p <- p + scale_x_continuous(limits = xlim)
-    
-  }
   
 
   print(p) 

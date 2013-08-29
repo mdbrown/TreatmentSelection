@@ -1,7 +1,7 @@
 plot.trtsel <-
 function(x, bootstraps = 500,  
             plot.type = "risk", 
-            ci = "horizontal", 
+            ci = "default", 
             alpha = .05, 
             fixed.values = NULL,  
             offset = 0.01, 
@@ -19,14 +19,36 @@ function(x, bootstraps = 500,
   }
   stopifnot(length(plot.type) ==1)
   
-  if(!is.element(ci, c("horizontal", "vertical"))){ 
-    stop("ci must be one of \"horizontal\", or  \"vertical\" ")
+  if(!is.element(ci, c("default", "horizontal", "vertical", "none"))){ 
+    stop("ci must be one of \"default\",  \"horizontal\", or  \"vertical\" or \"none\" ")
   }
   
+
   if(alpha<0 | alpha > 1) stop("Error: alpha should be between 0 and 1")
   if(bootstraps < 2) warning("Number of bootstraps must be greater than 1, bootstrap confidence intervals will not be computed") 
-  	
+  if(ci == "none") bootstraps = 0; 
 
+  #set default ci's 
+
+  if(ci =="default"){
+    #continuous marker
+    if(is.null(x$model.fit$disc.marker.neg)){
+      if(substr(plot.type, 1, 3) =="ris") ci = "horizontal"
+      if(substr(plot.type, 1, 3) =="tre") ci = "horizontal"
+      if(substr(plot.type, 1, 3) =="cdf") ci = "vertical"
+    }else{
+      
+      if(substr(plot.type, 1, 3) =="ris") ci = "vertical"
+      if(substr(plot.type, 1, 3) =="tre") ci = "vertical"
+      if(substr(plot.type, 1, 3) =="cdf") ci = "horizontal"
+    }
+
+  
+  }
+  #no cdf plots for binary marker
+  if(!is.null(x$model.fit$disc.marker.neg)){
+  if(substr(plot.type, 1, 3) =="cdf") stop("cdf plots cannot be created for a binary marker. Please choose plot.type to be \"risk\" or \"treatment effect\" ")
+  }
   #save the current plot parameters
   #old.par <- par(no.readonly = TRUE)
 
@@ -91,33 +113,15 @@ function(x, bootstraps = 500,
     #discrete marker...ignore fixed values and ci bands, we only need ci's around the observed points
     
     plot.functions <- list(  predcurvePLOT_gg_disc, trteffectPLOT_gg_disc, CDFdeltaPLOT_gg_disc)
-    ci.bounds = NULL
-    conf.bands = FALSE
-    if(substr(ci, 1,1 )=="v"){
-      
-      if(substr(plot.type, 1,3)== "tre") fixed.values = sort(unique(get.F(delta, event, trt, rho)))
-      else if(substr(plot.type, 1, 3) =="ris") fixed.values = sort(unique(get.F(marker, event, trt, rho)))
-      else if(substr(plot.type, 1,3)=="cdf") fixed.values =sort(unique(delta))
-      
-    }else{
-      
-      if(substr(plot.type, 1,3)== "cdf") fixed.values = sort(unique(get.F(delta, event, trt, rho)))
-      else if(substr(plot.type, 1, 3) =="ris") {
-        allrisks <- c(x$derived.data$fittedrisk.t0, x$derived.data$fittedrisk.t1)
-        fixed.values = sort(unique(allrisks))
-      }else if(substr(plot.type, 1,3)=="trt") fixed.values =sort(unique(delta))
-      
-    
-    
-  }
-    
+
     ##Bootstrap for confidence intervals...
     #much simpler for a discrete marker
 
-    if(( bootstraps>1)){ 
+    if(( bootstraps>1) ){ 
       
       ci.bounds <- get.plot.ci_disc(marker, trt, event, rho, plot.type, ci, bootstraps, obp.boot.sample = boot.sample, obp.get.F = get.F, alpha = alpha)
- 
+      ci = ci.bounds$newci
+      ci.bounds = ci.bounds$myconf.ints
       }else{ 
       ci.bounds <- NULL
       conf.bands = FALSE
@@ -129,7 +133,7 @@ function(x, bootstraps = 500,
 
   tmp.plotfun <- plot.functions[[match(plot.type, c("risk", "treatment effect", "cdf"))]]
    
-  
+
 if(is.null(x$model.fit$disc.marker.neg)){
   if(substring(plot.type, 1, 4) == "risk"){
 

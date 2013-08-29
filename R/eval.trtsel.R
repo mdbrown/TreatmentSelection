@@ -6,7 +6,7 @@ function(x, bootstraps = 1000, alpha = .05){
   if(alpha<0 | alpha > 1) stop("Error: alpha should be between 0 and 1")
   if(bootstraps ==0 ) print("bootstrap confidence intervals will not be calculated")
   if(bootstraps == 1) warning("Number of bootstraps must be greater than 1, bootstrap confidence intervals will not be computed") 
-  
+
   data<-x$derived.data
   study.design<-x$model.fit$study.design
   rho<-x$model.fit$cohort.attributes
@@ -102,7 +102,7 @@ function(x, bootstraps = 1000, alpha = .05){
   }
   result <- list(test.Null          = test.Null.val, estimates = summary.measures)
   }
-  
+  if(!is.null(x$model.fit$disc.marker.neg)) result$discrete.marker = TRUE
   
 
   class(result) <- "eval.trtsel"

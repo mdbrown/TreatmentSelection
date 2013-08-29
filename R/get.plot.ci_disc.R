@@ -38,20 +38,17 @@ function( marker, trt, event, rho = rho, plot.type, ci, bootstraps, obp.boot.sam
   # now bootstrap
 
   boot.data <- replicate(bootstraps, one.boot.plot_disc( event, trt, marker, rho,obp.boot.sample, obp.get.F))
-  
-  if(substr(ci, 1, 1) =="h"){
-    
-    if(substr(plot.type, 1, 3) =="ris") myconf.ints <- apply(boot.data[5:8,], 1, quantile, probs = c(alpha/2, 1-alpha/2))
-    if(substr(plot.type, 1, 3) =="tre") myconf.ints <- apply(boot.data[c(5,7),], 1, quantile, probs = c(alpha/2, 1-alpha/2))
+
+    #horizontal
+    if(substr(plot.type, 1, 3) =="ris" & substr(ci, 1,1) =="h"){ warning("Horizontal CI bands are not allowed for risk plots with a discrete marker. Vertical bands will be computed"); ci <- "vertical";}
+    if(substr(plot.type, 1, 3) =="tre" & substr(ci, 1,1) =="h") { warning("Horizontal CI bands are not allowed for treatment effect plots with a discrete marker. Vertical bands will be computed"); ci <- "vertical";}
     if(substr(plot.type, 1, 3) =="cdf") myconf.ints <- apply(boot.data[c(9:10),], 1, quantile, probs = c(alpha/2, 1-alpha/2))
     
-    }else{
-
+    #vertical
     if(substr(plot.type, 1, 3) =="ris") myconf.ints <- apply(boot.data[1:4,], 1, quantile, probs = c(alpha/2, 1-alpha/2))
     if(substr(plot.type, 1, 3) =="tre") myconf.ints <- apply(boot.data[c(9:10),], 1, quantile, probs = c(alpha/2, 1-alpha/2))
-    if(substr(plot.type, 1, 3) =="cdf") myconf.ints <- apply(boot.data[c(5,7),], 1, quantile, probs = c(alpha/2, 1-alpha/2))
+    if(substr(plot.type, 1, 3) =="cdf" & substr(ci, 1,1) =="v"){ warning("Vertical CI bands are not allowed for treatment effect plots with a discrete marker. Horizontal bands will be computed"); ci <- "horizontal";}
     
-  }
   
-  myconf.ints
+  list(myconf.ints = myconf.ints, newci = ci)
 }

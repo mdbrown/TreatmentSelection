@@ -175,7 +175,14 @@ trtsel.Y3 <- trtsel( event ="event", trt = "trt", marker = "Y3", data = tsdata,
 
 trtsel.Y3
 tmp = eval.trtsel(trtsel.Y3, bootstrap = 50)
-plot.trtsel(trtsel.Y3)
+
+
+plot.trtsel(trtsel.Y3, bootstrap = 50, plot.type ="risk" )
+
+plot.trtsel(trtsel.Y3, bootstrap = 50, plot.type ="treatment effect"  )
+
+plot.trtsel(trtsel.Y3, bootstrap = 50, plot.type ="cdf" )
+
 
 
 tsdata$Y4 <- round(tsdata$Y2, 1)

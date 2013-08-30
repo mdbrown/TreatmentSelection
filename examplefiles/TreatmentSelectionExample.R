@@ -213,9 +213,6 @@ trtsel.Y5 <- trtsel( event ="event", trt = "trt", marker = "Y5", data = tsdata,
 
 trtsel.Y1
 
-compare.trtsel(trtsel1 = trtsel.Y1, trtsel2 = trtsel.Y5,
-               bootstraps = 50, plot = TRUE, ci = "horizontal", conf.bands = TRUE)
-
 
 
 
@@ -243,5 +240,26 @@ tmp <- plot.trtsel(trtsel.Y1, plot.type = "treatment effect", ci = "vertical",
                    bootstraps = 50)
 tmp <- plot.trtsel(trtsel.Y1, plot.type = "treatment effect", ci = "horizontal",
                    bootstraps = 50)
+
+#cutoff
+tmp <- plot.trtsel(trtsel.Y3, plot.type = "risk", ci = "vertical",
+                   bootstraps = 50)
+tmp <- plot.trtsel(trtsel.Y3, plot.type = "risk", ci = "horizontal",
+                   bootstraps = 50)
+
+tmp <- plot.trtsel(trtsel.Y3, plot.type = "treatment effect", ci = "vertical",
+                   bootstraps = 50)
+tmp <- plot.trtsel(trtsel.Y3, plot.type = "treatment effect", ci = "horizontal",
+                   bootstraps = 50)
+
+
+
+tmp <- compare.trtsel(trtsel1 = trtsel.Y1, trtsel2 = trtsel.Y2,
+               bootstraps = 50, plot = TRUE, ci = "horizontal", conf.bands = TRUE, 
+                      fixed.values = c(-0.5, .1))
+
+tmp <- compare.trtsel(trtsel1 = trtsel.Y1, trtsel2 = trtsel.Y2,
+                      bootstraps = 50, plot = TRUE, ci = "vertical", conf.bands = TRUE,
+                      fixed.values = c(25, 75), offset = 5, marker.names = c("weak", "strong"))
 
 

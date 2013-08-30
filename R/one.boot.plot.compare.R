@@ -21,7 +21,7 @@ function(event, trt, marker, marker2,
   obsrisk.t1.b  <- c(ifelse(sum(coef[3:4])>0, 0,1), get.risk.t1(coef,  marker.b, linkinvfun))
   obsdelta.b <- c(-1, obsrisk.t0.b[-1] - obsrisk.t1.b[-1])
 
-  F.D <- c(0, obp.get.F( obsdelta.b[-1], event.b, trt.b, rho.b))  
+  F.D <- c(0, obp.get.F( obsdelta.b[-1], event.b, trt.b, rho.b))*100
 
   all  <- cbind( F.D, obsdelta.b)
   myorder <- order(all[,fix.ind])
@@ -44,7 +44,7 @@ coef <- unname(get.coef(event.b, trt.b, marker2.b, study.design, rho.b, link)[,1
   obsrisk.t1.b  <- c(ifelse(sum(coef[3:4])>0, 0,1), get.risk.t1(coef,  marker2.b, linkinvfun))
   obsdelta.b <- c(-1, obsrisk.t0.b[-1] - obsrisk.t1.b[-1])
 
-  F.D <- c(0, obp.get.F( obsdelta.b[-1], event.b, trt.b, rho.b))  
+  F.D <- c(0, obp.get.F( obsdelta.b[-1], event.b, trt.b, rho.b))*100
 
   all  <- cbind( F.D, obsdelta.b)
   myorder <- order(all[,fix.ind])

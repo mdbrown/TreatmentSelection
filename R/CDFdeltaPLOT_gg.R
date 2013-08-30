@@ -39,14 +39,14 @@ function(x, ci, ci.bounds, get.F, fixed.values,conf.bands,  rho, xlab, ylab, xli
     ci.bounds <- matrix(ci.bounds, ncol=length(fixed.values), nrow = 2)
     
     if(substr(ci, 1,1)=="h"){
-
+      width = 5
       index.fix  <- (fixed.values<= max(F.D) & fixed.values >= min(F.D)) 
     }else{
-
+      width = .05
       index.fix  <- (fixed.values<= max(trt.effect) & fixed.values >= min(trt.effect)) 
     }
     
-    p <- shade_gg(p, ci.bounds[,index.fix], fixed.values[index.fix], type = substr(ci, 1, 1), bands = conf.bands)
+    p <- shade_gg(p, ci.bounds[,index.fix], fixed.values[index.fix], type = substr(ci, 1, 1), bands = conf.bands, width = width)
   }
   
   
@@ -86,5 +86,5 @@ function(x, ci, ci.bounds, get.F, fixed.values,conf.bands,  rho, xlab, ylab, xli
   
   
   print(p)
-  return(list(p = p, ci.bounds = ci.bounds))
+ list(p=p)
 }

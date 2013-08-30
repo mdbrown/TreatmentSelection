@@ -140,7 +140,7 @@ if(is.null(x$model.fit$disc.marker.neg)){
   curves <- tmp.plotfun(x, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, trt.names, xlab, ylab, xlim, ylim, main, offset = offset,mar,  ...)
 
     if(!is.null(ci.bounds)){
-      ci.bounds <- data.frame(t(curves[[2]]))
+      ci.bounds <- data.frame(t(ci.bounds))
       ci.bounds <- cbind(fixed.values, ci.bounds)
       names(ci.bounds) <- c("fixed.values", "trt0.lower", "trt0.upper", "trt1.lower", "trt1.upper")
       }
@@ -148,7 +148,7 @@ if(is.null(x$model.fit$disc.marker.neg)){
 
       curves <- tmp.plotfun(x, ci, ci.bounds, get.F, fixed.values, conf.bands, rho, xlab, ylab, xlim, ylim, main, mar = mar,  ...)
       if(!is.null(ci.bounds)){
-        ci.bounds <- data.frame(t(curves[[2]]))
+        ci.bounds <- data.frame(t(ci.bounds))
         ci.bounds <- cbind(fixed.values, ci.bounds)
         names(ci.bounds) <- c("fixed.values", "lower", "upper")
       }
@@ -156,23 +156,18 @@ if(is.null(x$model.fit$disc.marker.neg)){
   
 }else{
   
-  if(substring(plot.type, 1, 4) == "risk"){
+
     
-    curves <- tmp.plotfun(x, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, trt.names, xlab, ylab, xlim, ylim, main, offset = offset,mar,  ...)
-    
-    if(!is.null(ci.bounds)){
-      ci.bounds <- data.frame(curves[[2]])
-    }
-  }else{
-    
-    curves <- tmp.plotfun(x, ci, ci.bounds, get.F, fixed.values, conf.bands, rho, xlab, ylab, xlim, ylim, main, mar = mar,  ...)
-   
+    curves <- tmp.plotfun(x=x, ci = ci, ci.bounds = ci.bounds, get.F = get.F, 
+                          xlab = xlab, ylab=ylab, 
+                          xlim = xlim, ylim=ylim, 
+                          main=main, mar=mar, trt.names = trt.names, ...)
+
     if(!is.null(ci.bounds)){
       ci.bounds <- data.frame(curves[[2]])
 
     }
-  }
-  
+   
 }    
 
   #par(old.par)

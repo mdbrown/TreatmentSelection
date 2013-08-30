@@ -115,8 +115,8 @@ result <- list(estimates.marker1   = data.frame(sm.m1),
   if(conf.bands){
     
    if(substr(ci, 1,1 )=="v"){
-      fixed.values1 = seq(from = 0, to = 1, length.out = conf.bandsN)
-      fixed.values2 = seq(from = 0, to = 1, length.out = conf.bandsN)
+      fixed.values1 = seq(from = 0, to = 100, length.out = conf.bandsN)
+      fixed.values2 = seq(from = 0, to = 100, length.out = conf.bandsN)
       offset = 0
 
    }else{
@@ -138,9 +138,9 @@ result <- list(estimates.marker1   = data.frame(sm.m1),
                            xlim = xlim, 
                            ylim = ylim, 
                            main = main, offset = offset, conf.bands=conf.bands, mar = mar,  ...)
-
-  result$plot.marker1 <- curves$trtsel1
-  result$plot.marker2 <- curves$trtsel2
+  result$plot <- curves$plot
+  result$plot.ci.marker1 <- curves$trtsel1$conf.intervals
+  result$plot.ci.marker2 <- curves$trtsel2$conf.intervals
   }
   result$trtsel1 <- NULL
   result$trtsel2 <- NULL

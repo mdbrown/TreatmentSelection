@@ -1,5 +1,5 @@
 shade_gg <-
-function(p, bounds, fixed, type, lty = 1, bands){
+function(p, bounds, fixed, type, lty = 1, bands, width=5){
   
    if(any(dim(bounds)==0) & substr(type,1,1)=="h"){
      
@@ -21,8 +21,9 @@ function(p, bounds, fixed, type, lty = 1, bands){
   
    if(type == "v"){
      #vertical ci
+     
    if(bands == FALSE){
-     p <- p + geom_errorbar(data = mydat, aes(ymin = low, ymax = high, x = fixed), linetype = lty, color = "gray50", size = 1, width = 5)
+     p <- p + geom_errorbar(data = mydat, aes(ymin = low, ymax = high, x = fixed), linetype = lty, color = "gray50", size = 1, width = width)
    }else{
      p <- p + geom_ribbon(data = mydat, alpha =.2, aes(x = fixed, ymin = low, ymax = high))
 
@@ -30,7 +31,7 @@ function(p, bounds, fixed, type, lty = 1, bands){
    }else if(type =="h"){
    if(bands == FALSE){
 
-      p <- p + geom_errorbar(data = mydat, aes(ymin = low, ymax = high, x = fixed), linetype = lty, color = "gray50", size = 1, width = 5) + coord_flip()
+      p <- p + geom_errorbar(data = mydat, aes(ymin = low, ymax = high, x = fixed), linetype = lty, color = "gray50", size = 1, width = width) + coord_flip()
      
    }else{
       p <- p + geom_ribbon(data = mydat, alpha =.2, aes(x = fixed, ymin = low, ymax = high)) +coord_flip() #+ scale_x_reverse()

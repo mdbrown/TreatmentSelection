@@ -29,7 +29,7 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, xlab, ylab, xl
 
    if(is.null(xlab)) xlab <- "% population below treatment effect"
    if(is.null(ylab)) ylab <- "treatment effect"
-   if(is.null(xlim)) xlim <- c(0,1)
+   if(is.null(xlim)) xlim <- c(0,100)
    if(is.null(ylim)) ylim <- mylim
    if(is.null(main)) main <- "Treatment effect distribution"
 
@@ -41,8 +41,8 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, xlab, ylab, xl
           type = "n", 
           main = main, ...)
      legend(x=xlim[2]+diff(xlim)/15, y = quantile(ylim, prob = .75), legend = c("Average", "Zero"), lty = c(3,4), col = c("black", "black"), bty="n", cex = 1, xpd = TRUE, title= "Treatment Effect")
-     lines(c(0, 1), c(0,0), lty = 4, col="black")
-     lines(c(0, 1), rep(mean(event[trt==0])-mean(event[trt==1]), 2), lty = 3)
+     lines(c(0, 100), c(0,0), lty = 4, col="black")
+     lines(c(0, 100), rep(mean(event[trt==0])-mean(event[trt==1]), 2), lty = 3)
     
   par(mar = old.mar)
   }

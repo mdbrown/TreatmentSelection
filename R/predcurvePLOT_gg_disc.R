@@ -1,5 +1,5 @@
 predcurvePLOT_gg_disc <-
-function(x, ci, ci.bounds, get.F, fixed.values, conf.bands, rho, trt.names, xlab, ylab, xlim, ylim, main, offset = .01, mar,...){ 
+function(x, ci, ci.bounds, get.F,  xlab, ylab, xlim, ylim, main, mar,trt.names,...){ 
 
   
   fittedrisk.t0 <- x$derived.data$fittedrisk.t0

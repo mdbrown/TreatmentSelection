@@ -2,14 +2,14 @@ calibrate.trtsel <-
 function( x, groups = 10, plot.type = "calibration", trt.names = c("Treatment", "No Treatment"), main = NULL, ylim = NULL, xlim = NULL, ylab = NULL, xlab=NULL, ...){
 
   if(!is.trtsel(x)) stop("x must be an object of class 'trtsel' created by using the function 'trtsel' see ?trtsel for more help")
- 
+  if(!is.null(x$model.fit$disc.marker.neg)) stop("Calibration not supported for a discrete marker")
   marker <- x$derived.data$marker
   event <- x$derived.data$event
   trt <- x$derived.data$trt
   n <- length(marker)
   if(!is.numeric(groups)) stop("groups must be an integer")
   
-  if(groups < 3) stop("Must have more than 2 groups!")
+  if(groups < 2) stop("Must have more than 1 group!")
 
   if(!is.element(plot.type, c("calibration", "risk.t0", "risk.t1", "treatment effect", NA, "none"))){ 
 
@@ -108,14 +108,6 @@ breaks.delta <- sort(fitteddelta)[ sum.I( seq(0, 1, 1/groups), "<",F.delta(fitte
    stop("Error: Too many groups, cut points are not unique. Please reduce number of groups")
    
 }
-
-
-
-
- # scc and cc, this is trickier because F.risk is a weighted average
- breaks.t0 <- sort(fittedrisk.c.t0)[sum.I( seq(0, 1, 1/groups), "<",F.risk.t0(fittedrisk.c.t0))]
- breaks.t1 <- sort(fittedrisk.c.t1)[sum.I( seq(0, 1, 1/groups), "<",F.risk.t1(fittedrisk.c.t1))]
- breaks.delta <- sort(fitteddelta)[ sum.I( seq(0, 1, 1/groups), "<",F.delta(fitteddelta))]
 
 
  #trt = 0

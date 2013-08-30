@@ -38,6 +38,17 @@ function( marker, trt, event, rho = rho, plot.type, ci, bootstraps, obp.boot.sam
   # now bootstrap
 
   boot.data <- replicate(bootstraps, one.boot.plot_disc( event, trt, marker, rho,obp.boot.sample, obp.get.F))
+  mval <- sort(unique(marker))
+  row.names(boot.data) = c(paste("risk.trt0.mkr", mval[1], sep = ""), 
+                       paste("risk.trt1.mkr", mval[1], sep = ""), 
+                       paste("risk.trt0.mkr", mval[2], sep = ""), 
+                       paste("risk.trt1.mkr", mval[2], sep = ""),
+                       "mean00", 
+                       "mean10", 
+                       "mean01", 
+                       "mean11", 
+                       paste("trteffect.mkr", mval[1], sep = ""), 
+                       paste("trteffect.mkr", mval[2], sep = ""))
 
     #horizontal
     if(substr(plot.type, 1, 3) =="ris" & substr(ci, 1,1) =="h"){ warning("Horizontal CI bands are not allowed for risk plots with a discrete marker. Vertical bands will be computed"); ci <- "vertical";}

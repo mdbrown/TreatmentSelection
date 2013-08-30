@@ -8,6 +8,8 @@ function(x, bootstraps = 500, alpha = .05,
                            ylim = NULL, 
                            main = NULL, offset = offset, conf.bands, mar,  ...)
 {
+  
+
   ts1 <- x$trtsel1
   ts2 <- x$trtsel2
 
@@ -108,12 +110,18 @@ function(x, bootstraps = 500, alpha = .05,
     ran <- ran*1.1
     ylim <- c(cen-ran/2, cen+ran/2)
     }
+  
 
 
-    ts1.curves <- trteffectPLOT(x =NULL, ci = ci, ci.bounds = bounds.delta.y1, get.F = get.F, fixed.values = fixeddeltas.y1, conf.bands = conf.bands, rho=rho, xlab=xlab, ylab = ylab, xlim=xlim, ylim = ylim, main = main, mar = mar,...) 
-    ts2.curves <- trteffectPLOT(ts2, ci = ci, ci.bounds = bounds.delta.y2, get.F = get.F, fixed.values = fixeddeltas.y2+offset, conf.bands = conf.bands, rho=rho, xlab=xlab, ylab = ylab, xlim=xlim, ylim = ylim, main = main, markerTWO=TRUE, lty= 2, mar = mar,  ...) 
-    if(is.null(xlim)) xlim = c(0,1)
-    legend(x=xlim[2]+diff(xlim)/15, y = quantile(ylim, prob = .5), legend = marker.names, lty = c(1,2), col = c("black", "black"), bty="n", cex = 1, xpd = TRUE, lwd=c(2,2))
+    ts1.curves <- trteffectPLOTcompare_gg(x1=ts1, x2 = ts2, ci = ci, ci.bounds = rbind(bounds.delta.y1, bounds.delta.y2), get.F = get.F, fixed.values = rbind(fixeddeltas.y1, fixeddeltas.y2+offset), conf.bands = conf.bands, rho=rho, xlab=xlab, ylab = ylab, xlim=xlim, ylim = ylim, main = main, mar = mar,...) 
+
+    p <- ts1.curves[[1]]
+    p <- p + scale_linetype_manual(name = "", breaks = c("1","2", "3", "4"), values = c(1, 2, 3, 4), labels = c(marker.names, "Mean", "Zero"))
+    p <- p + scale_size_manual(name = "", breaks = c("1", "2", "3", "4"), values = c(1, 1, .5, .5), labels = c(marker.names, "Mean", "Zero"))
+    
+  print(p)
+    #if(is.null(xlim)) xlim = c(0,100)
+    #legend(x=xlim[2]+diff(xlim)/15, y = quantile(ylim, prob = .5), legend = marker.names, lty = c(1,2), col = c("black", "black"), bty="n", cex = 1, xpd = TRUE, lwd=c(2,2))
 
    
    if(bootstraps >0 & length(fixeddeltas.y1) > 0 ){
@@ -123,13 +131,13 @@ function(x, bootstraps = 500, alpha = .05,
    names(conf.ints.y2) <- c("fixed", "lower", "upper")
 
 
-   result <- list("trtsel1" = list( "curves" = ts1.curves, "conf.intervals" = conf.ints.y1), 
-                  "trtsel2" = list( "curves" = ts2.curves, "conf.intervals" = conf.ints.y2))
+   result <- list("plot" = p, 
+                  "trtsel1" = list( "conf.intervals" = conf.ints.y1), 
+                  "trtsel2" = list( "conf.intervals" = conf.ints.y2))
  
    }else{
 
-   result <- list("trtsel1" = list( "curves" = ts1.curves), 
-                  "trtsel2" = list( "curves" = ts2.curves))
+   result <- list("plot" = p)
  
 
    }

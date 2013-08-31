@@ -209,12 +209,12 @@ max.risk <- max(c(fittedrisk.c.t0, fittedrisk.c.t1))
     ran <- ran*1.1
     mylim <- c(cen-ran/2, cen+ran/2)
    }
-#browser()
+#
 
 if(is.element(plot.type, "calibration")){
  mylim[1] <- ifelse(mylim[1]<0, 0.004, mylim[1])
  mylim[2] <- ifelse(mylim[2]>1, 1, mylim[2])
- par(mar=c(5.1, 4.1, 4.1, 9))  #mar=c(6.5, 4.5, 4.1, 2.1), oma=c(1.5,1,1.5,1),
+ #par(mar=c(5.1, 4.1, 4.1, 9))  #mar=c(6.5, 4.5, 4.1, 2.1), oma=c(1.5,1,1.5,1),
 
    if(!is.null(xlim)){ 
       if(any(xlim <0)) stop("Parameters of xlim must be > 0 due to log scaling") 
@@ -225,13 +225,13 @@ if(is.element(plot.type, "calibration")){
 
    if(is.null(xlab)) xlab <- "observed risk"
    if(is.null(ylab)) ylab <- "average predicted risk"
-   if(is.null(xlim)) xlim <- log(mylim) else xlim <- log(xlim)
-   if(is.null(ylim)) ylim <- log(mylim) else ylim <- log(ylim)
+   #if(is.null(xlim)) xlim <- log(mylim) else xlim <- log(xlim)
+   #if(is.null(ylim)) ylim <- log(mylim) else ylim <- log(ylim)
 
-   if(xlim[1]==-Inf) xlim[1] = log(0.004)
-   if(ylim[1]==-Inf) ylim[1] = log(0.004)
+   #if(xlim[1]==-Inf) xlim[1] = log(0.004)
+   #if(ylim[1]==-Inf) ylim[1] = log(0.004)
 
-   if(is.null(main)) main <- "Calibration plot"
+   #if(is.null(main)) main <- "Calibration plot"
 
   plot(NULL, xlab = xlab,
           ylab = ylab ,
@@ -242,17 +242,29 @@ if(is.element(plot.type, "calibration")){
 
  abline(a=0, b=1, col="grey")
 
-  xaxis <- seq(from = xlim[1], to=xlim[2], length.out=5)
-  axis(1,at=xaxis, round(exp(xaxis),2))
+ xaxis <- round(seq(from = xlim[1], to=xlim[2], length.out=5), 2)
+#  axis(1,at=xaxis, round(exp(xaxis),2))
    
-  yaxis <- seq(from = ylim[1], to=ylim[2], length.out=5)
-  axis(2,at=yaxis, round(exp(yaxis),2))
- tmp.scale <- ran/5 
- legend(x=max(xlim)+tmp.scale, y = quantile(ylim, prob = .75), legend = trt.names, pch = c(17, 16), bty="n", cex = 1, xpd = TRUE)
- points(log(obs.risk.t0), log(exp.risk.t0), pch = 16)
- points(log(obs.risk.t1), log(exp.risk.t1), pch = 17)
-  
-
+  yaxis <- round(seq(from = ylim[1], to=ylim[2], length.out=5), 2)
+#  axis(2,at=yaxis, round(exp(yaxis),2))
+ #tmp.scale <- ran/5 
+ #legend(x=max(xlim)+tmp.scale, y = quantile(ylim, prob = .75), legend = trt.names, pch = c(17, 16), bty="n", cex = 1, xpd = TRUE)
+ #points(log(obs.risk.t0), log(exp.risk.t0), pch = 16)
+ #points(log(obs.risk.t1), log(exp.risk.t1), pch = 17)
+ 
+ browser()
+ 
+ data <- data.frame("observedRisk" = c(obs.risk.t0, obs.risk.t0),
+                    "expectedRisk" = c(exp.risk.t0, exp.risk.t1), 
+                    "trt" = rep(c(0,1), rep(length(obs.risk.t0), 2)) )
+ 
+ p <- ggplot(data = data, aes(x= observedRisk, y = expectedRisk, shape = factor(trt)))
+p + geom_point(size = 4) + coord_trans(x = "log", y = "log") +
+   scale_shape_discrete("", labels = trt.names) + 
+   scale_x_continuous(breaks = xaxis, labels = xaxis, limits = xlim) +
+   scale_y_continuous(breaks = yaxis, labels = yaxis, limits = ylim) + theme_bw() + 
+   ylab(ylab) + xlab(xlab) + ggtitle(main) + theme( text = element_text(size=18))
+ 
 }
 if( is.element(plot.type, "risk.t0")) { 
 # trt = 0
@@ -265,12 +277,12 @@ if( is.element(plot.type, "risk.t0")) {
    if(is.null(ylim)) ylim <- mylim
    if(is.null(main)) main <- "Risk curve for non treated individuals"
 
-  plot(NULL, xlab = xlab,
-          ylab = ylab ,
-          ylim = ylim, 
-          xlim = xlim,
-          type = "n",
-          main= main, ...)
+  #plot(NULL, xlab = xlab,
+  #        ylab = ylab ,
+  #        ylim = ylim, 
+  #        xlim = xlim,
+  #        type = "n",
+  #        main= main, ...)
   
   x.points.t0 <- rep(F.risk.t0(sort(fittedrisk.c.t0)), c(rep(2, n.t0-1),1))
 
@@ -349,8 +361,9 @@ if(is.element(plot.type, c("calibration", "risk.t0", "risk.t1", "treatment effec
  
 }else{
  #plot.data=NULL
+  p = NULL
 }
-res <- list( "HL.TestStat" = c(trt0 = hl.t0, trt1 = hl.t1), "p.value" = c(trt0 = pval.t0, trt1 = pval.t1), "Df" = c(Df))#, "plot.data" = plot.data )
+res <- list( "HL.TestStat" = c(trt0 = hl.t0, trt1 = hl.t1), "p.value" = c(trt0 = pval.t0, trt1 = pval.t1), "Df" = c(Df), "plot" = p)#, "plot.data" = plot.data )
 class(res) = "calibrate.trtsel"
 return( res )
 

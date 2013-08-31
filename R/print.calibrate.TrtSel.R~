@@ -1,5 +1,5 @@
-print.calibrate.TrtSel <-
-function( cal ) {
+print.calibrate.trtsel <-
+function( cal, ... ) {
 
 HL <- cal$HL.TestStat
 p.value <- cal$p.value

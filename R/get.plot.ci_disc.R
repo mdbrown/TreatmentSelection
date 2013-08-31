@@ -8,7 +8,7 @@ function( marker, trt, event, rho = rho, plot.type, ci, bootstraps, obp.boot.sam
   # F.marker, risk_t0, risk_t1 (all sorted by F.marker), F.event, obs delta (sorted by F.event)
 
   one.boot.plot_disc <-
-    function(event, trt, marker, rho = rho,  obp.boot.sample, obp.get.F){
+    function(event, trt, marker, rho = rho,  obp.boot.sample){
       
       myboot.sample <- obp.boot.sample( event, trt, rho)
       
@@ -18,16 +18,12 @@ function( marker, trt, event, rho = rho, plot.type, ci, bootstraps, obp.boot.sam
       event.b  <- event[ind]
       trt.b  <- trt[ind]
       marker.b  <- marker[ind] 
-      Fy = obp.get.F(marker.b, event.b, trt.b, rho.b, return.fun = TRUE)
+
       mval <- sort(unique(marker))
       c(   event.trt0.mkr0 = mean(event.b[trt.b==0 & marker.b ==mval[1]]), 
            event.trt1.mkr0 = mean(event.b[trt.b==1 & marker.b ==mval[1]]), 
            event.trt0.mkr1 = mean(event.b[trt.b==0 & marker.b ==mval[2]]),
            event.trt1.mkr1 = mean(event.b[trt.b==1 & marker.b ==mval[2]]), 
-           mean.trt0.mkr0 = Fy(mval[1]), 
-           mean.trt1.mkr0 = Fy(mval[1]), 
-           mean.trt0.mkr1 = Fy(mval[2]),
-           mean.trt1.mkr1 = Fy(mval[2]), 
            trteff.mkr0 =mean(event.b[trt.b==0 & marker.b ==mval[1]]) - mean(event.b[trt.b==1 & marker.b ==mval[1]]), 
            trteff.mkr1 =mean(event.b[trt.b==0 & marker.b ==mval[2]]) - mean(event.b[trt.b==1 & marker.b ==mval[2]])
            )
@@ -37,27 +33,23 @@ function( marker, trt, event, rho = rho, plot.type, ci, bootstraps, obp.boot.sam
   
   # now bootstrap
 
-  boot.data <- replicate(bootstraps, one.boot.plot_disc( event, trt, marker, rho,obp.boot.sample, obp.get.F))
+  boot.data <- replicate(bootstraps, one.boot.plot_disc( event, trt, marker, rho,obp.boot.sample))
   mval <- sort(unique(marker))
   row.names(boot.data) = c(paste("risk.trt0.mkr", mval[1], sep = ""), 
                        paste("risk.trt1.mkr", mval[1], sep = ""), 
                        paste("risk.trt0.mkr", mval[2], sep = ""), 
                        paste("risk.trt1.mkr", mval[2], sep = ""),
-                       "mean00", 
-                       "mean10", 
-                       "mean01", 
-                       "mean11", 
                        paste("trteffect.mkr", mval[1], sep = ""), 
                        paste("trteffect.mkr", mval[2], sep = ""))
 
     #horizontal
     if(substr(plot.type, 1, 3) =="ris" & substr(ci, 1,1) =="h"){ warning("Horizontal CI bands are not allowed for risk plots with a discrete marker. Vertical bands will be computed"); ci <- "vertical";}
     if(substr(plot.type, 1, 3) =="tre" & substr(ci, 1,1) =="h") { warning("Horizontal CI bands are not allowed for treatment effect plots with a discrete marker. Vertical bands will be computed"); ci <- "vertical";}
-    if(substr(plot.type, 1, 3) =="cdf") myconf.ints <- apply(boot.data[c(9:10),], 1, quantile, probs = c(alpha/2, 1-alpha/2))
+    if(substr(plot.type, 1, 3) =="cdf") myconf.ints <- apply(boot.data[c(5:6),], 1, quantile, probs = c(alpha/2, 1-alpha/2))
     
     #vertical
     if(substr(plot.type, 1, 3) =="ris") myconf.ints <- apply(boot.data[1:4,], 1, quantile, probs = c(alpha/2, 1-alpha/2))
-    if(substr(plot.type, 1, 3) =="tre") myconf.ints <- apply(boot.data[c(9:10),], 1, quantile, probs = c(alpha/2, 1-alpha/2))
+    if(substr(plot.type, 1, 3) =="tre") myconf.ints <- apply(boot.data[c(5:6),], 1, quantile, probs = c(alpha/2, 1-alpha/2))
     if(substr(plot.type, 1, 3) =="cdf" & substr(ci, 1,1) =="v"){ warning("Vertical CI bands are not allowed for treatment effect plots with a discrete marker. Horizontal bands will be computed"); ci <- "horizontal";}
     
   

@@ -170,13 +170,16 @@ compare.trtsel(trtsel1 = trtsel.Y3, trtsel2 = trtsel.Y2,
 
 
 
-tsdata$Y3 <- as.numeric(!(tsdata$Y2>-.5))+1
-tsdata$Y3[tsdata$Y3 ==2] <- 0
+tsdata$Y3 <- as.numeric(!(tsdata$Y2>-.5)) 
+tsdata$Y4 <- as.numeric(!(tsdata$Y1>mean(tsdata$Y1)))
 
 trtsel.Y3 <- trtsel( event ="event", trt = "trt", marker = "Y3", data = tsdata,
                      study.design = "randomized cohort", link = "logit", 
                      default.trt = "trt all")
 
+trtsel.Y4 <- trtsel( event ="event", trt = "trt", marker = "Y4", data = tsdata,
+                     study.design = "randomized cohort", link = "logit", 
+                     default.trt = "trt all")
 trtsel.Y3
 tmp = eval.trtsel(trtsel.Y3, bootstrap = 50)
 
@@ -258,8 +261,8 @@ tmp <- compare.trtsel(trtsel1 = trtsel.Y1, trtsel2 = trtsel.Y2,
                bootstraps = 50, plot = TRUE, ci = "horizontal", conf.bands = TRUE, 
                       fixed.values = c(-0.5, .1))
 
-tmp <- compare.trtsel(trtsel1 = trtsel.Y1, trtsel2 = trtsel.Y2,
-                      bootstraps = 50, plot = TRUE, ci = "vertical", conf.bands = TRUE,
-                      fixed.values = c(25, 75), offset = 5, marker.names = c("weak", "strong"))
+tmp <- compare.trtsel(trtsel1 = trtsel.Y3, trtsel2 = trtsel.Y4,
+                      bootstraps = 50, plot = TRUE, ci = "vertical", 
+                      conf.bands = FALSE, annotate.plot =TRUE, offset = .05)
 
 

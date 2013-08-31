@@ -1,12 +1,12 @@
 compare.trtsel <-
 function(trtsel1, trtsel2, bootstraps = 500, alpha = .05, plot = TRUE, 
                            ci   = "horizontal", fixed.values =  NULL, offset = .01,
-                            conf.bands = FALSE, conf.bandsN =100, marker.names = c("Marker 1", "Marker 2"), 
+                            conf.bands = TRUE, conf.bandsN =100, marker.names = c("Marker 1", "Marker 2"), 
                            xlab = NULL, 
                            ylab = NULL, 
                            xlim = NULL, 
                            ylim = NULL, 
-                           main = NULL, mar = NULL,  ...){
+                           main = NULL, mar = NULL, annotate.plot = TRUE,  ...){
 
   # assume paired data here, so each individual has a measurement on y1 and y2. Also I am assuming each data set is ordered the same way. 
 
@@ -109,8 +109,15 @@ result <- list(estimates.marker1   = data.frame(sm.m1),
                  bootstraps = bootstraps)
   }
 
+  #for plotting, we can only compare marker types that are the same...ie discrete to discrete, continuous to continuous
+  same.marker.type = (is.null(trtsel1$model.fit$disc.marker.neg) == is.null(trtsel2$model.fit$disc.marker.neg))
+  if(plot & !same.marker.type) {
+    warning("Can not generate plots to compare a discrete marker to a continuous marker (bootstrap methods are not comparable). No plots will be produced!")
+    plot = FALSE
+  }
+  
 
-  if(plot){ 
+  if(plot & is.null(trtsel1$model.fit$disc.marker.neg)){ 
   if(length(fixed.values>0)) conf.bands = FALSE 
   if(conf.bands){
     
@@ -139,9 +146,26 @@ result <- list(estimates.marker1   = data.frame(sm.m1),
                            ylim = ylim, 
                            main = main, offset = offset, conf.bands=conf.bands, mar = mar,  ...)
   result$plot <- curves$plot
+
   result$plot.ci.marker1 <- curves$trtsel1$conf.intervals
   result$plot.ci.marker2 <- curves$trtsel2$conf.intervals
+  }else if(plot & !is.null(trtsel1$model.fit$disc.marker.neg)){
+    
+    curves <-  myplotcompare.trtsel_disc( x = result, bootstraps =bootstraps, alpha  = alpha, ci = ci, marker.names = marker.names, 
+                                     xlab = xlab, 
+                                     ylab = ylab, 
+                                     xlim = xlim, 
+                                     ylim = ylim, 
+                                     main = main, offset = offset, conf.bands=conf.bands, mar = mar, annotate.plot, ...)
+    result$plot <- curves$plot
+    result$plot.ci <- curves$ci.bounds
+
+    
+    
   }
+  
+  
+  
   result$trtsel1 <- NULL
   result$trtsel2 <- NULL
   class(result) <- "compare.trtsel"

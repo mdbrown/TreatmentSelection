@@ -1,7 +1,7 @@
-print.compare.TrtSel <-
-function(x){
+print.compare.trtsel <-
+function(x, ...){
   
-  confperc <- round(100*(1-alpha))
+  confperc <- round(100*(1-x$alpha))
 
   cat("                      Summary Measure Estimates \n")
   cat(paste("                    (with ", confperc ,"% confidence intervals) \n"))
@@ -10,11 +10,24 @@ function(x){
   cat(" ------------------------------------------------------------------------\n\n")
 
 
-  cat("Decrease in disease rate under marker-based treatment (Theta)\n")
-   bootN <- x$bootN
+ 
+
+  cat("Decrease in event rate under marker-based treatment (Theta)\n")
+   bootN <- x$bootstraps  
+
+   if(bootN==0){ 
+     x$p.values = rep(NA, 9)
+     cat("   No confidence intervals calculated...returning NA for lower and upper bounds"); cat("\n\n")
+     x$ci.marker1 <- matrix( nrow = 2, ncol = 9)
+     x$ci.marker2 <- matrix( nrow = 2, ncol = 9)
+     x$ci.diff <- matrix( nrow = 2, ncol = 9)
+   }
+
      tmp.pval <- x$p.values[6]
-  if(tmp.pval==0) tmp.pval <- paste("<", 1/bootN)
-  
+  if(is.element(tmp.pval, 0) & bootN>0) tmp.pval <- paste("<", 1/bootN)
+
+
+
   cat(" Empirical: ")
   cat(paste(" ", sprintf("   %.3f      |", round(x$estimates.marker1$Theta.emp,  3)),  
                  sprintf("     %.3f     |",round(x$estimates.marker2$Theta.emp,  3)), 
@@ -28,7 +41,7 @@ function(x){
                 sprintf(" (%.3f,%.3f) |", round(unname(x$ci.marker2[1,6]), 3), round(unname(x$ci.marker2[2,6]), 3)), 
                 sprintf(" (%.3f,%.3f) ", round(unname(x$ci.diff[1,6]), 3),round(unname(x$ci.diff[2,6]	), 3)), sep = ""))
      tmp.pval <- x$p.values[7]
-  if(tmp.pval==0) tmp.pval <- paste("<", 1/bootN)
+  if(is.element(tmp.pval, 0)) tmp.pval <- paste("<", 1/bootN)
   
   cat("\n")
   cat(" Model Based:")  
@@ -49,7 +62,7 @@ function(x){
 
   cat("Proportion marker negative:\n")
      tmp.pval <- x$p.values[1]
-  if(tmp.pval==0) tmp.pval <- paste("<", 1/bootN)
+  if(is.element(tmp.pval, 0)) tmp.pval <- paste("<", 1/bootN)
   
   cat("            ")  
   cat(paste(" ", sprintf("   %.3f      |", round(x$estimates.marker1$p.neg,  3)),  
@@ -68,7 +81,7 @@ function(x){
   cat("\n")
 
      tmp.pval <- x$p.values[2]
-  if(tmp.pval==0) tmp.pval <- paste("<", 1/bootN)
+  if(is.element(tmp.pval, 0)) tmp.pval <- paste("<", 1/bootN)
   
   cat("Average benefit of no treatment among marker-negatives (B.neg)\n")
   cat(" Empirical: ")
@@ -84,7 +97,7 @@ function(x){
                 sprintf(" (%.3f,%.3f) |", round(unname(x$ci.marker2[1,2]), 3), round(unname(x$ci.marker2[2,2]), 3)), 
                 sprintf(" (%.3f,%.3f) ", round(unname(x$ci.diff[1,2]), 3),round(unname(x$ci.diff[2,2]), 3)), sep = ""))
   tmp.pval <- x$p.values[3]
-  if(tmp.pval==0) tmp.pval <- paste("<", 1/bootN)
+  if(is.element(tmp.pval, 0)) tmp.pval <- paste("<", 1/bootN)
   
   cat("\n")
   cat(" Model Based:")  
@@ -104,7 +117,7 @@ function(x){
   cat("\n")
 
     tmp.pval <- x$p.values[4]
-  if(tmp.pval==0) tmp.pval <- paste("<", 1/bootN)
+  if(is.element(tmp.pval, 0)) tmp.pval <- paste("<", 1/bootN)
   
 
   cat("Average benefit of treatment among marker-positives (B.pos)\n")
@@ -121,7 +134,7 @@ function(x){
                 sprintf(" (%.3f,%.3f) |", round(unname(x$ci.marker2[1,4]), 3), round(unname(x$ci.marker2[2,4]), 3)), 
                 sprintf(" (%.3f,%.3f) ", round(unname(x$ci.diff[1,4]), 3),round(unname(x$ci.diff[2,4]), 3)), sep = ""))
    tmp.pval <- x$p.values[5]
-  if(tmp.pval==0) tmp.pval <- paste("<", 1/bootN)
+  if(is.element(tmp.pval, 0)) tmp.pval <- paste("<", 1/bootN)
   
   cat("\n")
   cat(" Model Based:")  
@@ -139,7 +152,7 @@ function(x){
 
   cat("\n\n\n")
   tmp.pval <- x$p.values[8]
-  if(tmp.pval==0) tmp.pval <- paste("<", 1/bootN)
+  if(is.element(tmp.pval, 0)) tmp.pval <- paste("<", 1/bootN)
   
     cat("Variance in estimated treatment effect : \n  ")
   cat("          ")  
@@ -155,7 +168,7 @@ function(x){
   cat("\n\n")
 
   tmp.pval <- x$p.values[9]
-  if(tmp.pval==0) tmp.pval <- paste("<", 1/bootN)
+  if(is.element(tmp.pval, 0)) tmp.pval <- paste("<", 1/bootN)
   
   cat("Total Gain: \n")
   cat("          ")  

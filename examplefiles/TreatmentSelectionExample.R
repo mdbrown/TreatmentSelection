@@ -124,7 +124,7 @@ estimates.Y2
 
 
 #default is to show calibration plot with 10 groups
-cali.Y2 <- calibrate.trtsel(trtsel.Y2)
+cali.Y2 <- calibrate.trtsel(trtsel.Y2, groups = 10)
 cali.Y2
 
 #no plot
@@ -264,5 +264,7 @@ tmp <- compare.trtsel(trtsel1 = trtsel.Y1, trtsel2 = trtsel.Y2,
 tmp <- compare.trtsel(trtsel1 = trtsel.Y3, trtsel2 = trtsel.Y4,
                       bootstraps = 50, plot = TRUE, ci = "vertical", 
                       conf.bands = FALSE, annotate.plot =TRUE, offset = .05)
-calibrate.trtsel(trtsel.Y1)
+
+
+calibrate.trtsel(trtsel.Y1, plot.type = "risk.t0")
 

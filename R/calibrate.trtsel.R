@@ -9,7 +9,7 @@ function( x, groups = 10, plot.type = "calibration", trt.names = c("Treatment", 
   n <- length(marker)
   if(!is.numeric(groups)) stop("groups must be an integer")
   
-  if(groups < 2) stop("Must have more than 1 group!")
+  if(groups < 2) stop("Must have more than 2 groups!")
 
   if(!is.element(plot.type, c("calibration", "risk.t0", "risk.t1", "treatment effect", NA, "none"))){ 
 
@@ -199,8 +199,8 @@ pval.t1    <- 1 - pchisq( hl.t1, Df)
 if(is.element(plot.type, c("calibration", "risk.t0", "risk.t1", "treatment effect"))){
 #save default plot settings 
 
-old.par <- par(no.readonly=TRUE)
-old.mar <- par()$mar
+#old.par <- par(no.readonly=TRUE)
+#old.mar <- par()$mar
 
 min.risk <- min(c(fittedrisk.c.t0, fittedrisk.c.t1))
 max.risk <- max(c(fittedrisk.c.t0, fittedrisk.c.t1))
@@ -212,8 +212,10 @@ max.risk <- max(c(fittedrisk.c.t0, fittedrisk.c.t1))
 #
 
 if(is.element(plot.type, "calibration")){
- mylim[1] <- ifelse(mylim[1]<0, 0.004, mylim[1])
- mylim[2] <- ifelse(mylim[2]>1, 1, mylim[2])
+  
+
+ #mylim[1] <- ifelse(mylim[1]<0, 0.01, mylim[1])
+ #mylim[2] <- ifelse(mylim[2]>1, 1, mylim[2])
  #par(mar=c(5.1, 4.1, 4.1, 9))  #mar=c(6.5, 4.5, 4.1, 2.1), oma=c(1.5,1,1.5,1),
 
    if(!is.null(xlim)){ 
@@ -225,47 +227,75 @@ if(is.element(plot.type, "calibration")){
 
    if(is.null(xlab)) xlab <- "observed risk"
    if(is.null(ylab)) ylab <- "average predicted risk"
-   #if(is.null(xlim)) xlim <- log(mylim) else xlim <- log(xlim)
-   #if(is.null(ylim)) ylim <- log(mylim) else ylim <- log(ylim)
+  
+   #if(is.null(xlim)) xlim <- mylim #else xlim <- log(xlim)
+   #if(is.null(ylim)) ylim <- mylim #else ylim <- log(ylim)
 
-   #if(xlim[1]==-Inf) xlim[1] = log(0.004)
-   #if(ylim[1]==-Inf) ylim[1] = log(0.004)
+   #if(xlim[1]==-Inf) xlim[1] = log(0.01)
+   #if(ylim[1]==-Inf) ylim[1] = log(0.01)
 
-   #if(is.null(main)) main <- "Calibration plot"
+   if(is.null(main)) main <- "Calibration plot"
 
-  plot(NULL, xlab = xlab,
-          ylab = ylab ,
-          ylim = ylim, 
-          xlim = xlim,
-          type = "n",
-          main= main, xaxt="n", yaxt = "n", ...)
+ # plot(NULL, xlab = xlab,
+#          ylab = ylab ,
+#          ylim = ylim, 
+#          xlim = xlim,
+#          type = "n",
+#          main= main, xaxt="n", yaxt = "n", ...)
 
- abline(a=0, b=1, col="grey")
+# abline(a=0, b=1, col="grey")
 
- xaxis <- round(seq(from = xlim[1], to=xlim[2], length.out=5), 2)
-#  axis(1,at=xaxis, round(exp(xaxis),2))
-   
-  yaxis <- round(seq(from = ylim[1], to=ylim[2], length.out=5), 2)
+ #  axis(1,at=xaxis, round(exp(xaxis),2))
+
 #  axis(2,at=yaxis, round(exp(yaxis),2))
  #tmp.scale <- ran/5 
  #legend(x=max(xlim)+tmp.scale, y = quantile(ylim, prob = .75), legend = trt.names, pch = c(17, 16), bty="n", cex = 1, xpd = TRUE)
  #points(log(obs.risk.t0), log(exp.risk.t0), pch = 16)
  #points(log(obs.risk.t1), log(exp.risk.t1), pch = 17)
  
- browser()
+
  
  data <- data.frame("observedRisk" = c(obs.risk.t0, obs.risk.t0),
                     "expectedRisk" = c(exp.risk.t0, exp.risk.t1), 
                     "trt" = rep(c(0,1), rep(length(obs.risk.t0), 2)) )
+   data <- subset(data, observedRisk >0)
+   data <- subset(data, expectedRisk >0)
  
  p <- ggplot(data = data, aes(x= observedRisk, y = expectedRisk, shape = factor(trt)))
-p + geom_point(size = 4) + coord_trans(x = "log", y = "log") +
+ p <- p + coord_trans(x = "log", y = "log") +
    scale_shape_discrete("", labels = trt.names) + 
-   scale_x_continuous(breaks = xaxis, labels = xaxis, limits = xlim) +
-   scale_y_continuous(breaks = yaxis, labels = yaxis, limits = ylim) + theme_bw() + 
-   ylab(ylab) + xlab(xlab) + ggtitle(main) + theme( text = element_text(size=18))
- 
+   ylab(ylab) + xlab(xlab) + ggtitle(main) + theme( text = element_text(size=18)) +
+   geom_line(aes(x = observedRisk, y = observedRisk), colour = "grey50", linetype = 2, size = .8 ) + 
+     geom_point(size = 4)
+   
+    if(!is.null(xlim)){
+    #  xaxis <- round(seq(from = xlim[1], to=xlim[2], length.out=5), 2)
+      if(xlim[1]==0){
+        warning("due to log scaling, the lower bound of xlim must be > 0, changing xlim[1] <- .01")
+        xlim[1] <- .01
+        
+      }
+      p <- p+ scale_x_continuous(limits = xlim)
+    }
+    if(!is.null(ylim)){
+     # yaxis <- round(seq(from = ylim[1], to=ylim[2], length.out=5), 2)
+      if(ylim[1]==0){
+        warning("due to log scaling, the lower bound of ylim must be > 0, changing ylim[1] <- .01")
+        ylim[1] <- .01
+        
+      }
+      p <- p+ scale_y_continuous( limits = ylim)
+    }
+      
+   
+ #p <- p + geom_abline()
+   #p <- p+ geom_segment(aes(x = 0.0004, y =0.004, xend = 1, yend = 1 ))
+
+ print(p)
 }
+  
+  
+  
 if( is.element(plot.type, "risk.t0")) { 
 # trt = 0
 
@@ -274,21 +304,33 @@ if( is.element(plot.type, "risk.t0")) {
    if(is.null(xlab)) xlab <- "% population below risk"
    if(is.null(ylab)) ylab <- "risk"
    if(is.null(xlim)) xlim <- c(0,1)
-   if(is.null(ylim)) ylim <- mylim
+  # if(is.null(ylim)) ylim <- mylim
    if(is.null(main)) main <- "Risk curve for non treated individuals"
 
   #plot(NULL, xlab = xlab,
   #        ylab = ylab ,
   #        ylim = ylim, 
-  #        xlim = xlim,
+  #      xlim = xlim,
   #        type = "n",
-  #        main= main, ...)
+  #       main= main, ...)
   
-  x.points.t0 <- rep(F.risk.t0(sort(fittedrisk.c.t0)), c(rep(2, n.t0-1),1))
+  #x.points.t0 <- rep(F.risk.t0(sort(fittedrisk.c.t0)), c(rep(2, n.t0-1),1))
 
-  lines(x.points.t0, fittedrisk.c.t0[rep(order(fittedrisk.c.t0),c(1, rep(2, n.t0-1)))],type = "l", lwd=2)  
+  #lines(x.points.t0, fittedrisk.c.t0[rep(order(fittedrisk.c.t0),c(1, rep(2, n.t0-1)))],type = "l", lwd=2)  
 
-  points(1:groups/groups - 1/(2*groups), obs.risk.t0)
+  #points(1:groups/groups - 1/(2*groups), obs.risk.t0)
+   
+   data = data.frame(F.risk = F.risk.t0(sort(fittedrisk.c.t0)), risk = sort(fittedrisk.c.t0))
+   p <- ggplot(data, aes(x = F.risk, y = risk)) + geom_step( size = 1)
+   
+   obsdata <- data.frame(x = (1:groups/groups - 1/(2*groups)), y= obs.risk.t0)
+   p <- p + geom_point(data = obsdata, aes(x = x, y = y), size = 4)
+   p <- p + ylab(ylab) + xlab(xlab) + ggtitle(main) + theme( text = element_text(size=18)) 
+   if(!is.null(xlim)) p <- p + xlim(xlim)
+   if(!is.null(ylim)) p <- p + ylim(ylim)
+   print(p)
+   
+   
 }
 
 if(is.element(plot.type, "risk.t1")) { 
@@ -298,57 +340,77 @@ if(is.element(plot.type, "risk.t1")) {
 if(is.null(xlab)) xlab <- "% population below risk"
    if(is.null(ylab)) ylab <- "risk"
    if(is.null(xlim)) xlim <- c(0,1)
-   if(is.null(ylim)) ylim <- mylim
+  #if(is.null(ylim)) ylim <- mylim
    if(is.null(main)) main <- "Risk curve for treated individuals"
 
-  plot(NULL, xlab = xlab,
-          ylab = ylab ,
-          ylim = ylim, 
-          xlim = xlim,
-          type = "n",
-          main= main, ...)
+  #plot(NULL, xlab = xlab,
+  #        ylab = ylab ,
+  #        ylim = ylim, 
+  #        xlim = xlim,
+  #        type = "n",
+  #        main= main, ...)
 
-  x.points.t1 <- rep(F.risk.t1(sort(fittedrisk.c.t1)), c(rep(2, n.t1-1),1))
+  #x.points.t1 <- rep(F.risk.t1(sort(fittedrisk.c.t1)), c(rep(2, n.t1-1),1))
 
-  lines(x.points.t1, fittedrisk.c.t1[rep(order(fittedrisk.c.t1),c(1, rep(2, n.t1-1)))],type = "l", lwd=2)  
-  points(1:groups/groups - 1/(2*groups), obs.risk.t1)
+ # lines(x.points.t1, fittedrisk.c.t1[rep(order(fittedrisk.c.t1),c(1, rep(2, n.t1-1)))],type = "l", lwd=2)  
+#  points(1:groups/groups - 1/(2*groups), obs.risk.t1)
 
+data = data.frame(F.risk = F.risk.t1(sort(fittedrisk.c.t1)), risk = sort(fittedrisk.c.t1))
+p <- ggplot(data, aes(x = F.risk, y = risk)) + geom_step( size = 1)
+
+obsdata <- data.frame(x = (1:groups/groups - 1/(2*groups)), y= obs.risk.t1)
+p <- p + geom_point(data = obsdata, aes(x = x, y = y), size = 4)
+p <- p + ylab(ylab) + xlab(xlab) + ggtitle(main) + theme( text = element_text(size=18)) 
+if(!is.null(xlim)) p <- p + xlim(xlim)
+if(!is.null(ylim)) p <- p + ylim(ylim)
+print(p)
 
 
 }
 
 if( is.element("treatment effect", plot.type)) { 
 
-min.risk <- min(c(fitteddelta, obs.delta))
-max.risk <- max(c(fitteddelta, obs.delta))
-    cen <- mean(c(min.risk, max.risk))
-    ran <- max.risk - min.risk
-    ran <- ran*1.1
-    mylim <- c(cen-ran/2, cen+ran/2)
+#min.risk <- min(c(fitteddelta, obs.delta))
+#max.risk <- max(c(fitteddelta, obs.delta))
+#    cen <- mean(c(min.risk, max.risk))
+#    ran <- max.risk - min.risk
+#    ran <- ran*1.1
+#    mylim <- c(cen-ran/2, cen+ran/2)
    
 # Delta  
 
    if(is.null(xlab)) xlab <- "% population below treatment effect"
    if(is.null(ylab)) ylab <- "treatment effect"
    if(is.null(xlim)) xlim <- c(0,1)
-   if(is.null(ylim)) ylim <- mylim
+  # if(is.null(ylim)) ylim <- mylim
    if(is.null(main)) main <- "Treatment effect distribution"
 
-    plot(NULL, 
-          ylab = ylab,
-          xlab = xlab,
-          xlim = xlim, 
-          ylim = ylim,
-          type = "n", 
-          main = main)
+   # plot(NULL, 
+   #       ylab = ylab,
+  #        xlab = xlab,
+  #        xlim = xlim, 
+  #        ylim = ylim,
+  #        type = "n", 
+  #        main = main)
 
-  x.points.delta <- rep(F.delta(sort(fitteddelta)), c(rep(2, n-1),1))
+#  x.points.delta <- rep(F.delta(sort(fitteddelta)), c(rep(2, n-1),1))
 
-  lines(x.points.delta, fitteddelta[rep(order(fitteddelta),c(1, rep(2, n-1)))],type = "l", lwd=2)  
-  points(1:groups/groups - 1/(2*groups), obs.delta)
+#  lines(x.points.delta, fitteddelta[rep(order(fitteddelta),c(1, rep(2, n-1)))],type = "l", lwd=2)  
+#  points(1:groups/groups - 1/(2*groups), obs.delta)
 
-  abline(h = 0, lty = 2, col = "grey")
+#  abline(h = 0, lty = 2, col = "grey")
 
+data = data.frame(F.risk = F.delta(sort(fitteddelta)), risk = sort(fitteddelta))
+p <- ggplot(data, aes(x = F.risk, y = risk)) + geom_step( size = 1)
+
+obsdata <- data.frame(x = (1:groups/groups - 1/(2*groups)), y= obs.delta)
+p <- p + geom_hline(yintercept  = 0, linetype = 2, colour = "grey50", size = .8) +
+     geom_point(data = obsdata, aes(x = x, y = y), size = 4)
+p <- p + ylab(ylab) + xlab(xlab) + ggtitle(main) + theme( text = element_text(size=18)) 
+if(!is.null(xlim)) p <- p + xlim(xlim)
+if(!is.null(ylim)) p <- p + ylim(ylim)
+   
+print(p)
 
 
 } 
@@ -356,14 +418,14 @@ max.risk <- max(c(fitteddelta, obs.delta))
  #reset plot parameters
 if(is.element(plot.type, c("calibration", "risk.t0", "risk.t1", "treatment effect"))){
 
- par(mar = old.mar)
+# par(mar = old.mar)
 # plot.data <- data.frame(cbind("group" = rep(1:groups, 2), "F.risk"= rep(1:groups/groups - 1/(2*groups), 2), "observed" = c(obs.risk.t0, obs.risk.t1), "expected" = c(exp.risk.t0, exp.risk.t1), "treatment" = c(rep(0, length(obs.risk.t0)),rep(1, length(obs.risk.t1)) )))
  
 }else{
  #plot.data=NULL
   p = NULL
 }
-res <- list( "HL.TestStat" = c(trt0 = hl.t0, trt1 = hl.t1), "p.value" = c(trt0 = pval.t0, trt1 = pval.t1), "Df" = c(Df), "plot" = p)#, "plot.data" = plot.data )
+res <- list( "HL.TestStat" = c(trt0 = hl.t0, trt1 = hl.t1), "p.value" = c(trt0 = pval.t0, trt1 = pval.t1), "Df" = c(Df), "plot" = p, "plot.data" = data )
 class(res) = "calibrate.trtsel"
 return( res )
 

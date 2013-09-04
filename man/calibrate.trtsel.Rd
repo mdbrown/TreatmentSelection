@@ -55,8 +55,8 @@ calibrate.trtsel(x, groups = 10,
     A list with the following components:
  \item{HL.TestStat}{Hosmer-Lemeshow test statistic for assessing fit of the risk models for the T = 0 and T = 1 groups.}
  \item{p.value}{P-values for the Hosmer-Lemeshow tests in each treatment group.}
- \item{Df}{Degrees of freedom for the chi-square distribution used to generate a p-value for the Hosmer-Lemeshow chi-square test. This equals "groups" - 2. 
- \item{plot}{If plot output was created, the ggplot plotting object.}}
+ \item{Df}{Degrees of freedom for the chi-square distribution used to generate a p-value for the Hosmer-Lemeshow chi-square test. This equals "groups" - 2. }
+ \item{plot}{If plot output was created, the ggplot plotting object.}
 }
 \references{
 

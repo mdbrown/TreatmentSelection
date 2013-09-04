@@ -4,11 +4,6 @@
 
 # Install the package
 
-#windows
-install.packages(pkgs = "DIRECTORY/TO/PACKAGE/TreatmentSelection_1.2.zip", repos = NULL)  # only have to do this once
-#unix 
-install.packages(pkgs = "DIRECTORY/TO/PACKAGE/TreatmentSelection_1.2.tar.gz", repos = NULL)
-
 library("TreatmentSelection")
 
 # Load the package data example
@@ -17,7 +12,6 @@ data(tsdata)
 tsdata[1:10, ]
 
 
-attach(tsdata)
 
 ###########################
 ## Create TrtSel objects
@@ -41,7 +35,6 @@ trtsel.Y2 <- trtsel( event ="event", trt = "trt", marker = "Y2", data = tsdata,
                      default.trt = "trt none")
 trtsel.Y2
 
-detach(tsdata)
 
 ##########################
 ## Use the plot function 
@@ -50,7 +43,7 @@ detach(tsdata)
 # Plot risk curves
 
 tmp <- plot.trtsel(trtsel.Y1, main = "Y1: Oncotype-DX-like marker", plot.type = "risk", ci = "vertical",
-            conf.bands = FALSE, fixed.values = c(20, 50), offset = .01, bootstraps = 50,trt.names=c("chemo.","no chemo."))
+            conf.bands = FALSE, fixed.values = c(20, 50), bootstraps = 50,trt.names=c("chemo.","no chemo."))
 
 tmp <- plot.trtsel(trtsel.Y1, main = "Y1: Oncotype-DX-like marker", plot.type = "risk", ci = "horizontal",
                     bootstraps = 50,trt.names=c("chemo.","no chemo."))

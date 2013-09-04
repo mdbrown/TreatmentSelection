@@ -19,3 +19,5 @@ if (!require("devtools")) install.packages("devtools")
 devtools::install_github("TreatmentSelection", "mdbrown")
 
 ```
+
+Start with a brief tutorial [here](https://github.com/mdbrown/TreatmentSelection/blob/master/Tutorial.md).

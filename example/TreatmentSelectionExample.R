@@ -166,7 +166,7 @@ compare.trtsel(trtsel1 = trtsel.Y3, trtsel2 = trtsel.Y2,
 tsdata$Y2_disc <- as.numeric(!(tsdata$Y2>0)) 
 tsdata$Y1_disc <- as.numeric(!(tsdata$Y1>mean(tsdata$Y1)))
 
-trtsel.Y3 <- trtsel( event ="event", trt = "trt", marker = "Y3", data = tsdata[1:100,],
+trtsel.Y3 <- trtsel( event ="event", trt = "trt", marker = "Y2_disc", data = tsdata[1:100,],
                      study.design = "randomized cohort", link = "logit", 
                      default.trt = "trt all")
 
@@ -238,6 +238,26 @@ tmp <- plot.trtsel(trtsel.Y1, plot.type = "treatment effect", ci = "vertical",
 tmp <- plot.trtsel(trtsel.Y1, plot.type = "treatment effect", ci = "horizontal",
                    bootstraps = 50)
 
+
+#no ci's
+
+tmp <- plot.trtsel(trtsel.Y1, plot.type = "risk", ci = "vertical",
+                   bootstraps = 50, conf.bands = FALSE)
+
+tmp <- plot.trtsel(trtsel.Y1, plot.type = "risk", ci = "horizontal",
+                   bootstraps = 50, conf.bands = FALSE)
+
+tmp <- plot.trtsel(trtsel.Y1, plot.type = "cdf", ci = "vertical",
+                   bootstraps = 50, conf.bands = FALSE)
+tmp <- plot.trtsel(trtsel.Y1, plot.type = "cdf", ci = "horizontal",
+                   bootstraps = 50, conf.bands = FALSE)
+
+tmp <- plot.trtsel(trtsel.Y1, plot.type = "treatment effect", ci = "vertical",
+                   bootstraps = 50, conf.bands = FALSE)
+tmp <- plot.trtsel(trtsel.Y1, plot.type = "treatment effect", ci = "horizontal",
+                   bootstraps = 50, conf.bands = FALSE)
+
+
 #cutoff
 tmp <- plot.trtsel(trtsel.Y3, plot.type = "risk", ci = "vertical",
                    bootstraps = 50)
@@ -246,8 +266,24 @@ tmp <- plot.trtsel(trtsel.Y3, plot.type = "risk", ci = "horizontal",
 
 tmp <- plot.trtsel(trtsel.Y3, plot.type = "treatment effect", ci = "vertical",
                    bootstraps = 50)
-tmp <- plot.trtsel(trtsel.Y4, plot.type = "treatment effect", ci = "horizontal",
+tmp <- plot.trtsel(trtsel.Y3, plot.type = "treatment effect", ci = "horizontal",
                    bootstraps = 50)
+
+#cutoff
+tmp <- plot.trtsel(trtsel.Y3, plot.type = "risk", ci = "vertical",
+                   bootstraps = 50, conf.bands = FALSE)
+tmp <- plot.trtsel(trtsel.Y3, plot.type = "risk", ci = "horizontal",
+                   bootstraps = 50, conf.bands = FALSE)
+
+tmp <- plot.trtsel(trtsel.Y3, plot.type = "treatment effect", ci = "vertical",
+                   bootstraps = 50, conf.bands = FALSE)
+tmp <- plot.trtsel(trtsel.Y3, plot.type = "treatment effect", ci = "horizontal",
+                   bootstraps = 50, conf.bands = FALSE)
+
+
+
+
+
 
 
 

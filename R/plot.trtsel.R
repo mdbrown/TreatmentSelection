@@ -117,7 +117,7 @@ function(x, bootstraps = 500,
     ##Bootstrap for confidence intervals...
     #much simpler for a discrete marker
 
-    if(( bootstraps>1) ){ 
+    if(( conf.bands & bootstraps>1) ){ 
       
       ci.bounds <- get.plot.ci_disc(marker, trt, event, rho, plot.type, ci, bootstraps, obp.boot.sample = boot.sample, obp.get.F = get.F, alpha = alpha)
       ci = ci.bounds$newci

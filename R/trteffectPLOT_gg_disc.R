@@ -29,7 +29,7 @@ function(x, ci, ci.bounds, get.F,  xlab, ylab, xlim, ylim, main, markerTWO=FALSE
    if(is.null(xlim)) xlim <- c(0,100)
    if(is.null(ylim)) ylim <- mylim
    if(is.null(main)) main <- "Treatment effect distribution"
-   p <- ggplot(mydata)     
+ 
 
   }
 
@@ -48,6 +48,10 @@ function(x, ci, ci.bounds, get.F,  xlab, ylab, xlim, ylim, main, markerTWO=FALSE
       p <- p + geom_errorbar(size = 1, width = .1) + geom_point(size = 4)
       
     
+}else{
+  p <- ggplot(mydata, aes(x = factor(marker), y =trt.effect ))
+  p <- p + geom_point(size = 4)
+  
 }
   
   

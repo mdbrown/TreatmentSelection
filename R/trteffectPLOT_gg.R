@@ -1,5 +1,5 @@
 trteffectPLOT_gg <-
-function(x, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, xlab, ylab, xlim, ylim, main, markerTWO=FALSE, lty = 1, mar, p=NULL,  ...){ 
+function(x, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, xlab, ylab, xlim, ylim, main, markerTWO=FALSE, lty = 1,  p=NULL){ 
   
 
   trt.effect <- x$derived.data$trt.effect

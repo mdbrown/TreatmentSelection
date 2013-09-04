@@ -16,6 +16,8 @@ sample data for R package TreatmentSelection
     \item{\code{event}}{a numeric vector indicating event status  (1 for recurrence or death within 5 years, 0 otherwise)}
     \item{\code{Y1}}{a numeric vector of values for marker 1. This marker has relatively weak performance.}
     \item{\code{Y2}}{a numeric vector of values for marker 2. This marker has strong performance. }
+    \item{\code{Y1_disc}}{a discrete version of marker 1, coded 1 if Y1 > mean(Y1) and 0 otherwise. }
+  \item{\code{Y2_disc}}{a discrete version of marker 2, coded 1 if Y2 > 0, and 0 otherwise. }
   }
 }
 

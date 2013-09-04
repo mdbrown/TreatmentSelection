@@ -17,7 +17,7 @@ calibrate.trtsel(x, groups = 10,
                     ylim = NULL, 
                     xlim = NULL, 
                     ylab = NULL, 
-                    xlab = NULL, ...) 
+                    xlab = NULL) 
 }
 
 \arguments{
@@ -40,24 +40,23 @@ calibrate.trtsel(x, groups = 10,
    A label for the y-axis. Default values depend on plot.type.  Only applies if plot.type is specified.
 }
   \item{xlim}{
-   The limits for the x-axisof the plot, in the form c(x1,x2). Only applies if plot.type is specified.
+   The limits for the x-axisof the plot, in the form c(lower,upper). Only applies if plot.type is specified.
 }
   \item{ylim}{
-   The limits for the y-axis of the plot, in the form c(y1,y2). Only applies if plot.type is specified.
+   The limits for the y-axis of the plot, in the form c(lower,upper). Only applies if plot.type is specified.
 }
   \item{main}{
    The main title for the plot.  Only applies if plot.type is specified.
 }
-  \item{\dots}{
-   other parameters to be passed to "plot."  Only applies if plot.type is specified.
-}
+
 }
 
 \value{
     A list with the following components:
  \item{HL.TestStat}{Hosmer-Lemeshow test statistic for assessing fit of the risk models for the T = 0 and T = 1 groups.}
  \item{p.value}{P-values for the Hosmer-Lemeshow tests in each treatment group.}
- \item{Df}{Degrees of freedom for the chi-square distribution used to generate a p-value for the Hosmer-Lemeshow chi-square test. This equals "groups" - 2. }
+ \item{Df}{Degrees of freedom for the chi-square distribution used to generate a p-value for the Hosmer-Lemeshow chi-square test. This equals "groups" - 2. 
+ \item{plot}{If plot output was created, the ggplot plotting object.}}
 }
 \references{
 

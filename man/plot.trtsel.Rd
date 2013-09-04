@@ -12,19 +12,18 @@ plot risk curves, treatment effect curves or cdf of risk for a trtsel object.
 #S3 method for class ''trtsel''
 \method{plot}{trtsel}(x, bootstraps = 500,  
                          plot.type = "risk",
-                         ci = "horizontal",
+                         ci = "default",
                          alpha = .05,
                          fixed.values = NULL,
                          offset = 0.01,  
                          conf.bands = TRUE,
                          conf.bandsN = 100, 
-                         trt.names = c("Treatment", "No Treatment"),
+                         trt.names = c("Treatment", "    No \nTreatment"),
                          xlab = NULL, 
                          ylab = NULL, 
                          xlim = NULL, 
                          ylim = NULL,
-                         main = NULL, 
-                         mar  = NULL,  ...)
+                         main = NULL, ...)
 }
 %- maybe also "usage" for other objects documented here.
 \arguments{
@@ -74,12 +73,7 @@ plot risk curves, treatment effect curves or cdf of risk for a trtsel object.
   \item{main}{
    The main title for the plot. 
 }
-  \item{mar}{
-   A numerical vector of the form "c(bottom, left, top, right)" which gives the number of lines of margin to be specified on the four sides of the plot.  The default is c(5.1, 4.1, 4.1, 9) for plot.type "treatment effect" or "risk", and c(5.1, 4.1, 4.1, 2.1) for plot.type "cdf".  
-}
-  \item{\dots}{
-   other parameters to be passed to "plot."  
-}
+\item{\dots}{ N/A}
 }
 
 
@@ -87,7 +81,7 @@ plot risk curves, treatment effect curves or cdf of risk for a trtsel object.
 
   
   Generates a plot. In addition, if the function call is assigned to a variable (as in "myplot <- plot(mytrtsel)"), plot.trtsel returns a list composed of:
-\item{curves}{ A data.frame containing the x and y points of the estimated curve(s). }
+\item{plot}{ ggplot object containing the printed plot. }
 \item{ci.bounds}{ A data.frame containing the bounds of the bootstrap-based confidence intervals, along with the fixed.values they are centered around, if applicable. }
 
 }
@@ -124,6 +118,11 @@ trtsel.Y2 <- trtsel( event = "event",
                      study.design = "randomized cohort")
 trtsel.Y2
 
+#discrete marker
+trtsel.Y1_disc <- trtsel( event ="event", trt = "trt", marker = "Y1_disc", 
+                          data =  tsdata,
+                          study.design = "randomized cohort")
+
 ##########################
 ## Use the plot function 
 ##########################
@@ -139,6 +138,11 @@ plot.trtsel(trtsel.Y1, main = "Marker Y1",
                         fixed.values = c(.2, .5), 
                         offset = .01, bootstraps = 50,
                         trt.names=c("chemo.","no chemo."))
+                        
+#discrete marker
+plot.trtsel(trtsel.Y1_disc, main = "Discrete Marker Y1", 
+            plot.type = "risk" , bootstraps = 50)
+
    
 
 # Plot treatment effect curves
@@ -151,7 +155,6 @@ plot.trtsel(trtsel.Y2, main = "Marker Y2",
                        plot.type = "treatment effect",
                        ci = "vertical", conf.bands = FALSE,
                        fixed.values = c(.1, .2), bootstraps = 500)
-
 
 
 

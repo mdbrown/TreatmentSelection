@@ -1,5 +1,5 @@
 trteffectPLOTcompare_gg_disc <-
-function(x1, x2, ci.bounds, conf.bands, offset,  xlab, ylab, xlim, ylim, main, marker.names, lty = 1, mar, annotate.plot = TRUE,  ...){ 
+function(x1, x2, ci.bounds, conf.bands, offset,  xlab, ylab, xlim, ylim, main, marker.names, lty = 1,  annotate.plot = TRUE){ 
   
   
   trt.effect1 <- x1$derived.data$trt.effect
@@ -14,7 +14,7 @@ function(x1, x2, ci.bounds, conf.bands, offset,  xlab, ylab, xlim, ylim, main, m
   mkrvals <- unique(c(marker1, x2$derived.data$marker))
   marker2 <- x2$derived.data$marker + offset
   mval2 = sort(unique(marker2))
- 
+  markerValue <- markerName <- trt.effect <- lower <- upper <- NULL
 
   mydata = data.frame(trt.effect = c(trt.effect1, trt.effect2),
                       "markerValue" = c(marker1, marker2), 

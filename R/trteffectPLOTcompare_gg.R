@@ -1,7 +1,7 @@
 trteffectPLOTcompare_gg <-
-function(x1, x2, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, xlab, ylab, xlim, ylim, main, markerTWO=FALSE, lty = 1, mar, p=NULL,  ...){ 
+function(x1, x2, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, xlab, ylab, xlim, ylim, main, markerTWO=FALSE, lty = 1,  p=NULL){ 
   
-
+  mylim <- NULL
   trt.effect <- x1$derived.data$trt.effect
   marker <- x1$derived.data$marker
   event <- x1$derived.data$event

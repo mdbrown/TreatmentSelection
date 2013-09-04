@@ -1,5 +1,5 @@
 calibrate.trtsel <-
-function( x, groups = 10, plot.type = "calibration", trt.names = c("Treatment", "No Treatment"), main = NULL, ylim = NULL, xlim = NULL, ylab = NULL, xlab=NULL, ...){
+function( x, groups = 10, plot.type = "calibration", trt.names = c("Treatment", "No Treatment"), main = NULL, ylim = NULL, xlim = NULL, ylab = NULL, xlab=NULL){
 
   if(!is.trtsel(x)) stop("x must be an object of class 'trtsel' created by using the function 'trtsel' see ?trtsel for more help")
   if(!is.null(x$model.fit$disc.marker.neg)) stop("Calibration not supported for a discrete marker")
@@ -210,7 +210,10 @@ max.risk <- max(c(fittedrisk.c.t0, fittedrisk.c.t1))
     mylim <- c(cen-ran/2, cen+ran/2)
    }
 #
-
+## to appease check
+  observedRisk <- expectedRisk <- F.risk <- risk <- y <- NULL; 
+  
+  
 if(is.element(plot.type, "calibration")){
   
 
@@ -254,6 +257,7 @@ if(is.element(plot.type, "calibration")){
  #points(log(obs.risk.t1), log(exp.risk.t1), pch = 17)
  
 
+
  
  data <- data.frame("observedRisk" = c(obs.risk.t0, obs.risk.t0),
                     "expectedRisk" = c(exp.risk.t0, exp.risk.t1), 
@@ -262,7 +266,7 @@ if(is.element(plot.type, "calibration")){
    data <- subset(data, expectedRisk >0)
  
  p <- ggplot(data = data, aes(x= observedRisk, y = expectedRisk, shape = factor(trt)))
- p <- p + coord_trans(x = "log", y = "log") +
+ p <- p + coord_trans(xtrans = "log", ytrans = "log") +
    scale_shape_discrete("", labels = trt.names) + 
    ylab(ylab) + xlab(xlab) + ggtitle(main) + theme( text = element_text(size=18)) +
    geom_line(aes(x = observedRisk, y = observedRisk), colour = "grey50", linetype = 2, size = .8 ) + 
@@ -425,7 +429,7 @@ if(is.element(plot.type, c("calibration", "risk.t0", "risk.t1", "treatment effec
  #plot.data=NULL
   p = NULL
 }
-res <- list( "HL.TestStat" = c(trt0 = hl.t0, trt1 = hl.t1), "p.value" = c(trt0 = pval.t0, trt1 = pval.t1), "Df" = c(Df), "plot" = p, "plot.data" = data )
+res <- list( "HL.TestStat" = c(trt0 = hl.t0, trt1 = hl.t1), "p.value" = c(trt0 = pval.t0, trt1 = pval.t1), "Df" = c(Df), "plot" = p)#, "plot.data" = data )
 class(res) = "calibrate.trtsel"
 return( res )
 

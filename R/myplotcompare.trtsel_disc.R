@@ -5,7 +5,7 @@ function(x, bootstraps = 500, alpha = .05,
                            ylab = NULL, 
                            xlim = NULL, 
                            ylim = NULL, 
-                           main = NULL, offset = offset, conf.bands, mar, annotate.plot,  ...)
+                           main = NULL, offset = offset, conf.bands,  annotate.plot)
 {
   ts1 <- x$trtsel1
   ts2 <- x$trtsel2
@@ -79,7 +79,7 @@ function(x, bootstraps = 500, alpha = .05,
  }
   
 
-    ts1.curves <- trteffectPLOTcompare_gg_disc(x1=ts1, x2 = ts2, ci.bounds = myconf.ints, conf.bands = conf.bands, offset = offset, xlab=xlab, ylab = ylab, xlim=xlim, ylim = ylim, main = main,marker.names = marker.names, mar = mar, annotate.plot = annotate.plot, ...) 
+    ts1.curves <- trteffectPLOTcompare_gg_disc(x1=ts1, x2 = ts2, ci.bounds = myconf.ints, conf.bands = conf.bands, offset = offset, xlab=xlab, ylab = ylab, xlim=xlim, ylim = ylim, main = main,marker.names = marker.names,  annotate.plot = annotate.plot) 
   
     p <- ts1.curves[[1]]
 

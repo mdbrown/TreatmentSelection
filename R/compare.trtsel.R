@@ -6,14 +6,16 @@ function(trtsel1, trtsel2, bootstraps = 500, alpha = .05, plot = TRUE,
                            ylab = NULL, 
                            xlim = NULL, 
                            ylim = NULL, 
-                           main = NULL, mar = NULL, annotate.plot = TRUE,  ...){
+                           main = NULL, annotate.plot = TRUE){
 
   # assume paired data here, so each individual has a measurement on y1 and y2. Also I am assuming each data set is ordered the same way. 
 
 
   if(!is.trtsel(trtsel1)) stop("trtsel1 must be an object of class 'trtsel' created by using the function 'trtsel' see ?trtsel for more help")
   if(!is.trtsel(trtsel2)) stop("trtsel2 must be an object of class 'trtsel' created by using the function 'trtsel' see ?trtsel for more help")
- 
+  
+  
+  
   if(alpha<0 | alpha > 1) stop("Error: alpha should be between 0 and 1")
   if(bootstraps ==0 ) cat("bootstrap confidence intervals will not be calculated\n")
   if(bootstraps == 1) {warning("Number of bootstraps must be greater than 1, bootstrap confidence intervals will not be computed"); bootstraps <- 0;}  
@@ -25,7 +27,9 @@ function(trtsel1, trtsel2, bootstraps = 500, alpha = .05, plot = TRUE,
   
   data1 <- trtsel1$derived.data 
   data2 <- trtsel2$derived.data
-
+  
+  if(nrow(data1) != nrow(data2)) stop("trtsel objects must have the same number of observations for comparison")
+  if(!all.equal(data1[,1:2], data2[,1:2])) stop("trt and event data must be identical to compare markers!")
   boot.sample <- trtsel1$functions$boot.sample
   get.summary.measures <- trtsel1$functions$get.summary.measures
   
@@ -144,7 +148,7 @@ result <- list(estimates.marker1   = data.frame(sm.m1),
                            ylab = ylab, 
                            xlim = xlim, 
                            ylim = ylim, 
-                           main = main, offset = offset, conf.bands=conf.bands, mar = mar,  ...)
+                           main = main, offset = offset, conf.bands=conf.bands)
   result$plot <- curves$plot
 
   result$plot.ci.marker1 <- curves$trtsel1$conf.intervals
@@ -156,7 +160,7 @@ result <- list(estimates.marker1   = data.frame(sm.m1),
                                      ylab = ylab, 
                                      xlim = xlim, 
                                      ylim = ylim, 
-                                     main = main, offset = offset, conf.bands=conf.bands, mar = mar, annotate.plot, ...)
+                                     main = main, offset = offset, conf.bands=conf.bands, annotate.plot)
     result$plot <- curves$plot
     result$plot.ci <- curves$ci.bounds
 

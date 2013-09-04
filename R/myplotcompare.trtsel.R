@@ -6,9 +6,9 @@ function(x, bootstraps = 500, alpha = .05,
                            ylab = NULL, 
                            xlim = NULL, 
                            ylim = NULL, 
-                           main = NULL, offset = offset, conf.bands, mar,  ...)
+                           main = NULL, offset = offset, conf.bands)
 {
-  
+
 
   ts1 <- x$trtsel1
   ts2 <- x$trtsel2
@@ -113,7 +113,7 @@ function(x, bootstraps = 500, alpha = .05,
   
 
 
-    ts1.curves <- trteffectPLOTcompare_gg(x1=ts1, x2 = ts2, ci = ci, ci.bounds = rbind(bounds.delta.y1, bounds.delta.y2), get.F = get.F, fixed.values = rbind(fixeddeltas.y1, fixeddeltas.y2+offset), conf.bands = conf.bands, rho=rho, xlab=xlab, ylab = ylab, xlim=xlim, ylim = ylim, main = main, mar = mar,...) 
+    ts1.curves <- trteffectPLOTcompare_gg(x1=ts1, x2 = ts2, ci = ci, ci.bounds = rbind(bounds.delta.y1, bounds.delta.y2), get.F = get.F, fixed.values = rbind(fixeddeltas.y1, fixeddeltas.y2+offset), conf.bands = conf.bands, rho=rho, xlab=xlab, ylab = ylab, xlim=xlim, ylim = ylim, main = main) 
 
     p <- ts1.curves[[1]]
     p <- p + scale_linetype_manual(name = "", breaks = c("1","2", "3", "4"), values = c(1, 2, 3, 4), labels = c(marker.names, "Mean", "Zero"))

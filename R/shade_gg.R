@@ -1,6 +1,8 @@
 shade_gg <-
 function(p, bounds, fixed, type, lty = 1, bands, width=5){
   
+   low <- high <- NULL #appease check
+  
    if(any(dim(bounds)==0) & substr(type,1,1)=="h"){
      
      return(p + coord_flip())

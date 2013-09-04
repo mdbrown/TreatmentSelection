@@ -1,5 +1,5 @@
 predcurvePLOT_gg_disc <-
-function(x, ci, ci.bounds, get.F,  xlab, ylab, xlim, ylim, main, mar,trt.names,...){ 
+function(x, ci, ci.bounds, get.F,  xlab, ylab, xlim, ylim, main, trt.names){ 
 
   
   fittedrisk.t0 <- x$derived.data$fittedrisk.t0
@@ -14,6 +14,9 @@ function(x, ci, ci.bounds, get.F,  xlab, ylab, xlim, ylim, main, mar,trt.names,.
   mydata$upper <- rep(NA, nrow(mydata))
   mval = sort(unique(marker))
    
+  #appease check 
+  risk <- lower <- upper <- NULL
+  
   if(!is.null(ci.bounds)){
     
   

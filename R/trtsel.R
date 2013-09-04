@@ -1,5 +1,5 @@
 trtsel <-
-function(event, trt, marker, data,  thresh=0, study.design = "randomized cohort", cohort.attributes = NULL, marker.bounds = NULL, link = "logit", default.trt = c("trt all") ){
+function(event, trt, marker, data,  thresh=0, study.design = "randomized cohort", cohort.attributes = NULL, marker.bounds = NULL, link = "logit", default.trt = "trt all" ){
   
   if(!is.data.frame(data)){stop('data must be a data.frame')}
   mycomplete <- complete.cases(data); 

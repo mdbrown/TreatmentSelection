@@ -8,7 +8,7 @@ function(x, bootstraps = 500,
             conf.bands = TRUE, 
             conf.bandsN = 100, 
             trt.names = c("Treatment", "    No \nTreatment"), 
-            xlab = NULL, ylab = NULL, xlim = NULL, ylim = NULL, main = NULL, mar = NULL, ...)
+            xlab = NULL, ylab = NULL, xlim = NULL, ylim = NULL, main = NULL, ...)
 
 {
 
@@ -137,7 +137,7 @@ function(x, bootstraps = 500,
 if(is.null(x$model.fit$disc.marker.neg)){
   if(substring(plot.type, 1, 4) == "risk"){
 
-  curves <- tmp.plotfun(x, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, trt.names, xlab, ylab, xlim, ylim, main, offset = offset,mar,  ...)
+  curves <- tmp.plotfun(x, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, trt.names, xlab, ylab, xlim, ylim, main, offset = offset)
 
     if(!is.null(ci.bounds)){
       ci.bounds <- data.frame(t(ci.bounds))
@@ -146,7 +146,7 @@ if(is.null(x$model.fit$disc.marker.neg)){
       }
     }else{
 
-      curves <- tmp.plotfun(x, ci, ci.bounds, get.F, fixed.values, conf.bands, rho, xlab, ylab, xlim, ylim, main, mar = mar,  ...)
+      curves <- tmp.plotfun(x, ci, ci.bounds, get.F, fixed.values, conf.bands, rho, xlab, ylab, xlim, ylim, main)
       if(!is.null(ci.bounds)){
         ci.bounds <- data.frame(t(ci.bounds))
         ci.bounds <- cbind(fixed.values, ci.bounds)
@@ -161,7 +161,7 @@ if(is.null(x$model.fit$disc.marker.neg)){
     curves <- tmp.plotfun(x=x, ci = ci, ci.bounds = ci.bounds, get.F = get.F, 
                           xlab = xlab, ylab=ylab, 
                           xlim = xlim, ylim=ylim, 
-                          main=main, mar=mar, trt.names = trt.names, ...)
+                          main=main, trt.names = trt.names)
 
     if(!is.null(ci.bounds)){
       ci.bounds <- data.frame(curves[[2]])

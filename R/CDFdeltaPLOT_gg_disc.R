@@ -1,5 +1,5 @@
 CDFdeltaPLOT_gg_disc <-
-function(x, ci, ci.bounds, get.F, fixed.values,conf.bands,  rho, xlab, ylab, xlim, ylim, main, mar,  ...){ 
+function(x, ci, ci.bounds, get.F, fixed.values,conf.bands,  rho, xlab, ylab, xlim, ylim, main){ 
 
   
   trt.effect <- x$derived.data$trt.effect
@@ -54,6 +54,8 @@ function(x, ci, ci.bounds, get.F, fixed.values,conf.bands,  rho, xlab, ylab, xli
       index.fix  <- (fixed.values<= max(trt.effect) & fixed.values >= min(trt.effect)) 
     }
     
+    #to appease check
+    lower = NULL; upper = NULL; 
     
     if(substr(ci, 1,1)=="h"){
       

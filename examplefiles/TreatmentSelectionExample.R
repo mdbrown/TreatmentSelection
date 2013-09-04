@@ -161,8 +161,8 @@ mycompare$ci.marker1
 #see ?compare.trtsel for a list of all output values
 
 #no confidence intervals
-compare.trtsel(trtsel1 = trtsel.Y1, trtsel2 = trtsel.Y2,
-                            bootstraps = 50, plot = TRUE, ci = "horizontal")
+tmp <- compare.trtsel(trtsel1 = trtsel.Y1, trtsel2 = trtsel.Y2,
+                            bootstraps = 50, plot = TRUE, ci = "vertical")
 #with confidence bands
 compare.trtsel(trtsel1 = trtsel.Y3, trtsel2 = trtsel.Y2,
                             bootstraps = 50, plot = TRUE, ci = "horizontal", conf.bands = TRUE)
@@ -170,10 +170,10 @@ compare.trtsel(trtsel1 = trtsel.Y3, trtsel2 = trtsel.Y2,
 
 
 
-tsdata$Y3 <- as.numeric(!(tsdata$Y2>-.5)) 
-tsdata$Y4 <- as.numeric(!(tsdata$Y1>mean(tsdata$Y1)))
+tsdata$Y2_disc <- as.numeric(!(tsdata$Y2>0)) 
+tsdata$Y1_disc <- as.numeric(!(tsdata$Y1>mean(tsdata$Y1)))
 
-trtsel.Y3 <- trtsel( event ="event", trt = "trt", marker = "Y3", data = tsdata,
+trtsel.Y3 <- trtsel( event ="event", trt = "trt", marker = "Y3", data = tsdata[1:100,],
                      study.design = "randomized cohort", link = "logit", 
                      default.trt = "trt all")
 
@@ -194,7 +194,7 @@ plot.trtsel(trtsel.Y3, bootstrap = 50, plot.type ="cdf" )
 
 tsdata$Y4 <- round(tsdata$Y2, 1)
 
-trtsel.Y4 <- trtsel( event ="event", trt = "trt", marker = "Y4", data = tsdata[1:25,],
+trtsel.Y4 <- trtsel( event ="event", trt = "trt", marker = "Y2_disc", data = tsdata,
                      study.design = "randomized cohort", link = "logit", 
                      default.trt = "trt all")
 
@@ -231,6 +231,7 @@ trtsel.Y1
 
 tmp <- plot.trtsel(trtsel.Y1, plot.type = "risk", ci = "vertical",
                    bootstraps = 50)
+
 tmp <- plot.trtsel(trtsel.Y1, plot.type = "risk", ci = "horizontal",
                    bootstraps = 50)
 
@@ -252,7 +253,7 @@ tmp <- plot.trtsel(trtsel.Y3, plot.type = "risk", ci = "horizontal",
 
 tmp <- plot.trtsel(trtsel.Y3, plot.type = "treatment effect", ci = "vertical",
                    bootstraps = 50)
-tmp <- plot.trtsel(trtsel.Y3, plot.type = "treatment effect", ci = "horizontal",
+tmp <- plot.trtsel(trtsel.Y4, plot.type = "treatment effect", ci = "horizontal",
                    bootstraps = 50)
 
 
@@ -263,8 +264,9 @@ tmp <- compare.trtsel(trtsel1 = trtsel.Y1, trtsel2 = trtsel.Y2,
 
 tmp <- compare.trtsel(trtsel1 = trtsel.Y3, trtsel2 = trtsel.Y4,
                       bootstraps = 50, plot = TRUE, ci = "vertical", 
-                      conf.bands = FALSE, annotate.plot =TRUE, offset = .05)
+                      conf.bands = TRUE, annotate.plot =TRUE, offset = .05)
 
 
-calibrate.trtsel(trtsel.Y1, plot.type = "risk.t0")
+tmp <- calibrate.trtsel(trtsel.Y1, plot.type = "treatment effect", groups =20)
+
 

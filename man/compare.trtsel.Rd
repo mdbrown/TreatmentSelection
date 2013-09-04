@@ -17,15 +17,15 @@ compare.trtsel(trtsel1, trtsel2, bootstraps = 500,
                                  ci   = "horizontal",
                                  fixed.values =  NULL, 
                                  offset = .01,
-                                 conf.bands = FALSE, 
+                                 conf.bands = TRUE, 
                                  conf.bandsN =100,  
                                  marker.names = c("Marker 1", "Marker 2"), 
                                  xlab = NULL, 
                                  ylab = NULL, 
                                  xlim = NULL, 
                                  ylim = NULL, 
-                                 main = NULL, 
-                                 mar  = NULL, ...)
+                                 main = NULL,
+                                 annotate.plot = TRUE)
 }
 
 \arguments{
@@ -82,16 +82,11 @@ compare.trtsel(trtsel1, trtsel2, bootstraps = 500,
   \item{main}{
    The main title for the plot. Only applies if plot = TRUE.
 }
-
-  \item{mar}{
-   A numerical vector of the form "c(bottom, left, top, right)" which gives the number of lines of margin to be specified on the four sides of the plot.  The default is c(5.1, 4.1, 4.1, 9).  
-}
-  \item{\dots}{
-   other parameters to be passed to "plot."  
+\item{annotate.plot}{
+   Only applies to comparison of two discrete markers. Should the plot be annotated with the marker group percentages? default is TRUE. 
 }
 
 }
-
 
 \value{
   A list with components (see Janes et al. (2013) for a description of the summary measures and estimators):
@@ -106,8 +101,9 @@ compare.trtsel(trtsel1, trtsel2, bootstraps = 500,
   \item{bootstraps}{ bootstraps value provided.}
   
   In addition, if plot = TRUE:
-  \item{plot.marker1}{  which consists of component "curves" -- A dataframe containing the x and y points of the estimated treatment effect curve for marker 1, and component "ci.bounds"--a data.frame containing the bounds of the bootstrap-based confidence intervals, along with the fixed.values they are centered around, where applicable. }
-    \item{plot.marker2}{  which consists of component "curves" -- A dataframe containing the x and y points of the estimated treatment effect curve for marker 2, and component "ci.bounds"--a data.frame containing the bounds of the bootstrap-based confidence intervals, along with the fixed.values they are centered around, where applicable. }
+  \item{plot}{ ggplot object containing the generated plot.}
+  \item{plot.ci.marker1}{  A data.frame containing the bounds of the bootstrap-based confidence intervals for marker1, along with the fixed.values they are centered around, where applicable. }
+    \item{plot.ci.marker2}{  a data.frame containing the bounds of the bootstrap-based confidence intervals for marker 2, along with the fixed.values they are centered around, where applicable. }
     
 
 }
@@ -146,6 +142,15 @@ trtsel.Y2 <- trtsel( event = "event",
                      study.design = "randomized cohort")
 trtsel.Y2
 
+#discrete markers
+trtsel.Y1_disc <- trtsel( event ="event", trt = "trt", marker = "Y1_disc", 
+                          data =  tsdata,
+                          study.design = "randomized cohort")
+                          
+trtsel.Y2_disc <- trtsel( event ="event", trt = "trt", marker = "Y2_disc",
+                          data = tsdata,
+                          study.design = "randomized cohort")
+                          
 
 ###############################
 ## Compare marker performance
@@ -161,5 +166,10 @@ mycompare
 compare.trtsel(trtsel1 = trtsel.Y1, trtsel2 = trtsel.Y2,
                                 bootstraps = 50, plot = TRUE, 
                                 ci = "horizontal",  conf.bands = TRUE)
+                                
+#compare discrete markers, plots are different                  
+compare.trtsel(trtsel1 = trtsel.Y1_disc, trtsel2 = trtsel.Y2_disc, 
+               bootstraps = 50, plot = TRUE)                
+                                
 
 }

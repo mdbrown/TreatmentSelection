@@ -28,7 +28,7 @@ trtsel(event, trt, marker, data, thresh = 0,
   }
 
   \item{marker}{
-  Name of the marker to be evaluated in data.frame "data". This should be a numeric vector of the same length as "event." 
+  Name of the marker to be evaluated in data.frame "data". This should be a numeric vector of the same length as "event." A discrete markers are allowed, coded as a 0,1 numeric vector. 
   }
 \item{data}{
   data.frame object holding event, trt and marker data.   

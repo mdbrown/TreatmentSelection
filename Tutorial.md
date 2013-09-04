@@ -10,14 +10,14 @@ For Windows:
 
 
 ```r
-install.packages(pkgs = "DIRECTORY/TO/PACKAGE/TreatmentSelection_1.2.zip", repos = NULL)
+install.packages(pkgs = "DIRECTORY/TO/PACKAGE/TreatmentSelection_1.3.zip", repos = NULL)
 ```
 
 
 or for Unix:
 
 ```r
-install.packages(pkgs = "DIRECTORY/TO/PACKAGE/TreatmentSelection_1.2.tar.gz", 
+install.packages(pkgs = "DIRECTORY/TO/PACKAGE/TreatmentSelection_1.3.tar.gz", 
     repos = NULL)
 ```
 

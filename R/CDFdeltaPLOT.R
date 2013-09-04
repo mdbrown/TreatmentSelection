@@ -45,11 +45,13 @@ function(x, ci, ci.bounds, get.F, fixed.values,conf.bands,  rho, xlab, ylab, xli
 
   if(substr(ci, 1,1)=="h"){
     index.fix  <- (fixed.values<= max(F.D) & fixed.values >= min(F.D)) 
+    width = 5
   }else{
     index.fix  <- (fixed.values<= max(trt.effect) & fixed.values >= min(trt.effect)) 
+    width = .05
   }
   
-  shade(ci.bounds[,index.fix], fixed.values[index.fix], type = substr(ci, 1, 1), bands = conf.bands)
+  shade(ci.bounds[,index.fix], fixed.values[index.fix], type = substr(ci, 1, 1), bands = conf.bands, width = width)
   }
 
   

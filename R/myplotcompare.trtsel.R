@@ -73,8 +73,9 @@ function(x, bootstraps = 500, alpha = .05,
     if(length(fixeddeltas.y1)==1){
       bounds.delta.y1<- quantile(boot.dat[1,,], probs = c(alpha/2, 1-alpha/2), na.rm = TRUE)
       bounds.delta.y2<- quantile(boot.dat[2,,], probs = c(alpha/2, 1-alpha/2), na.rm = TRUE)
-   
- 
+
+      bounds.delta.y1 = t(t(bounds.delta.y1))
+      bounds.delta.y2 = t(t(bounds.delta.y2))
     }else{
       bounds.delta.y1<- apply(boot.dat[1,,], 1, function(x, ...){quantile(unlist(x), ...)}, probs = c(alpha/2, 1-alpha/2), na.rm = TRUE)
       bounds.delta.y2<- apply(boot.dat[2,,], 1, function(x, ...){quantile(unlist(x), ...)}, probs = c(alpha/2, 1-alpha/2), na.rm = TRUE)

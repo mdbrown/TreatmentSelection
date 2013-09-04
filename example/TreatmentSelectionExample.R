@@ -258,6 +258,31 @@ tmp <- plot.trtsel(trtsel.Y1, plot.type = "treatment effect", ci = "horizontal",
                    bootstraps = 50, conf.bands = FALSE)
 
 
+
+#a single fixed value
+
+tmp <- plot.trtsel(trtsel.Y1, plot.type = "risk", ci = "vertical",
+                   bootstraps = 50, fixed.value = c(50))
+
+tmp <- plot.trtsel(trtsel.Y1, plot.type = "risk", ci = "horizontal",
+                   bootstraps = 50, , fixed.value = c(.50))
+
+tmp <- plot.trtsel(trtsel.Y1, plot.type = "cdf", ci = "vertical",
+                   bootstraps = 50, fixed.value = c(.1))
+tmp <- plot.trtsel(trtsel.Y1, plot.type = "cdf", ci = "horizontal",
+                   bootstraps = 50, fixed.value = c(50))
+
+tmp <- plot.trtsel(trtsel.Y1, plot.type = "treatment effect", ci = "vertical",
+                   bootstraps = 50, fixed.value = c(50))
+tmp <- plot.trtsel(trtsel.Y1, plot.type = "treatment effect", ci = "horizontal",
+                   bootstraps = 50, fixed.value = c(.10))
+
+
+
+
+
+
+
 #cutoff
 tmp <- plot.trtsel(trtsel.Y3, plot.type = "risk", ci = "vertical",
                    bootstraps = 50)

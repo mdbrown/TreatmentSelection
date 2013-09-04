@@ -79,7 +79,7 @@ function(x1, x2, ci.bounds, conf.bands, offset,  xlab, ylab, xlim, ylim, main, m
                  mean(mydata$markerVal[4]==marker2))*100, 1)
     mkrprop = paste("   (", mkrprop, "%)", sep = "")
   if(annotate.plot){
-  p <- p + annotate("text", x= mydata$markerVal+0.1, y = mydata$trt.effect, label= mkrprop)
+  p <- p + annotate("text", x= mydata$markerVal+offset, y = mydata$trt.effect, label= mkrprop)
   }
 
   p <- p + scale_x_continuous(breaks = mkrvals, limits = xlim)

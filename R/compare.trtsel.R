@@ -14,6 +14,7 @@ function(trtsel1, trtsel2, bootstraps = 500, alpha = .05, plot = TRUE,
   if(!is.trtsel(trtsel1)) stop("trtsel1 must be an object of class 'trtsel' created by using the function 'trtsel' see ?trtsel for more help")
   if(!is.trtsel(trtsel2)) stop("trtsel2 must be an object of class 'trtsel' created by using the function 'trtsel' see ?trtsel for more help")
   
+  if(!all(names(trtsel1$derived.data)==names(trtsel2$derived.data))) stop("default.trt is different between markers. Summary measure comparison would not be valid.")
   
   
   if(alpha<0 | alpha > 1) stop("Error: alpha should be between 0 and 1")

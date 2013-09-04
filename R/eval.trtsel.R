@@ -36,6 +36,13 @@ function(x, bootstraps = 1000, alpha = .05){
                                              min(data$marker[data$marker.neg == 1]))
 
 
+  }else if(any(data$marker.pos==1) & any(data$marker.pos==0) &is.null(x$model.fit$disc.marker.neg)){
+    
+    summary.measures$Marker.Thresh <-ifelse( with(data, trt.effect[which.min(marker)]) < 0 , 
+                                             max(data$marker[data$marker.pos == 0]), 
+                                             min(data$marker[data$marker.pos == 0]))
+    
+    
   }else{
   summary.measures$Marker.Thresh <- NA
   }

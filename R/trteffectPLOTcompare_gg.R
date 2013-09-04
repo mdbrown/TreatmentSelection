@@ -81,9 +81,11 @@ function(x1, x2, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, xlab, yla
 
   if(!is.null(ci.bounds)){
  
-  
+
   fixed.values1 <- fixed.values[1,]
   fixed.values2 <- fixed.values[2,]
+  
+  
   if(substr(ci, 1,1)=="v"){
     
     index.fix1  <- (fixed.values1<= max(F.D) & fixed.values1 >= min(F.D)) 

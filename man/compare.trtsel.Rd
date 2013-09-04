@@ -88,6 +88,12 @@ compare.trtsel(trtsel1, trtsel2, bootstraps = 500,
 
 }
 
+\note{
+ Plot output is only produced when comparing a continuous (discrete) marker to a continuous (discrete) marker because confidence bands are calculated differently for continuous vs. discrete markers. See the note under ?plot.trtsel, for a description of the differences between how the bootstrap confidence bands are calculated.  
+
+}
+
+
 \value{
   A list with components (see Janes et al. (2013) for a description of the summary measures and estimators):
   

@@ -7,7 +7,7 @@ function(x, ci, ci.bounds, get.F,  xlab, ylab, xlim, ylim, main, markerTWO=FALSE
   trt <- x$derived.data$trt
   n = length(trt.effect)
   mval = sort(unique(marker))
-
+  lower <- upper <- NULL ## appease check
   mydata = data.frame(trt.effect, marker )
 
   mydata <- unique(mydata)

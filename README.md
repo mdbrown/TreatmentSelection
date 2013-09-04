@@ -20,4 +20,4 @@ devtools::install_github("TreatmentSelection", "mdbrown")
 
 ```
 
-Start with a brief tutorial [here](https://github.com/mdbrown/TreatmentSelection/blob/master/Tutorial.md).
+A brief tutorial is available [here](https://github.com/mdbrown/TreatmentSelection/blob/master/Tutorial.md).

@@ -1,5 +1,5 @@
 September 2 2013
-Tutorial for Rpackage TreatmentSelection 
+Tutorial for R package TreatmentSelection 
 ========================================================
 
 This tutorial uses the Treatment Selection package to analyze the example data provided in the package.

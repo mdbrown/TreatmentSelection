@@ -1,5 +1,5 @@
 September 2 2013
-Treatment Selection Tutorial
+Tutorial for Rpackage TreatmentSelection 
 ========================================================
 
 This tutorial uses the Treatment Selection package to analyze the example data provided in the package.
@@ -17,7 +17,7 @@ devtools::install_github("TreatmentSelection", "mdbrown")
 Alternatively, you could download the package from [here](http://labs.fhcrc.org/janes/) and install the package locally. 
 
 
-Next load the package and look at the example data called `tsdata`. Four markers are included in the data example, a ''weak'' and a ''strong'' marker ($Y1$ and $Y2$ respectively), along with discrete versions of these markers. 
+Next load the package and look at the example data called `tsdata`. Four markers are included in the data example, a ''weak'' and a ''strong'' marker ($Y1$ and $Y2$ respectively), along with corresponding discrete versions. 
 
 
 ```r

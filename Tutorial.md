@@ -4,24 +4,8 @@ Treatment Selection Tutorial
 
 This tutorial uses the Treatment Selection package to analyze the example data provided in the package.
 
-The first step is to download the package from [here](http://labs.fhcrc.org/janes/) and install the package. You only have to do this the first time you use the package. 
 
-For Windows:
-
-
-```r
-install.packages(pkgs = "DIRECTORY/TO/PACKAGE/TreatmentSelection_1.3.zip", repos = NULL)
-```
-
-
-or for Unix:
-
-```r
-install.packages(pkgs = "DIRECTORY/TO/PACKAGE/TreatmentSelection_1.3.tar.gz", 
-    repos = NULL)
-```
-
-Alternatively, you can download and install the package from github using:
+First, you need to download and install the package from github using:
 
 
 ```r
@@ -30,24 +14,15 @@ devtools::install_github("TreatmentSelection", "mdbrown")
 
 ```
 
+Alternatively, you could download the package from [here](http://labs.fhcrc.org/janes/) and install the package locally. 
+
+
 Next load the package and look at the example data called `tsdata`. Four markers are included in the data example, a ''weak'' and a ''strong'' marker ($Y1$ and $Y2$ respectively), along with discrete versions of these markers. 
 
 
 ```r
 library(TreatmentSelection)
-```
 
-```
-## Loading required package: ggplot2
-```
-
-```
-## Loading required package: grid
-```
-
-
-
-```r
 data(tsdata)
 
 tsdata[1:5, ]
@@ -483,10 +458,6 @@ compare.trtsel(trtsel1 = trtsel.Y1_disc, trtsel2 = trtsel.Y2_disc, ci = "vertica
 ## Total Gain: 
 ##                 0.061      |     0.223      |     -0.162         (< 0.02)
 ##             (0.008,0.011)  | (0.160,0.064)  | (-0.232,-0.021)
-```
-
-```r
-
 ```
 
 

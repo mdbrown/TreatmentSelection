@@ -1,0 +1,13 @@
+{
+    "path" : "~/nethome/Holly/TrtSelect/currentCode/TreatmentSelection",
+    "sortOrder" : [
+        {
+            "ascending" : true,
+            "columnIndex" : 2
+        },
+        {
+            "ascending" : false,
+            "columnIndex" : 4
+        }
+    ]
+}

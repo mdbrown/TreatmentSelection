@@ -185,9 +185,9 @@ plot.trtsel(trtsel.Y3, bootstrap = 50, plot.type ="cdf" )
 
 
 
-tsdata$Y4 <- -round(tsdata$Y1, -1)
+tsdata$Y4 <- -round(tsdata$Y1, -1); tsdata$notrt = 1-tsdata$trt
 
-trtsel.Y4 <- trtsel( event ="event", trt = "trt", marker = "Y4", data = tsdata,
+trtsel.Y4 <- trtsel( event ="event", trt = "notrt", marker = "Y4", data = tsdata,
                      study.design = "randomized cohort", link = "logit", 
                      default.trt = "trt all")
 
@@ -195,7 +195,7 @@ trtsel.Y4
 eval.trtsel(trtsel.Y4, bootstrap = 50)
 
 ##problem here
-tmp <- plot(trtsel.Y4, bootstrap = 50, ci = "vertical") 
+tmp <- plot(trtsel.Y4, bootstrap = 50, ci = "vertical", fixed.values = c(50, 75)) 
 #problem here
 plot.trtsel(trtsel.Y4, bootstrap =  50, plot.type="treatment effect", ci = "vertical")
 

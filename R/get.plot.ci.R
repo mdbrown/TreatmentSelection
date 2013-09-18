@@ -56,7 +56,7 @@ function( marker, trt, event, study.design, rho = rho, plot.type, ci, bootstraps
 
   
   # now bootstrap
-
+  #browser()
   boot.data <- replicate(bootstraps, one.boot.plot( event, trt, marker, rho, study.design, obp.boot.sample, obp.get.F, fixed.values, fix.ind, out.ind, link))
   if(substr(myplot, 1,3)=="ris"){ boot.data[is.na(boot.data)] <- 0 }
 

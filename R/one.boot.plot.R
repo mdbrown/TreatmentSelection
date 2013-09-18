@@ -23,7 +23,8 @@ function(event, trt, marker, rho = rho, study.design, obp.boot.sample, obp.get.F
 
   #all 
   all  <- cbind( F.Y, obsrisk.t0.b, obsrisk.t1.b, F.D, obsdelta.b)
-  #browser()
+  all <- unique(all)
+ 
   if(length(fix.ind) > 1){
   myorder <- apply(all[,fix.ind], 2, order)
   
@@ -31,7 +32,7 @@ function(event, trt, marker, rho = rho, study.design, obp.boot.sample, obp.get.F
   
   for( i in 1:length(fix.ind)){
 
-  tmpind <- sum.I(fixed.values, ">=", all[myorder[,i],fix.ind[i]])
+  tmpind <- sum.I(fixed.values, ">=", all[myorder[,i],fix.ind[i]])+1
   tmpind[tmpind==0] <- NA
   tmpall <- all[myorder[,i],out.ind[i]]
   out[i, ] <- tmpall[tmpind]
@@ -43,15 +44,11 @@ function(event, trt, marker, rho = rho, study.design, obp.boot.sample, obp.get.F
   
   out <- numeric( length(fixed.values))
   
-  
-
-  tmpind <- sum.I(fixed.values, ">=", all[myorder,fix.ind])
+  tmpind <- sum.I(fixed.values, ">=", all[myorder,fix.ind]) +1
   tmpind[tmpind==0] <- NA
   tmpall <- all[myorder,out.ind]
   out <- tmpall[tmpind]
   
-  
-
   }
 
   out

@@ -325,7 +325,7 @@ if( is.element(plot.type, "risk.t0")) {
   #points(1:groups/groups - 1/(2*groups), obs.risk.t0)
    
    data = data.frame(F.risk = F.risk.t0(sort(fittedrisk.c.t0)), risk = sort(fittedrisk.c.t0))
-   p <- ggplot(data, aes(x = F.risk, y = risk)) + geom_step( size = 1)
+   p <- ggplot(data, aes(x = F.risk, y = risk)) + geom_step( size = 1, direction="vh")
    
    obsdata <- data.frame(x = (1:groups/groups - 1/(2*groups)), y= obs.risk.t0)
    p <- p + geom_point(data = obsdata, aes(x = x, y = y), size = 4)
@@ -360,7 +360,7 @@ if(is.null(xlab)) xlab <- "% population below risk"
 #  points(1:groups/groups - 1/(2*groups), obs.risk.t1)
 
 data = data.frame(F.risk = F.risk.t1(sort(fittedrisk.c.t1)), risk = sort(fittedrisk.c.t1))
-p <- ggplot(data, aes(x = F.risk, y = risk)) + geom_step( size = 1)
+p <- ggplot(data, aes(x = F.risk, y = risk)) + geom_step( size = 1, direction="vh")
 
 obsdata <- data.frame(x = (1:groups/groups - 1/(2*groups)), y= obs.risk.t1)
 p <- p + geom_point(data = obsdata, aes(x = x, y = y), size = 4)
@@ -405,7 +405,7 @@ if( is.element("treatment effect", plot.type)) {
 #  abline(h = 0, lty = 2, col = "grey")
 
 data = data.frame(F.risk = F.delta(sort(fitteddelta)), risk = sort(fitteddelta))
-p <- ggplot(data, aes(x = F.risk, y = risk)) + geom_step( size = 1)
+p <- ggplot(data, aes(x = F.risk, y = risk)) + geom_step( size = 1, direction="vh")
 
 obsdata <- data.frame(x = (1:groups/groups - 1/(2*groups)), y= obs.delta)
 p <- p + geom_hline(yintercept  = 0, linetype = 2, colour = "grey50", size = .8) +

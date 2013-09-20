@@ -1,8 +1,10 @@
 one.boot.plot.compare <-
-function(event, trt, marker, marker2,
+function(event, trt, marker, marker2, ci,
                                                 fixeddeltas.y1, fixeddeltas.y2,
                                                 rho = rho, study.design, obp.boot.sample, obp.get.F, fix.ind, out.ind, link){
-
+  if(substr(ci, 1,1)=="h") addind = 0 
+  else addind = 1
+  
   myboot.sample <- obp.boot.sample( event, trt, rho)
  
   rho.b <- myboot.sample[1:7]
@@ -50,7 +52,7 @@ coef <- unname(get.coef(event.b, trt.b, marker2.b, study.design, rho.b, link)[,1
   myorder <- order(all[,fix.ind])
   out <- numeric( length(fixed.values))
   
-  tmpind <- sum.I(fixed.values, ">=", all[myorder,fix.ind])
+  tmpind <- sum.I(fixed.values, ">=", all[myorder,fix.ind]) + addind
   tmpind[tmpind==0] <- NA
   tmpall <- all[myorder,out.ind]
   out <- tmpall[tmpind]

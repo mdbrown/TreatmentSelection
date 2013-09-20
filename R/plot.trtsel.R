@@ -51,8 +51,7 @@ function(x, bootstraps = 500,
   }
   #save the current plot parameters
   #old.par <- par(no.readonly = TRUE)
-
-
+ 
 
 #extract the needed data from x, which is our TrtSel object
     
@@ -68,7 +67,7 @@ function(x, bootstraps = 500,
   get.F <- x$functions$get.F
   delta <- x$derived.data$trt.effect   
   
-  
+
  if(is.null(x$model.fit$disc.marker.neg)){
     plot.functions <- list(  predcurvePLOT_gg, trteffectPLOT_gg, CDFdeltaPLOT_gg)
     

@@ -29,8 +29,7 @@ function(x, ci, ci.bounds, get.F, fixed.values,conf.bands,  rho, xlab, ylab, xli
     if(is.null(xlim)) xlim <- mylim
     if(is.null(main)) main <- "Treatment effect distribution"
     p <- ggplot(mydata)     
-    if(substr(ci, 1,1) =="h") p <- p + coord_flip()
-  
+
  # breaks = seq(xlim[1], xlim[2], length.out = 5)
   
   
@@ -50,27 +49,8 @@ function(x, ci, ci.bounds, get.F, fixed.values,conf.bands,  rho, xlab, ylab, xli
   }
   
   
-  
-  if(substr(ci, 1, 1)=="h"){
-    #we used coord_flip, so we switch x and y, otherwise dont
-    p <- p+geom_step(data = mydata, aes(x = F.D, y = trt.effect), direction = "vh", size = 1)
-    
-    #add x/y labels and main
-    
-    p <- p + ylab(xlab) + xlab(ylab) + xlim(ylim[1], ylim[2]) + ggtitle(main) 
-    
-    #add vlines 
-    #tmpdat <- data.frame( value = c(0, mean(event[trt==0])-mean(event[trt==1])), line = c(4, 3))
       
-    #p + scale_linetype_discrete(breaks = c("3", "4"), labels = c("a", "b"))
-    #add the legend, increase text size
-    p <- p + theme( text = element_text(size=18))
-    
-    p <- p + scale_y_continuous( limits = xlim) 
-    
-  }else{
-    
-    p <- p+geom_step(data = mydata, aes(y = F.D, x = trt.effect), direction = "hv", size = 1)
+    p <- p+geom_step(data = mydata, aes(y = F.D, x = trt.effect), direction = "vh", size = 1)
     
     #add x/y labels and main
     p <- p + xlab(xlab) + ylab(ylab) + ylim(ylim[1], ylim[2])+ ggtitle(main) 
@@ -82,7 +62,7 @@ function(x, ci, ci.bounds, get.F, fixed.values,conf.bands,  rho, xlab, ylab, xli
     
     p <- p + scale_x_continuous( limits = xlim)
     
-  }
+  
   
   
   print(p)

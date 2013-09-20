@@ -35,43 +35,14 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, xlab, ylab, xl
    if(is.null(ylim)) ylim <- mylim
    if(is.null(main)) main <- "Treatment effect distribution"
    p <- ggplot()     
-   if(substr(ci, 1,1) =="h"){
-     p <- p + coord_flip()
-     
-     #add x/y labels and main
-     
-     p <- p + ylab(xlab) + xlab(ylab) + xlim(ylim[1], ylim[2]) + ggtitle(main) 
-     
-     #add vlines 
-     #tmpdat <- data.frame( value = c(0, mean(event[trt==0])-mean(event[trt==1])), line = c(4, 3))
-   #  p <- p + stat_vline(xintercept  = mean(trt.effect), aes(linetype = factor(3)))+
-  #     stat_vline(xintercept = 0, aes( linetype = factor(4))) + scale_linetype_manual(name = "Treatment Effect", breaks = c("3", "4"), values = c(3, 4), labels = c("Mean", "Zero"))
-     
-     #p + scale_linetype_discrete(breaks = c("3", "4"), labels = c("a", "b"))
-     #add the legend, increase text size
-     p <- p + theme( text = element_text(size=18))
-     
-     p <- p + scale_y_continuous(limits = xlim) 
-     
-     
-   }else{
-     
+
      #add x/y labels and main
      p <- p + xlab(xlab) + ylab(ylab) + ylim(ylim[1], ylim[2])+ ggtitle(main) 
      
-     #change the names for the legend
-  #   p <- p + stat_hline(yintercept  = mean(trt.effect), aes(linetype = factor(3)))+
-  #     stat_hline(yintercept = 0, aes( linetype = factor(4))) + scale_linetype_manual(name = "Treatment Effect",breaks = c("3", "4"), values = c(3, 4), labels = c("Mean", "Zero"))
-     
      p <- p + theme( text = element_text(size=18)) #, 
      
-     
      p <- p + scale_x_continuous(limits = xlim)
-     
-     
-     
-     
-   }
+   
   }
 
   if(!is.null(ci.bounds)){
@@ -93,18 +64,10 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, xlab, ylab, xl
   
 
 
-  if(substr(ci, 1, 1)=="h"){
-    
-    #we used coord_flip, so we switch x and y, otherwise dont
-    p <- p+geom_step(data = mydata[(1:(n)),], aes(y = F.D, x = trt.effect), size = 1, direction = "hv")
-    p <- p+geom_line(data = mydata[-c(1:(n)),], aes(y = F.D, x = trt.effect, linetype = factor(lty)), size = 0.5)
-    
-  }else{
-    
+ 
     p <- p+geom_step(data =  mydata[(1:(n)),], aes(x = F.D, y = trt.effect), size = 1, direction = "vh")
     p <- p+geom_line(data =  mydata[-c(1:(n)),], aes(x = F.D, y = trt.effect, linetype = factor(lty)), size = 0.5)
     
-  }
 
   p <- p+ scale_linetype_manual(name = "Treatment Effect", breaks = c( "3", "4"), values = c( 3, 4), labels = c("Mean", "Zero"))
   

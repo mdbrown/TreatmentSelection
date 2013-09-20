@@ -65,7 +65,7 @@ function(x, bootstraps = 500, alpha = .05,
    # }
 
 
-    boot.dat <- replicate( bootstraps, one.boot.plot.compare(event, trt, marker1, marker2, 
+    boot.dat <- replicate( bootstraps, one.boot.plot.compare(event, trt, marker1, marker2, ci, 
                                                               fixeddeltas.y1 = fixeddeltas.y1, fixeddeltas.y2 = fixeddeltas.y2,
                                                               rho = rho, study.design = study.design,  obp.boot.sample = boot.sample, obp.get.F = get.F, fix.ind, out.ind, link = link))
     

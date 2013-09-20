@@ -1,7 +1,11 @@
 one.boot.plot <-
-function(event, trt, marker, rho = rho, study.design, obp.boot.sample, obp.get.F, fixed.values, fix.ind, out.ind, link){
+function(event, trt, marker, ci, rho = rho, study.design, obp.boot.sample, obp.get.F, fixed.values, fix.ind, out.ind, link){
 
   myboot.sample <- obp.boot.sample( event, trt, rho)
+  #this makes it work for step function
+  if(substr(ci, 1,1)=="h") addind = 0 
+  else addind = 1
+   
 
   rho.b <- myboot.sample[1:7]
   ind   <- myboot.sample[-c(1:7)]
@@ -24,16 +28,18 @@ function(event, trt, marker, rho = rho, study.design, obp.boot.sample, obp.get.F
   #all 
   all  <- cbind( F.Y, obsrisk.t0.b, obsrisk.t1.b, F.D, obsdelta.b)
   all <- unique(all)
- 
+#  browser()
   if(length(fix.ind) > 1){
   myorder <- apply(all[,fix.ind], 2, order)
   
   out <- matrix(0, ncol = length(fixed.values), nrow = length(fix.ind))
   
   for( i in 1:length(fix.ind)){
-
-  tmpind <- sum.I(fixed.values, ">=", all[myorder[,i],fix.ind[i]])+1
-  tmpind[tmpind==0] <- NA
+    #for decreasing pred curves with horizontal bands
+    if(is.element(fix.ind[i], c(2,3)) & !(all.equal(order(all[,fix.ind[i]]), order(all[,1]))==TRUE)){ addind = 1} 
+    
+  tmpind <- sum.I(fixed.values, ">=", all[myorder[,i],fix.ind[i]])+addind
+  tmpind[tmpind<=0] <- NA
   tmpall <- all[myorder[,i],out.ind[i]]
   out[i, ] <- tmpall[tmpind]
   
@@ -44,7 +50,7 @@ function(event, trt, marker, rho = rho, study.design, obp.boot.sample, obp.get.F
   
   out <- numeric( length(fixed.values))
   
-  tmpind <- sum.I(fixed.values, ">=", all[myorder,fix.ind]) +1
+  tmpind <- sum.I(fixed.values, ">=", all[myorder,fix.ind]) +addind
   tmpind[tmpind==0] <- NA
   tmpall <- all[myorder,out.ind]
   out <- tmpall[tmpind]

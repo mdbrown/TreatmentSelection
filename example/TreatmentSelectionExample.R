@@ -32,7 +32,7 @@ trtsel.Y1$model.fit  #information regarding the model fit
 # "strong" marker
 trtsel.Y2 <- trtsel( event ="event", trt = "trt", marker = "Y2", data = tsdata,
                      study.design = "randomized cohort", link = "logit", 
-                     default.trt = "trt none")
+                     default.trt = "trt all")
 trtsel.Y2
 
 
@@ -155,7 +155,7 @@ mycompare$ci.marker1
 
 #no confidence intervals
 tmp <- compare.trtsel(trtsel1 = trtsel.Y1, trtsel2 = trtsel.Y2,
-                            bootstraps = 50, plot = TRUE, ci = "vertical")
+                            bootstraps = 50, plot = TRUE, ci = "horizontal")
 #with confidence bands
 compare.trtsel(trtsel1 = trtsel.Y3, trtsel2 = trtsel.Y2,
                             bootstraps = 50, plot = TRUE, ci = "horizontal", conf.bands = TRUE)
@@ -185,7 +185,8 @@ plot.trtsel(trtsel.Y3, bootstrap = 50, plot.type ="cdf" )
 
 
 
-tsdata$Y4 <- -round(tsdata$Y1, -1); tsdata$notrt = 1-tsdata$trt
+tsdata$Y4 <- round(tsdata$Y1, -1); tsdata$notrt = 1-tsdata$trt
+tsdata$Y4[tsdata$Y4 < -75] <- -75
 
 trtsel.Y4 <- trtsel( event ="event", trt = "notrt", marker = "Y4", data = tsdata,
                      study.design = "randomized cohort", link = "logit", 
@@ -194,13 +195,18 @@ trtsel.Y4 <- trtsel( event ="event", trt = "notrt", marker = "Y4", data = tsdata
 trtsel.Y4
 eval.trtsel(trtsel.Y4, bootstrap = 50)
 
-##problem here
-tmp <- plot(trtsel.Y4, bootstrap = 50, ci = "vertical", fixed.values = c(50, 75)) 
+tmp <- plot(trtsel.Y4, bootstrap = 50, ci = "horizontal") 
+tmp <- plot(trtsel.Y4, bootstrap = 50, ci = "vertical") 
+
+
 #problem here
 plot.trtsel(trtsel.Y4, bootstrap =  50, plot.type="treatment effect", ci = "vertical")
-
 plot.trtsel(trtsel.Y4, bootstrap =  50, plot.type="treatment effect", ci = "horizontal")
-plot.trtsel(trtsel.Y4, bootstrap =  500, plot.type="cdf", ci = "vertical")
+
+plot.trtsel(trtsel.Y4, bootstrap =  50, plot.type="cdf", ci = "horizontal")
+plot.trtsel(trtsel.Y4, bootstrap =  50, plot.type="cdf", ci = "vertical")
+
+plot(ecdf(trtsel.Y4$derived.data$trt.effect))
 
 #problem here
 plot.trtsel(trtsel.Y4, bootstrap =  50, plot.type="cdf", ci = "horizontal") 
@@ -278,7 +284,7 @@ tmp <- plot.trtsel(trtsel.Y1, plot.type = "risk", ci = "vertical",
                    bootstraps = 50, fixed.value = c(50))
 
 tmp <- plot.trtsel(trtsel.Y1, plot.type = "risk", ci = "horizontal",
-                   bootstraps = 50, , fixed.value = c(.50))
+                   bootstraps = 50,  fixed.value = c(.50))
 
 tmp <- plot.trtsel(trtsel.Y1, plot.type = "cdf", ci = "vertical",
                    bootstraps = 50, fixed.value = c(.1))

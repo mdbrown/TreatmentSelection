@@ -37,29 +37,7 @@ function(x1, x2, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, xlab, yla
    if(is.null(main)) main <- "Treatment effect distribution"
    p <- ggplot(mydata) 
   
-   if(substr(ci, 1,1) =="h"){
-     p <- p + coord_flip()
-     
-     #add x/y labels and main
-     
-     p <- p + ylab(xlab) + xlab(ylab) + xlim(ylim[1], ylim[2]) + ggtitle(main) 
-
-     
-     #p <- p + geom_vline(xintercept  = as.numeric(mean(trt.effect)), aes(linetype = factor(3), size = factor(3)), show.guide = FALSE)+
-    #   geom_vline(xintercept = as.numeric(0), aes( linetype = factor(4), size = factor(4)))
-     
-     #p <- p + geom_vline(xintercept  = as.numeric(mean(trt.effect)), linetype = 3, size = .5, show.guide = FALSE)+
-    #   geom_vline(xintercept = as.numeric(0),  linetype = 4, size = .5)
-     
-     #p + scale_linetype_discrete(breaks = c("3", "4"), labels = c("a", "b"))
-     #add the legend, increase text size
-     p <- p + theme( text = element_text(size=18))
-     
-     p <- p + scale_y_continuous(limits = xlim) 
-     
-     
-   }else{
-     
+       
      #add x/y labels and main
      p <- p + xlab(xlab) + ylab(ylab) + ylim(ylim[1], ylim[2])+ ggtitle(main) 
      
@@ -74,7 +52,7 @@ function(x1, x2, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, xlab, yla
      
      
      
-   }
+   
   
   
 
@@ -104,19 +82,11 @@ function(x1, x2, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, xlab, yla
 
   }
 
-  if(substr(ci, 1, 1)=="h"){
-
-    #we used coord_flip, so we switch x and y, otherwise dont
-    p <- p+geom_step(data = mydata[(1:(2*n)),], aes(y = F.D, x = trt.effect, linetype = factor(lty), size = factor(lty)), direction = "hv")
-    p <- p+geom_line(data = mydata[-c(1:(2*n)),], aes(y = F.D, x = trt.effect, linetype = factor(lty), size = factor(lty)))
-
-  }else{
 
     p <- p+geom_step(data =  mydata[(1:(2*n)),], aes(x = F.D, y = trt.effect, linetype = factor(lty), size = factor(lty)), direction = "vh")
     p <- p+geom_line(data =  mydata[-c(1:(2*n)),], aes(x = F.D, y = trt.effect, linetype = factor(lty), size = factor(lty)))
        
-  }
-  
+
 
   return(list(p=p))
 }

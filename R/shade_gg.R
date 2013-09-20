@@ -3,12 +3,9 @@ function(p, bounds, fixed, type, lty = 1, bands, width=5){
   
    low <- high <- NULL #appease check
   
-   if(any(dim(bounds)==0) & substr(type,1,1)=="h"){
+   if(any(dim(bounds)==0)){
      
-     return(p + coord_flip())
-   }else if(any(dim(bounds)==0)  & substr(type, 1, 1)=="v"){
-     
-     return(p)
+     return(p )
    }
    
    numbounds <- ncol(bounds)
@@ -17,28 +14,34 @@ function(p, bounds, fixed, type, lty = 1, bands, width=5){
       bounds <- matrix(bounds, ncol = 1)
    } 
 
-   mydat <- data.frame(t(bounds), fixed)
-   names(mydat) = c("low", "high", "fixed")
-  
-  
+   mydatERRORBAR <- data.frame(t(bounds), fixed)
+   names(mydatERRORBAR) = c("low", "high", "fixed")
+
+   mydat <- data.frame( c(bounds[1,], rev(bounds[2,])), c(fixed, rev(fixed)))
+   names(mydat) = c("bounds", "fixed")
    if(type == "v"){
      #vertical ci
      
    if(bands == FALSE){
-     p <- p + geom_errorbar(data = mydat, aes(ymin = low, ymax = high, x = fixed), linetype = lty, color = "gray50", size = 1, width = width)
+     p <- p + geom_errorbar(data = mydatERRORBAR, aes(ymin = low, ymax = high, x = fixed), linetype = lty, color = "gray50", size = 1, width = width)
    }else{
-     p <- p + geom_ribbon(data = mydat, alpha =.2, aes(x = fixed, ymin = low, ymax = high))
-
+     #p <- p + geom_ribbon(data = mydat, alpha =.2, aes(x = fixed, ymin = low, ymax = high))
+     p <- p + geom_polygon(data = mydat, alpha = .2, aes(y = bounds, x = fixed))
    }
    }else if(type =="h"){
    if(bands == FALSE){
 
-      p <- p + geom_errorbar(data = mydat, aes(ymin = low, ymax = high, x = fixed), linetype = lty, color = "gray50", size = 1, width = width) + coord_flip()
-     
-   }else{
-      p <- p + geom_ribbon(data = mydat, alpha =.2, aes(x = fixed, ymin = low, ymax = high)) +coord_flip() #+ scale_x_reverse()
-      
+      #p <- p + geom_errorbar(data = mydatERRORBAR, aes(ymin = low, ymax = high, x = fixed), linetype = lty, color = "gray50", size = 1, width = width) 
+      p <- p + geom_segment(data = mydatERRORBAR, aes(y = fixed, yend = fixed, x = low, xend = high), linetype = lty, color = "gray50", size = 1)#, width = width)
+      mydat$y = mydat$fixed-width/2; mydat$yend = mydat$fixed + width/2
+      p <- p + geom_segment(data = mydat, aes(y = y, yend=yend, x = bounds, xend = bounds), linetype = lty, color = "gray50", size = 1)
+
+      }else{
+
+      #p <- p + geom_ribbon(data = mydat, alpha =.2, aes(x = fixed, ymin = low, ymax = high)) #+ scale_x_reverse()
+      p <- p + geom_polygon(data = mydat, alpha = .2, aes(x = bounds, y = fixed))
    }
    }
    return(p)
+   
 }

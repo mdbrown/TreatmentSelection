@@ -10,8 +10,8 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands, rho, trt.names, xlab
   F.Y <- get.F(marker, event, trt, rho = rho)*100
   n = length(fittedrisk.t0)
   mydata <- data.frame(risk = c(fittedrisk.t0, fittedrisk.t1), trt = c(rep(1, n ), rep(0,n)), Fy = rep(F.Y,2))
-  mydata <- mydata[with(mydata, order(Fy)),]
-  
+ # mydata <- mydata[with(mydata, order(risk)),]
+  mydata <- unique(mydata)
   #to appease check 
   Fy <- risk <- NULL
 
@@ -44,9 +44,7 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands, rho, trt.names, xlab
   p <- shade_gg(p, ci.bounds[3:4,index.fix.t1], fixed.values[index.fix.t1] +offset, type = substr(ci, 1, 1), bands = conf.bands, lty = 2, width = width)
 
   }else{
-    
     p <- ggplot(mydata)
-    if(substr(ci, 1,1) =="h") p <- p + coord_flip()
   }
 
   if(is.null(xlab)) xlab <- "% population below marker value"
@@ -56,25 +54,7 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands, rho, trt.names, xlab
   if(is.null(main)) main <- "Risk curves by treatment"
   breaks = seq(xlim[1], xlim[2], length.out = 5)
   
-  if(substr(ci, 1, 1)=="h"){
-    #we used coord_flip, so we switch x and y, otherwise dont
-    p <- p+geom_step(data = mydata, aes(y = Fy, x = risk, linetype = factor(trt)), direction = "hv", size = 1)
-    
-    #add x/y labels and main
-    p <- p + ylab(xlab) + xlab(ylab)  + xlim(ylim[1], ylim[2]) + ggtitle(main) 
-    #change the names for the legend
-    p <- p + scale_linetype_manual(values = c(2, 1), labels = trt.names) +
-      theme(legend.title = element_blank(),  text = element_text(size=18))
-           # legend.text = element_text(size = 16))
-    p <- p + scale_y_continuous(breaks = breaks,limits = xlim) 
-    p <- p + theme(plot.margin = unit(c(1,1,4,1), "lines"))
- 
-    p <- p + annotation_custom(grob = xaxisGrob( at = breaks, label = round(quantile(marker, prob = breaks/100), 1), gp = gpar(col = gray(.55), fontsize=15)), 
-                               ymin = 0, ymax = 1, xmin = ylim[1]-diff(ylim)*.25, xmax = ylim[1]-diff(ylim)*.25)
-    p <- p + annotation_custom(grob = textGrob( label = "marker value", gp = gpar( fontsize=18)), 
-                               ymin = mean(xlim), ymax = mean(xlim), xmin = ylim[1]-diff(ylim)*.4, xmax = ylim[1]-diff(ylim)*.4)
-    
-  }else{
+
 
   p <- p+geom_step(data = mydata, aes(x = Fy, y = risk, linetype = factor(trt)), direction = "vh", size = 1)
 
@@ -93,8 +73,8 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands, rho, trt.names, xlab
   p <- p + annotation_custom(grob = textGrob( label = "marker value", gp = gpar( fontsize=18)), 
                              xmin = mean(xlim), xmax = mean(xlim), ymin = ylim[1]-diff(ylim)*.4, ymax = ylim[1]-diff(ylim)*.4)
   
-  }
-
+  
+  plot.new()
   # Code to override clipping
   gt <- ggplotGrob((p))
   gt$layout$clip[gt$layout$name=="panel"] <- "off"

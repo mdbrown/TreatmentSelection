@@ -64,7 +64,7 @@ function(x, ci, ci.bounds, get.F,  xlab, ylab, xlim, ylim, main, markerTWO=FALSE
     p <- p + stat_hline(yintercept  = mean(trt.effect), aes(linetype = factor(3)))+
       stat_hline(yintercept = 0, aes( linetype = factor(4))) + scale_linetype_manual(name = "Treatment Effect",breaks = c("3", "4"), values = c(3, 4), labels = c("Mean", "Zero"))
     
-    p <- p + theme( text = element_text(size=18)) #, 
+    p <- p + theme( text = element_text(size=14)) #, 
   p <- p + scale_x_discrete(labels = c(paste(mval[1], "\n(", round(mean(marker==mval[1])*100, 1),"%)", sep = ""), 
                                        paste(mval[2], "\n(", round(mean(marker==mval[2])*100, 1),"%)", sep = "")))
   

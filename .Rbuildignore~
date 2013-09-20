@@ -1,8 +1,8 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-examples
-.gitignore
-figure
-*.html
-*.md
-.git\*
+^examples$
+^\.gitignore$
+^figure$
+^*\.html
+^*\.md
+^\.git$

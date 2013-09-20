@@ -84,7 +84,7 @@ function(x, ci, ci.bounds, get.F, fixed.values,conf.bands,  rho, xlab, ylab, xli
       
     #p + scale_linetype_discrete(breaks = c("3", "4"), labels = c("a", "b"))
     #add the legend, increase text size
-    p <- p + theme( text = element_text(size=18))
+    p <- p + theme( text = element_text(size=14))
     
     p <- p + scale_y_continuous( limits = xlim) 
     

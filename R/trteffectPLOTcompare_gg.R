@@ -44,7 +44,7 @@ function(x1, x2, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, xlab, yla
     # p <- p + stat_hline(yintercept  = mean(trt.effect), aes(linetype = factor(3), size = factor(3)), show.guide = FALSE)+
     #   stat_hline(yintercept = 0, aes( linetype = factor(4), size = factor(4)), show.guide = FALSE)
      
-     p <- p + theme( text = element_text(size=18)) #, 
+     p <- p + theme( text = element_text(size=14)) #, 
      
      
      p <- p + scale_x_continuous(limits = xlim)

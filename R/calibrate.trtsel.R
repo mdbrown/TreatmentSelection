@@ -268,7 +268,7 @@ if(is.element(plot.type, "calibration")){
  p <- ggplot(data = data, aes(x= observedRisk, y = expectedRisk, shape = factor(trt)))
  p <- p + coord_trans(xtrans = "log", ytrans = "log") +
    scale_shape_discrete("", labels = trt.names) + 
-   ylab(ylab) + xlab(xlab) + ggtitle(main) + theme( text = element_text(size=18)) +
+   ylab(ylab) + xlab(xlab) + ggtitle(main) + theme( text = element_text(size=14)) +
    geom_line(aes(x = observedRisk, y = observedRisk), colour = "grey50", linetype = 2, size = .8 ) + 
      geom_point(size = 4)
    
@@ -307,7 +307,7 @@ if( is.element(plot.type, "risk.t0")) {
   #layout.show(nf)
    if(is.null(xlab)) xlab <- "% population below risk"
    if(is.null(ylab)) ylab <- "risk"
-   if(is.null(xlim)) xlim <- c(0,1)
+   if(is.null(xlim)) xlim <- c(0,100)
   # if(is.null(ylim)) ylim <- mylim
    if(is.null(main)) main <- "Risk curve for non treated individuals"
 
@@ -324,12 +324,12 @@ if( is.element(plot.type, "risk.t0")) {
 
   #points(1:groups/groups - 1/(2*groups), obs.risk.t0)
    
-   data = data.frame(F.risk = F.risk.t0(sort(fittedrisk.c.t0)), risk = sort(fittedrisk.c.t0))
+   data = data.frame(F.risk = F.risk.t0(sort(fittedrisk.c.t0))*100, risk = sort(fittedrisk.c.t0))
    p <- ggplot(data, aes(x = F.risk, y = risk)) + geom_step( size = 1, direction="vh")
    
-   obsdata <- data.frame(x = (1:groups/groups - 1/(2*groups)), y= obs.risk.t0)
+   obsdata <- data.frame(x = (1:groups/groups - 1/(2*groups))*100, y= obs.risk.t0)
    p <- p + geom_point(data = obsdata, aes(x = x, y = y), size = 4)
-   p <- p + ylab(ylab) + xlab(xlab) + ggtitle(main) + theme( text = element_text(size=18)) 
+   p <- p + ylab(ylab) + xlab(xlab) + ggtitle(main) + theme( text = element_text(size=14)) 
    if(!is.null(xlim)) p <- p + xlim(xlim)
    if(!is.null(ylim)) p <- p + ylim(ylim)
    print(p)
@@ -343,7 +343,7 @@ if(is.element(plot.type, "risk.t1")) {
 
 if(is.null(xlab)) xlab <- "% population below risk"
    if(is.null(ylab)) ylab <- "risk"
-   if(is.null(xlim)) xlim <- c(0,1)
+   if(is.null(xlim)) xlim <- c(0,100)
   #if(is.null(ylim)) ylim <- mylim
    if(is.null(main)) main <- "Risk curve for treated individuals"
 
@@ -359,12 +359,12 @@ if(is.null(xlab)) xlab <- "% population below risk"
  # lines(x.points.t1, fittedrisk.c.t1[rep(order(fittedrisk.c.t1),c(1, rep(2, n.t1-1)))],type = "l", lwd=2)  
 #  points(1:groups/groups - 1/(2*groups), obs.risk.t1)
 
-data = data.frame(F.risk = F.risk.t1(sort(fittedrisk.c.t1)), risk = sort(fittedrisk.c.t1))
+data = data.frame(F.risk = F.risk.t1(sort(fittedrisk.c.t1))*100, risk = sort(fittedrisk.c.t1))
 p <- ggplot(data, aes(x = F.risk, y = risk)) + geom_step( size = 1, direction="vh")
 
-obsdata <- data.frame(x = (1:groups/groups - 1/(2*groups)), y= obs.risk.t1)
+obsdata <- data.frame(x = (1:groups/groups - 1/(2*groups))*100, y= obs.risk.t1)
 p <- p + geom_point(data = obsdata, aes(x = x, y = y), size = 4)
-p <- p + ylab(ylab) + xlab(xlab) + ggtitle(main) + theme( text = element_text(size=18)) 
+p <- p + ylab(ylab) + xlab(xlab) + ggtitle(main) + theme( text = element_text(size=14)) 
 if(!is.null(xlim)) p <- p + xlim(xlim)
 if(!is.null(ylim)) p <- p + ylim(ylim)
 print(p)
@@ -385,7 +385,7 @@ if( is.element("treatment effect", plot.type)) {
 
    if(is.null(xlab)) xlab <- "% population below treatment effect"
    if(is.null(ylab)) ylab <- "treatment effect"
-   if(is.null(xlim)) xlim <- c(0,1)
+   if(is.null(xlim)) xlim <- c(0,100)
   # if(is.null(ylim)) ylim <- mylim
    if(is.null(main)) main <- "Treatment effect distribution"
 
@@ -404,13 +404,13 @@ if( is.element("treatment effect", plot.type)) {
 
 #  abline(h = 0, lty = 2, col = "grey")
 
-data = data.frame(F.risk = F.delta(sort(fitteddelta)), risk = sort(fitteddelta))
+data = data.frame(F.risk = F.delta(sort(fitteddelta))*100, risk = sort(fitteddelta))
 p <- ggplot(data, aes(x = F.risk, y = risk)) + geom_step( size = 1, direction="vh")
 
-obsdata <- data.frame(x = (1:groups/groups - 1/(2*groups)), y= obs.delta)
+obsdata <- data.frame(x = (1:groups/groups - 1/(2*groups))*100, y= obs.delta)
 p <- p + geom_hline(yintercept  = 0, linetype = 2, colour = "grey50", size = .8) +
      geom_point(data = obsdata, aes(x = x, y = y), size = 4)
-p <- p + ylab(ylab) + xlab(xlab) + ggtitle(main) + theme( text = element_text(size=18)) 
+p <- p + ylab(ylab) + xlab(xlab) + ggtitle(main) + theme( text = element_text(size=14)) 
 if(!is.null(xlim)) p <- p + xlim(xlim)
 if(!is.null(ylim)) p <- p + ylim(ylim)
    

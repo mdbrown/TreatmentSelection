@@ -62,15 +62,16 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands, rho, trt.names, xlab
   p <- p + xlab(xlab) + ylab(ylab) + ylim(ylim[1], ylim[2]) + ggtitle(main) 
   #change the names for the legend
   p <- p + scale_linetype_manual(values = c(2, 1), labels = trt.names)+
-    theme(legend.title = element_blank(),  text = element_text(size=18)) #, 
+    theme(legend.title = element_blank(),  text = element_text(size=14), 
+          legend.key.size = unit(1.5, "lines")) #, 
           #legend.text = element_text(size = 16))
   p <- p + scale_x_continuous(breaks = breaks, limits = xlim)
   
   p <- p + theme(plot.margin = unit(c(1,1,4,1), "lines"))
   
-  p <- p + annotation_custom(grob = xaxisGrob( at = breaks, label = round(quantile(marker, prob = breaks/100), 1), gp = gpar(col = gray(.55), fontsize=15)), 
+  p <- p + annotation_custom(grob = xaxisGrob( at = breaks, label = round(quantile(marker, prob = breaks/100), 1), gp = gpar(col = gray(.55), fontsize=11.5)), 
                              xmin = 0, xmax = 1, ymin = ylim[1]-diff(ylim)*.25, ymax = ylim[1]-diff(ylim)*.25)
-  p <- p + annotation_custom(grob = textGrob( label = "marker value", gp = gpar( fontsize=18)), 
+  p <- p + annotation_custom(grob = textGrob( label = "marker value", gp = gpar( fontsize=14)), 
                              xmin = mean(xlim), xmax = mean(xlim), ymin = ylim[1]-diff(ylim)*.4, ymax = ylim[1]-diff(ylim)*.4)
   
   

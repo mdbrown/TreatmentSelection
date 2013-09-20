@@ -70,7 +70,7 @@ function(x1, x2, ci.bounds, conf.bands, offset,  xlab, ylab, xlim, ylim, main, m
 
   #change the names for the legend
 
-  p <- p + theme( text = element_text(size=18)) #, 
+  p <- p + theme( text = element_text(size=14)) #, 
 
   
     mkrprop = round(c( mean(mydata$markerVal[1]==marker1), 

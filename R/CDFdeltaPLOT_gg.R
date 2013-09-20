@@ -57,7 +57,7 @@ function(x, ci, ci.bounds, get.F, fixed.values,conf.bands,  rho, xlab, ylab, xli
     
     #change the names for the legend
       
-    p <- p + theme( text = element_text(size=18)) #, 
+    p <- p + theme( text = element_text(size=14)) #, 
     
     
     p <- p + scale_x_continuous( limits = xlim)

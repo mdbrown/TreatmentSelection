@@ -51,7 +51,7 @@ function(x, ci, ci.bounds, get.F,  xlab, ylab, xlim, ylim, main, trt.names){
   #change the names for the legend
   p <- p + scale_shape_discrete(labels = trt.names) +
     scale_linetype_discrete( labels = trt.names)+
-    theme(legend.title = element_blank(),  text = element_text(size=18))
+    theme(legend.title = element_blank(),  text = element_text(size=14))
   #legend.text = element_text(size = 16))
   p <- p + scale_x_discrete(labels = c(paste(mval[1], "\n(", round(mean(marker==mval[1])*100, 1),"%)", sep = ""), 
                                        paste(mval[2], "\n(", round(mean(marker==mval[2])*100, 1),"%)", sep = "")))

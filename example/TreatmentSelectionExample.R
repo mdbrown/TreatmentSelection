@@ -43,7 +43,8 @@ trtsel.Y2
 # Plot risk curves
 
 tmp <- plot.trtsel(trtsel.Y1, main = "Y1: Oncotype-DX-like marker", plot.type = "risk", ci = "vertical",
-            conf.bands = FALSE, fixed.values = c(20, 50), bootstraps = 50,trt.names=c("chemo.","no chemo."))
+            conf.bands = FALSE, fixed.values = c(20, 50), bootstraps = 50,trt.names=c("chemo.","no chemo."), 
+                   show.marker.axis = TRUE)
 
 tmp <- plot.trtsel(trtsel.Y1, main = "Y1: Oncotype-DX-like marker", plot.type = "risk", ci = "horizontal",
                     bootstraps = 50,trt.names=c("chemo.","no chemo."))

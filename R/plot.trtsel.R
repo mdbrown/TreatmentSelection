@@ -7,8 +7,9 @@ function(x, bootstraps = 500,
             offset = 0.01, 
             conf.bands = TRUE, 
             conf.bandsN = 100, 
-            trt.names = c("Treatment", "    No \nTreatment"), 
-            xlab = NULL, ylab = NULL, xlim = NULL, ylim = NULL, main = NULL, ...)
+            trt.names = c("Treatment", "    No \nTreatment"),
+            xlab = NULL, ylab = NULL, xlim = NULL, ylim = NULL, main = NULL, show.marker.axis = TRUE, 
+            ...)
 
 {
 
@@ -136,7 +137,7 @@ function(x, bootstraps = 500,
 if(is.null(x$model.fit$disc.marker.neg)){
   if(substring(plot.type, 1, 4) == "risk"){
 
-  curves <- tmp.plotfun(x, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, trt.names, xlab, ylab, xlim, ylim, main, offset = offset)
+  curves <- tmp.plotfun(x, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, trt.names, xlab, ylab, xlim, ylim, main, show.marker.axis, offset = offset)
 
     if(!is.null(ci.bounds)){
       ci.bounds <- data.frame(t(ci.bounds))

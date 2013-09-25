@@ -23,7 +23,8 @@ plot risk curves, treatment effect curves or cdf of risk for a trtsel object.
                          ylab = NULL, 
                          xlim = NULL, 
                          ylim = NULL,
-                         main = NULL, ...)
+                         main = NULL,
+                         show.marker.axis = TRUE, ...)
 }
 %- maybe also "usage" for other objects documented here.
 \arguments{
@@ -72,6 +73,9 @@ plot risk curves, treatment effect curves or cdf of risk for a trtsel object.
 }
   \item{main}{
    The main title for the plot. 
+}
+  \item{show.marker.axis}{
+   For risk curve plots with a continuous marker, should an axis showing marker values be displayed? default is TRUE. 
 }
 \item{\dots}{ N/A}
 }

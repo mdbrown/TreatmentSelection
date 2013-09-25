@@ -1,5 +1,5 @@
 predcurvePLOT_gg <-
-function(x, ci, ci.bounds, get.F, fixed.values, conf.bands, rho, trt.names, xlab, ylab, xlim, ylim, main, offset = .01){ 
+function(x, ci, ci.bounds, get.F, fixed.values, conf.bands, rho, trt.names, xlab, ylab, xlim, ylim, main, show.marker.axis, offset = .01){ 
 
 
   fittedrisk.t0 <- x$derived.data$fittedrisk.t0
@@ -66,10 +66,10 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands, rho, trt.names, xlab
           legend.key.size = unit(1.5, "lines")) #, 
           #legend.text = element_text(size = 16))
   p <- p + scale_x_continuous(breaks = breaks, limits = xlim)
-  
+  if(show.marker.axis){
   p <- p + theme(plot.margin = unit(c(1,1,4,1), "lines"))
   
-  p <- p + annotation_custom(grob = xaxisGrob( at = breaks, label = round(quantile(marker, prob = breaks/100), 1), gp = gpar(col = gray(.55), fontsize=11.5)), 
+  p <- p + annotation_custom(grob = xaxisGrob( at = breaks, label = round(quantile(marker, prob = breaks/100), 1), gp = gpar( fontsize=11.5)), #col = gray(.55),
                              xmin = 0, xmax = 1, ymin = ylim[1]-diff(ylim)*.25, ymax = ylim[1]-diff(ylim)*.25)
   p <- p + annotation_custom(grob = textGrob( label = "marker value", gp = gpar( fontsize=14)), 
                              xmin = mean(xlim), xmax = mean(xlim), ymin = ylim[1]-diff(ylim)*.4, ymax = ylim[1]-diff(ylim)*.4)
@@ -80,7 +80,9 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands, rho, trt.names, xlab
   gt <- ggplotGrob((p))
   gt$layout$clip[gt$layout$name=="panel"] <- "off"
   grid.draw(gt)
-  
+  }else{
+    print(p)
+  }
 
   
   list(p=p)

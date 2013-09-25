@@ -268,7 +268,7 @@ if(is.element(plot.type, "calibration")){
  p <- ggplot(data = data, aes(x= observedRisk, y = expectedRisk, shape = factor(trt)))
  p <- p + coord_trans(xtrans = "log", ytrans = "log") +
    scale_shape_discrete("", labels = trt.names) + 
-   ylab(ylab) + xlab(xlab) + ggtitle(main) + theme( text = element_text(size=14)) +
+   ylab(ylab) + xlab(xlab) + ggtitle(main) + theme( text = element_text(size=16)) +
    geom_line(aes(x = observedRisk, y = observedRisk), colour = "grey50", linetype = 2, size = .8 ) + 
      geom_point(size = 4)
    
@@ -329,7 +329,7 @@ if( is.element(plot.type, "risk.t0")) {
    
    obsdata <- data.frame(x = (1:groups/groups - 1/(2*groups))*100, y= obs.risk.t0)
    p <- p + geom_point(data = obsdata, aes(x = x, y = y), size = 4)
-   p <- p + ylab(ylab) + xlab(xlab) + ggtitle(main) + theme( text = element_text(size=14)) 
+   p <- p + ylab(ylab) + xlab(xlab) + ggtitle(main) + theme( text = element_text(size=16)) 
    if(!is.null(xlim)) p <- p + xlim(xlim)
    if(!is.null(ylim)) p <- p + ylim(ylim)
    print(p)
@@ -364,7 +364,7 @@ p <- ggplot(data, aes(x = F.risk, y = risk)) + geom_step( size = 1, direction="v
 
 obsdata <- data.frame(x = (1:groups/groups - 1/(2*groups))*100, y= obs.risk.t1)
 p <- p + geom_point(data = obsdata, aes(x = x, y = y), size = 4)
-p <- p + ylab(ylab) + xlab(xlab) + ggtitle(main) + theme( text = element_text(size=14)) 
+p <- p + ylab(ylab) + xlab(xlab) + ggtitle(main) + theme( text = element_text(size=16)) 
 if(!is.null(xlim)) p <- p + xlim(xlim)
 if(!is.null(ylim)) p <- p + ylim(ylim)
 print(p)
@@ -410,7 +410,7 @@ p <- ggplot(data, aes(x = F.risk, y = risk)) + geom_step( size = 1, direction="v
 obsdata <- data.frame(x = (1:groups/groups - 1/(2*groups))*100, y= obs.delta)
 p <- p + geom_hline(yintercept  = 0, linetype = 2, colour = "grey50", size = .8) +
      geom_point(data = obsdata, aes(x = x, y = y), size = 4)
-p <- p + ylab(ylab) + xlab(xlab) + ggtitle(main) + theme( text = element_text(size=14)) 
+p <- p + ylab(ylab) + xlab(xlab) + ggtitle(main) + theme( text = element_text(size=16)) 
 if(!is.null(xlim)) p <- p + xlim(xlim)
 if(!is.null(ylim)) p <- p + ylim(ylim)
    

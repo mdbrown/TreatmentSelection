@@ -66,7 +66,10 @@ function(x, bootstraps = 500,
   link <- x$model.fit$link
   boot.sample <- x$functions$boot.sample
   get.F <- x$functions$get.F
-  delta <- x$derived.data$trt.effect   
+  delta <- x$derived.data$trt.effect  
+  
+  if(link == "risks_provided") provided_risk <- c(x$derived.data$fittedrisk.t0, x$derived.data$fittedrisk.t1)
+  else provided_risk = NULL
   
 
  if(is.null(x$model.fit$disc.marker.neg)){
@@ -99,7 +102,7 @@ function(x, bootstraps = 500,
     #bootstrapping done by fixing response and strapping marker 
     
     if((conf.bands & bootstraps>1) | (length(fixed.values)>0 & bootstraps > 1)){ 
-      ci.bounds <- get.plot.ci(marker, trt, event, study.design, rho, plot.type, ci, bootstraps, fixed.values =fixed.values, obp.boot.sample = boot.sample, obp.get.F = get.F, link = link, alpha = alpha)
+      ci.bounds <- get.plot.ci(marker, trt, event, study.design, rho, plot.type, ci, bootstraps, fixed.values =fixed.values, obp.boot.sample = boot.sample, obp.get.F = get.F, link = link, alpha = alpha, provided_risk = provided_risk)
     }else{ 
       ci.bounds <- NULL
       conf.bands = FALSE

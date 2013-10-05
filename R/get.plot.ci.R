@@ -1,5 +1,5 @@
 get.plot.ci <-
-function( marker, trt, event, study.design, rho = rho, plot.type, ci, bootstraps, fixed.values, obp.boot.sample, obp.get.F, link, alpha){
+function( marker, trt, event, study.design, rho = rho, plot.type, ci, bootstraps, fixed.values, obp.boot.sample, obp.get.F, link, alpha, provided_risk = NULL){
   ##first we need to look at what is fixed and what needs to vary to get the ci's we want
   ## I am just storing some index variables that make me able to calculate the 
   ## proper ci's later.  
@@ -57,7 +57,7 @@ function( marker, trt, event, study.design, rho = rho, plot.type, ci, bootstraps
   
   # now bootstrap
   #browser()
-  boot.data <- replicate(bootstraps, one.boot.plot( event, trt, marker, ci, rho, study.design, obp.boot.sample, obp.get.F, fixed.values, fix.ind, out.ind, link))
+  boot.data <- replicate(bootstraps, one.boot.plot( event, trt, marker, ci, rho, study.design, obp.boot.sample, obp.get.F, fixed.values, fix.ind, out.ind, link, provided_risk))
 
  # if(substr(myplot, 1,3)=="ris"){ boot.data[is.na(boot.data)] <- 0 }
 

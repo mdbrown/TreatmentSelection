@@ -10,7 +10,13 @@ function(data, rho, study.design, obe.boot.sample, obe.get.summary.measures, lin
 
   x.b <- trtsel.boot( event = data$event[ind], 
                       trt = data$trt[ind], 
-                      marker = data$marker[ind], d = d, study.design = study.design, rho = rho.b, link = link, disc.marker.neg = disc.marker.neg)
+                      marker = data$marker[ind], 
+                      d = d, 
+                      study.design = study.design, 
+                      rho = rho.b, 
+                      link = link, 
+                      disc.marker.neg = disc.marker.neg, 
+                      provided_risk = provided_risk)
  
   if(is.null(data[["marker.neg"]])){
     x.b$derived.data$marker.neg <- 1- x.b$derived.data$marker.neg

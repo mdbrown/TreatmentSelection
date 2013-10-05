@@ -20,9 +20,12 @@ tsdata[1:10, ]
 # Two markers are contained in the data example, a "weak" and "strong" marker
 
 # "Weak" marker
-trtsel.Y1 <- trtsel( event ="event", trt = "trt", marker = "Y1", data = tsdata,
+
+trtsel.Y1 <- 
+  x <- lineprof(tmp <- trtsel( event ="event", trt = "trt", marker = "Y1", data = tsdata,
                      study.design = "randomized cohort", link = "logit", 
-                     default.trt = "trt all")
+                     default.trt = "trt all"))
+shine(x)
 
 trtsel.Y1
 
@@ -171,7 +174,7 @@ trtsel.Y3 <- trtsel( event ="event", trt = "trt", marker = "Y2_disc", data = tsd
                      study.design = "randomized cohort", link = "logit", 
                      default.trt = "trt all")
 
-trtsel.Y4 <- trtsel( event ="event", trt = "trt", marker = "Y4", data = tsdata,
+trtsel.Y4 <- trtsel( event ="event", trt = "trt", marker = "Y1_disc", data = tsdata,
                      study.design = "randomized cohort", link = "logit", 
                      default.trt = "trt all")
 trtsel.Y3

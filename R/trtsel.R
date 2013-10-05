@@ -1,5 +1,5 @@
 trtsel <-
-function(event, trt, marker, data,  thresh=0, study.design = "randomized cohort", cohort.attributes = NULL, marker.bounds = NULL, link = "logit", default.trt = "trt all" ){
+function(event, trt, marker, data, fitted_risk_t0 = NULL, fitted_risk_t1 = NULL, thresh=0, study.design = "randomized cohort", cohort.attributes = NULL, marker.bounds = NULL, link = "logit", default.trt = "trt all" ){
   
   if(!is.data.frame(data)){stop('data must be a data.frame')}
   mycomplete <- complete.cases(data); 
@@ -111,9 +111,16 @@ function(event, trt, marker, data,  thresh=0, study.design = "randomized cohort"
   # derived.data
 
   #now that we allow for different link functions for "randomized cohorts", we need to get the fitted risks directly from the model
-  
+
+  if(link == "risks_provided"){
+    
+    fittedrisk.t0 <- fitted_risk_t0
+    fittedrisk.t0 <- fitted_risk_t1
+    
+  }else{
     fittedrisk.t0 <- get.risk.t0(coef, marker, linkinvfun)
     fittedrisk.t1 <- get.risk.t1(coef, marker, linkinvfun)
+  }
   
 
   trt.effect <- fittedrisk.t0 - fittedrisk.t1

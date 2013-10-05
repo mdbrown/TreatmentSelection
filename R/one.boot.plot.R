@@ -1,5 +1,5 @@
 one.boot.plot <-
-function(event, trt, marker, ci, rho = rho, study.design, obp.boot.sample, obp.get.F, fixed.values, fix.ind, out.ind, link){
+function(event, trt, marker, ci, rho = rho, study.design, obp.boot.sample, obp.get.F, fixed.values, fix.ind, out.ind, link, provided_risk = NULL){
 
   myboot.sample <- obp.boot.sample( event, trt, rho)
   #this makes it work for step function
@@ -13,13 +13,20 @@ function(event, trt, marker, ci, rho = rho, study.design, obp.boot.sample, obp.g
   event.b  <- event[ind]
   trt.b  <- trt[ind]
   marker.b  <- marker[ind] 
+  
 
   coef <- unname(get.coef(event.b, trt.b, marker.b, study.design, rho.b, link = link)[,1])
 
   linkinvfun <- binomial(link = link)$linkinv
+  
+  if(link == "risks_provided"){
+    obsrisk.t0.b <- provided_risk[ind,1]
+    obsrisk.t1.b <- provided_risk[ind,2]
+  }else{
   obsrisk.t0.b  <-  get.risk.t0(coef,  marker.b, linkinvfun)
   obsrisk.t1.b  <-  get.risk.t1(coef,  marker.b, linkinvfun)
-
+  }
+  
   obsdelta.b <-obsrisk.t0.b - obsrisk.t1.b#
 
   F.Y <- obp.get.F( marker.b,        event.b, trt.b, rho.b)*100#

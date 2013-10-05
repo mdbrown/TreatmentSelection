@@ -1,5 +1,8 @@
 get.coef <-
 function(event,trt,marker, study.design, rho, link, ...){  
+  if(link == "risks_provide"){
+    return(NULL)
+  }else{
   myglm<- glm(event~trt+ marker+trt*marker,  family=binomial(link = link))
   #myglm <- glm.fit(cbind(1, trt, marker, trt*marker), event, family=binomial(link = link))
   mycoef <- myglm$coefficients
@@ -18,5 +21,7 @@ function(event,trt,marker, study.design, rho, link, ...){
  # browser()
   coefficients <- summary(myglm)$coefficients
   coefficients[,1] <- mycoef
-  coefficients 
+  
+  }
+  return(coefficients)
 }

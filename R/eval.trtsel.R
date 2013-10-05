@@ -16,11 +16,23 @@ function(x, bootstraps = 1000, alpha = .05){
   test.Null.val <- test.Null(x, alpha = alpha)
   
   link <- x$model.fit$link
+  
+  if(link == "risks_provided") provided_risk <- c(x$derived.data$fittedrisk.t0, x$derived.data$fittedrisk.t1)
+  else provided_risk = NULL
+  
 
   if(bootstraps > 1){
   #get bootstrap data
 
-  boot.data <- replicate(bootstraps, one.boot.eval(data = data, rho = rho, d = x$model.fit$thresh, study.design = study.design, obe.boot.sample = boot.sample, obe.get.summary.measures = get.summary.measures, link = link, disc.marker.neg = x$model.fit$disc.marker.neg))
+  boot.data <- replicate(bootstraps, one.boot.eval(data = data, 
+                                                   rho = rho, 
+                                                   d = x$model.fit$thresh, 
+                                                   study.design = study.design, 
+                                                   obe.boot.sample = boot.sample, 
+                                                   obe.get.summary.measures = get.summary.measures, 
+                                                   link = link, 
+                                                   disc.marker.neg = x$model.fit$disc.marker.neg, 
+                                                   provided_risk = provided_risk))
  
   ## 1. Test the null hypothesis of Theta = 0   
 

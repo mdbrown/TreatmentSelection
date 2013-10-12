@@ -4,9 +4,19 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands, rho, trt.names, xlab
 
   fittedrisk.t0 <- x$derived.data$fittedrisk.t0
   fittedrisk.t1 <- x$derived.data$fittedrisk.t1
-  marker <- x$derived.data$marker
+  
+  if(any(names(x$derived.data)=="marker")){
+    marker <- x$derived.data$marker
+    if(is.null(xlab)) xlab <- "% population below marker value"
+    if(is.null(ylab)) ylab <- "risk given marker"
+  }else{
+    marker <- x$derived.data$trt.effect #if risks are provided, there is no marker so we use trt.effect
+    if(is.null(xlab)) xlab <- "% population below treatment effect"
+    if(is.null(ylab)) ylab <- "risk given treatment effect"
+  }
   event <- x$derived.data$event
   trt <- x$derived.data$trt
+
   F.Y <- get.F(marker, event, trt, rho = rho)*100
   n = length(fittedrisk.t0)
   mydata <- data.frame(risk = c(fittedrisk.t0, fittedrisk.t1), trt = c(rep(1, n ), rep(0,n)), Fy = rep(F.Y,2))
@@ -47,8 +57,7 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands, rho, trt.names, xlab
     p <- ggplot(mydata)
   }
 
-  if(is.null(xlab)) xlab <- "% population below marker value"
-  if(is.null(ylab)) ylab <- "risk given marker"
+
   if(is.null(xlim)) xlim <- c(0,100)
   if(is.null(ylim)) ylim <- c(0,1)
   if(is.null(main)) main <- "Risk curves by treatment"

@@ -2,9 +2,17 @@ print.eval.trtsel <-
 function(x, ...){
   
 #if we fail to reject the null hypothesis, display a warning
-  test.Null.warning(x$test.Null$reject, x$test.Null$a1a3.pval)
   alpha <- x$test.Null$alpha
+  
+  if(is.na(x$test.Null$reject)){
+    #fitted risks provided...no testing done
+    
+  }else{
+    
+  
+  test.Null.warning(x$test.Null$reject, x$test.Null$a1a3.pval)
 
+  
   cat("\n\n")
   cat("  Hypothesis test:\n")
   cat(" ------------------\n")
@@ -24,6 +32,7 @@ function(x, ...){
   cat(" P value = "); cat(x$test.Null$a1a3.pval);
   cat("\n")
 
+  }
   }
 cat("\n")
  

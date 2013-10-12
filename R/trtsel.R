@@ -1,8 +1,10 @@
 trtsel <-
-function(event, trt, marker, data, fitted_risk_t0 = NULL, fitted_risk_t1 = NULL, thresh=0, study.design = "randomized cohort", cohort.attributes = NULL, marker.bounds = NULL, link = "logit", default.trt = "trt all" ){
-  
+function(event, trt, marker = NULL, data, fitted_risk_t0 = NULL, fitted_risk_t1 = NULL, thresh=0, study.design = "randomized cohort", cohort.attributes = NULL, marker.bounds = NULL, link = "logit", default.trt = "trt all" ){
+
   if(!is.data.frame(data)){stop('data must be a data.frame')}
-  mycomplete <- complete.cases(data); 
+  
+  tmpnames <- c(event, trt, marker, fitted_risk_t0, fitted_risk_t1)
+  mycomplete <- complete.cases(data[,tmpnames]); 
   
   #check for missing data and throw it out, print a warning
   if(nrow(data)!=sum(mycomplete)){
@@ -86,6 +88,14 @@ function(event, trt, marker, data, fitted_risk_t0 = NULL, fitted_risk_t1 = NULL,
   }
   else { stop("study.design not specified correctly, must be one of ''randomized cohort'', ''nested case-control'', or ''stratified nested case-control''") }
 
+  if(!is.null(fitted_risk_t0))
+    {
+    if(!is.null(marker)) warning("fitted risks provided: marker data will be ignored")
+    marker <- NULL
+    link <- "risks_provided"
+    
+    }
+  
   functions <- list("boot.sample" = boot.sample, "get.F" = get.F, "get.summary.measures" = get.summary.measures)
 
   rho = cohort.attributes
@@ -100,14 +110,17 @@ function(event, trt, marker, data, fitted_risk_t0 = NULL, fitted_risk_t1 = NULL,
   
   event = data[[event]]
   trt = data[[trt]]
-  marker = data[[marker]]
+  if(!is.null(marker)) marker = data[[marker]]
+  if(!is.null(fitted_risk_t0)) fitted_risk_t0 = data[[fitted_risk_t0]]
+  if(!is.null(fitted_risk_t1)) fitted_risk_t1 = data[[fitted_risk_t1]]
   
   # model.fit
   
   coef <- get.coef( event, trt, marker, study.design, rho, link)
 
   model.fit <- list( "coefficients" = coef, "cohort.attributes" = rho, "study.design" = study.design, "marker.bounds" = marker.bounds, "link" = link, "thresh" = d)
-  linkinvfun <- binomial(link = link)$linkinv
+  
+  
   # derived.data
 
   #now that we allow for different link functions for "randomized cohorts", we need to get the fitted risks directly from the model
@@ -115,11 +128,13 @@ function(event, trt, marker, data, fitted_risk_t0 = NULL, fitted_risk_t1 = NULL,
   if(link == "risks_provided"){
     
     fittedrisk.t0 <- fitted_risk_t0
-    fittedrisk.t0 <- fitted_risk_t1
-    
+    fittedrisk.t1 <- fitted_risk_t1
+    linkinvfun <- NULL
   }else{
+    linkinvfun <- binomial(link = link)$linkinv
     fittedrisk.t0 <- get.risk.t0(coef, marker, linkinvfun)
     fittedrisk.t1 <- get.risk.t1(coef, marker, linkinvfun)
+    
   }
   
 
@@ -142,23 +157,46 @@ function(event, trt, marker, data, fitted_risk_t0 = NULL, fitted_risk_t1 = NULL,
     marker.neg <- ifelse( trt.effect < d, 1, 0) # indicator of being marker negative
   }
 
-  if(default.trt =="trt all"){
-    derived.data <- data.frame( trt = trt, event = event, marker = marker, 
+  
+  ## if we dont use marker; we use fitted risks
+  if(is.null(marker))
+  {
+    if(default.trt =="trt all"){
+      derived.data <- data.frame( trt = trt, event = event, 
+                                  fittedrisk.t0 = fittedrisk.t0, 
+                                  fittedrisk.t1 = fittedrisk.t1,
+                                  trt.effect = trt.effect,
+                                  marker.neg = marker.neg)
+      
+    }else{
+      marker.pos <- 1-marker.neg # indicator of being marker negative
+      derived.data <- data.frame( trt = trt, event = event,  
+                                  fittedrisk.t0 = fittedrisk.t0, 
+                                  fittedrisk.t1 = fittedrisk.t1,
+                                  trt.effect = trt.effect,
+                                  marker.pos = marker.pos)
+      
+    }
+    
+  }else # if we do use marker
+  {
+     if(default.trt =="trt all"){
+       derived.data <- data.frame( trt = trt, event = event, marker = marker, 
                                      fittedrisk.t0 = fittedrisk.t0, 
                                      fittedrisk.t1 = fittedrisk.t1,
                                      trt.effect = trt.effect,
                                      marker.neg = marker.neg)
 
-  }else{
-    marker.pos <- 1-marker.neg # indicator of being marker negative
-    derived.data <- data.frame( trt = trt, event = event, marker = marker, 
+     }else{
+       marker.pos <- 1-marker.neg # indicator of being marker negative
+       derived.data <- data.frame( trt = trt, event = event, marker = marker, 
                                 fittedrisk.t0 = fittedrisk.t0, 
                                 fittedrisk.t1 = fittedrisk.t1,
                                 trt.effect = trt.effect,
                                 marker.pos = marker.pos)
     
+     }
   }
-
   out <- list(derived.data=derived.data, model.fit = model.fit, functions  = functions)
   class(out) = "trtsel"
   

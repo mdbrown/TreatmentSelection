@@ -19,10 +19,19 @@ function( marker, trt, event, study.design, rho = rho, plot.type, ci, bootstraps
         if(substr(myci, 1, 4) =="hori") {
            ## predcurve plot with horizontal ci bands
            fix.ind = 2:3    #fix risk_trt
-           out.ind = c(1,1) #output F.marker  
+          if(is.null(provided_risk)){ 
+            out.ind = c(1,1) #output F.marker 
+          }else{
+            out.ind = c(4,4) #output F.delta
+          }
+                          
         }else if(substr(myci, 1, 4) =="vert"){
            ## predcurve plot with vertical ci bands
-           fix.ind = c(1,1) #fix F.marker
+          if(is.null(provided_risk)){ 
+            fix.ind = c(1,1) #fix F.marker 
+          }else{
+            fix.ind = c(4,4) #fix F.delta
+          }
            out.ind = 2:3      #output risk_trt
         }
         n <- length(fixed.values)

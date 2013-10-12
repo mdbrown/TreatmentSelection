@@ -1,6 +1,6 @@
 get.coef <-
 function(event,trt,marker, study.design, rho, link, ...){  
-  if(link == "risks_provide"){
+  if(link == "risks_provided"){
     return(NULL)
   }else{
   myglm<- glm(event~trt+ marker+trt*marker,  family=binomial(link = link))

@@ -6,15 +6,19 @@ function(event, trt, marker, d=0, rho = NULL, study.design, link, disc.marker.ne
   coef <- get.coef( event, trt, marker, study.design, rho, link) #glm object
   
   model.fit <- list( "coefficients" = coef,  "cohort.attributes" = rho, "study.design" = study.design, "link" = link)
-  linkinvfun <- binomial(link = link)$linkinv
-  
+
   # derived.data
   if(link == "risks_provided"){
     fittedrisk.t0 <- provided_risk[,1]
-    fittedrisk.t0 <- provided_risk[,2]
+    fittedrisk.t1 <- provided_risk[,2]
+    linkinvfun <-NULL
+    
   }else{
+    linkinvfun <- binomial(link = link)$linkinv
   fittedrisk.t0 <- get.risk.t0(coef, marker, linkinvfun)
   fittedrisk.t1 <- get.risk.t1(coef, marker, linkinvfun)
+  
+  
   }
   
   

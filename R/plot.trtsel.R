@@ -12,7 +12,7 @@ function(x, bootstraps = 500,
             ...)
 
 {
-
+  
   if(!is.trtsel(x)) stop("x must be an object of class 'trtsel' created by using the function 'trtsel' see ?trtsel for more help")
  
   if(!is.element(plot.type, c("risk", "treatment effect", "cdf"))){ 
@@ -68,7 +68,11 @@ function(x, bootstraps = 500,
   get.F <- x$functions$get.F
   delta <- x$derived.data$trt.effect  
   
-  if(link == "risks_provided") provided_risk <- c(x$derived.data$fittedrisk.t0, x$derived.data$fittedrisk.t1)
+  if(link == "risks_provided") 
+    {
+    provided_risk <- cbind(x$derived.data$fittedrisk.t0, x$derived.data$fittedrisk.t1)
+    show.marker.axis = FALSE
+  }
   else provided_risk = NULL
   
 

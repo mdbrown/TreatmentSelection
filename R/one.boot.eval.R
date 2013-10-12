@@ -1,5 +1,5 @@
 one.boot.eval <-
-function(data, rho, study.design, obe.boot.sample, obe.get.summary.measures, link, d, disc.marker.neg = NULL){
+function(data, rho, study.design, obe.boot.sample, obe.get.summary.measures, link, d, disc.marker.neg = NULL, provided_risk = NULL){
 
   
 
@@ -16,7 +16,7 @@ function(data, rho, study.design, obe.boot.sample, obe.get.summary.measures, lin
                       rho = rho.b, 
                       link = link, 
                       disc.marker.neg = disc.marker.neg, 
-                      provided_risk = provided_risk)
+                      provided_risk = provided_risk[ind,])
  
   if(is.null(data[["marker.neg"]])){
     x.b$derived.data$marker.neg <- 1- x.b$derived.data$marker.neg
@@ -39,6 +39,7 @@ function(data, rho, study.design, obe.boot.sample, obe.get.summary.measures, lin
 
 
   #c(a3.b = a3.b, a1.b = a1.b, unlist(sm.b))
+  if(is.null(coefs)) coefs <- rep(0, 4)
    c(unlist(coefs), unlist(sm.b))#, thresh.b)
 
 }

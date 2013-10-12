@@ -17,8 +17,9 @@ function(event, trt, marker, ci, rho = rho, study.design, obp.boot.sample, obp.g
 
   coef <- unname(get.coef(event.b, trt.b, marker.b, study.design, rho.b, link = link)[,1])
 
-  linkinvfun <- binomial(link = link)$linkinv
-  
+  if(is.null(provided_risk)) linkinvfun <- binomial(link = link)$linkinv
+  else linkinvfun <- NULL
+
   if(link == "risks_provided"){
     obsrisk.t0.b <- provided_risk[ind,1]
     obsrisk.t1.b <- provided_risk[ind,2]

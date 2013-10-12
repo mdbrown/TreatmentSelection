@@ -33,7 +33,9 @@ function( trtsel, alpha){
  #   }
 
  #  }
-  p.val <- trtsel$model.fit$coefficients[4,4]
+
+  if(is.null(trtsel$model.fit$coefficients)) p.val <- NA
+  else p.val <- trtsel$model.fit$coefficients[4,4]
   reject <- p.val <= alpha
   z.value <- trtsel$model.fit$coefficients[4,3] 
 

@@ -1,7 +1,7 @@
 one.boot.compare <-
 function(data1, data2, rho, study.design, obe.boot.sample, obe.get.summary.measures, link, d, disc.marker.neg = NULL){
 
-  
+  browser()
   myboot.sample <- obe.boot.sample( data1$event, data1$trt, rho)
 
   rho.b <- myboot.sample[1:7]

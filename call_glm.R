@@ -53,7 +53,7 @@ plot.trtsel(trtsel.fitted.1, bootstraps = 50, plot.type = "cdf",
 #eval
 
 #works!
-tmp <- eval.trtsel(trtsel.fitted, bootstraps = 50)
+tmp <- eval.trtsel(trtsel.fitted.1, bootstraps = 50)
 
 #calibrate should already work
 
@@ -62,7 +62,7 @@ calibrate.trtsel(trtsel.fitted, plot.type="treatment effect")
 
 #now for compare.... it should break if we are comparing two different bootstrap approaches. 
 
-
+compare.trtsel(trtsel.fitted, trtsel.fitted.1, bootstraps = 100, plot = FALSE)
 
 
 

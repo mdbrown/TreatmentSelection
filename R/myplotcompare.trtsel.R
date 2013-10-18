@@ -63,11 +63,21 @@ function(x, bootstraps = 500, alpha = .05,
     #fixeddeltas.y1 <- fixed.values
     #fixeddeltas.y2 <- fixed.values
    # }
-
+    if(link == "risks_provided"){
+      
+      provided_risk <- cbind(fittedrisk.t0.y1, 
+                         fittedrisk.t1.y1, 
+                         fittedrisk.t0.y2,
+                         fittedrisk.t1.y2)
+    }else{
+      
+      provided_risk = NULL
+    }
 
     boot.dat <- replicate( bootstraps, one.boot.plot.compare(event, trt, marker1, marker2, ci, 
                                                               fixeddeltas.y1 = fixeddeltas.y1, fixeddeltas.y2 = fixeddeltas.y2,
-                                                              rho = rho, study.design = study.design,  obp.boot.sample = boot.sample, obp.get.F = get.F, fix.ind, out.ind, link = link))
+                                                              rho = rho, study.design = study.design,  obp.boot.sample = boot.sample, obp.get.F = get.F, fix.ind, out.ind, link = link, 
+                                                             provided_risk = provided_risk))
     
 
     if(length(fixeddeltas.y1)==1){
@@ -93,7 +103,7 @@ function(x, bootstraps = 500, alpha = .05,
     #set up the ylimit of the treatment effect plot
     if(is.null(ylim)){
 
-    if(substr(ci, 1,1)=="v"){
+    if(substr(ci, 1,1) %in% c("v", "V")){
     min.delta <- min(c(delta.y1, delta.y2, bounds.delta.y1, bounds.delta.y2), na.rm=TRUE)
     max.delta <- max(c(delta.y1, delta.y2, bounds.delta.y1, bounds.delta.y2), na.rm=TRUE)
 

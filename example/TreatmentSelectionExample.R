@@ -333,7 +333,7 @@ tmp <- plot.trtsel(trtsel.Y3, plot.type = "treatment effect", ci = "horizontal",
 
 
 
-tmp <- compare.trtsel(trtsel1 = trtsel.Y1, trtsel2 = trtsel.Y2,
+tmp <- compare.trtsel(trtsel1 = trtsel.Y2, trtsel2 = trtsel.Y1,
                bootstraps = 50, plot = TRUE, ci = "horizontal", conf.bands = TRUE, 
                       fixed.values = c(-0.5, .1))
 

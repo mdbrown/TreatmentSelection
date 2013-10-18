@@ -92,9 +92,9 @@ function(x, ...){
   
   
   cat("\n          ")
-  cat(paste(" ",sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.marker1[1,1]), 3), round(unname(x$ci.marker1[2,1]), 3)), 
-            sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.marker2[1,1]), 3), round(unname(x$ci.marker2[2,1]), 3)), 
-            sprintf(" (%.3f,%.3f) ", round(unname(x$ci.diff[1,1]), 3),round(unname(x$ci.diff[2,1]), 3)), sep = ""))
+  cat(paste(" ",sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.marker1[1,2]), 3), round(unname(x$ci.marker1[2,2]), 3)), 
+            sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.marker2[1,2]), 3), round(unname(x$ci.marker2[2,2]), 3)), 
+            sprintf(" (%.3f,%.3f) ", round(unname(x$ci.diff[1,2]), 3),round(unname(x$ci.diff[2,2]), 3)), sep = ""))
   
   cat("\n")
   cat("\n")
@@ -112,9 +112,9 @@ function(x, ...){
 
                  
   cat("\n          ")
-  cat(paste(" ",sprintf(" (%.3f,%.3f) |", round(unname(x$ci.marker1[1,3]), 3), round(unname(x$ci.marker1[2,2]), 3)), 
-                sprintf(" (%.3f,%.3f) |", round(unname(x$ci.marker2[1,3]), 3), round(unname(x$ci.marker2[2,2]), 3)), 
-                sprintf(" (%.3f,%.3f) ", round(unname(x$ci.diff[1,3]), 3),round(unname(x$ci.diff[2,2]), 3)), sep = ""))
+  cat(paste(" ",sprintf(" (%.3f,%.3f) |", round(unname(x$ci.marker1[1,3]), 3), round(unname(x$ci.marker1[2,3]), 3)), 
+                sprintf(" (%.3f,%.3f) |", round(unname(x$ci.marker2[1,3]), 3), round(unname(x$ci.marker2[2,3]), 3)), 
+                sprintf(" (%.3f,%.3f) ", round(unname(x$ci.diff[1,3]), 3),round(unname(x$ci.diff[2,3]), 3)), sep = ""))
   tmp.pval <- x$p.values[4]
   if(is.element(tmp.pval, 0)) tmp.pval <- paste("<", 1/bootN)
   
@@ -128,9 +128,9 @@ function(x, ...){
 
                  
   cat("\n          ")
-  cat(paste(" ",sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.marker1[1,4]), 3), round(unname(x$ci.marker1[2,3]), 3)), 
-                sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.marker2[1,4]), 3), round(unname(x$ci.marker2[2,3]), 3)), 
-                sprintf(" (%.3f,%.3f) ", round(unname(x$ci.diff[1,4]), 3),round(unname(x$ci.diff[2,3]), 3)), sep = ""))
+  cat(paste(" ",sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.marker1[1,4]), 3), round(unname(x$ci.marker1[2,4]), 3)), 
+                sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.marker2[1,4]), 3), round(unname(x$ci.marker2[2,4]), 3)), 
+                sprintf(" (%.3f,%.3f) ", round(unname(x$ci.diff[1,4]), 3),round(unname(x$ci.diff[2,4]), 3)), sep = ""))
 
   cat("\n")
   cat("\n")
@@ -149,9 +149,9 @@ function(x, ...){
 
                  
   cat("\n          ")
-  cat(paste(" ",sprintf(" (%.3f,%.3f) |", round(unname(x$ci.marker1[1,5]), 3), round(unname(x$ci.marker1[2,4]), 3)), 
-                sprintf(" (%.3f,%.3f) |", round(unname(x$ci.marker2[1,5]), 3), round(unname(x$ci.marker2[2,4]), 3)), 
-                sprintf(" (%.3f,%.3f) ", round(unname(x$ci.diff[1,5]), 3),round(unname(x$ci.diff[2,4]), 3)), sep = ""))
+  cat(paste(" ",sprintf(" (%.3f,%.3f) |", round(unname(x$ci.marker1[1,5]), 3), round(unname(x$ci.marker1[2,5]), 3)), 
+                sprintf(" (%.3f,%.3f) |", round(unname(x$ci.marker2[1,5]), 3), round(unname(x$ci.marker2[2,5]), 3)), 
+                sprintf(" (%.3f,%.3f) ", round(unname(x$ci.diff[1,5]), 3),round(unname(x$ci.diff[2,5]), 3)), sep = ""))
    tmp.pval <- x$p.values[6]
   if(is.element(tmp.pval, 0)) tmp.pval <- paste("<", 1/bootN)
   
@@ -165,9 +165,9 @@ function(x, ...){
 
                  
   cat("\n          ")
-  cat(paste(" ",sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.marker1[1,6]), 3), round(unname(x$ci.marker1[2,5]), 3)), 
-                sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.marker2[1,6]), 3), round(unname(x$ci.marker2[2,5]), 3)), 
-                sprintf(" (%.3f,%.3f) ", round(unname(x$ci.diff[1,6]), 3),round(unname(x$ci.diff[2,5]), 3)), sep = ""))
+  cat(paste(" ",sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.marker1[1,6]), 3), round(unname(x$ci.marker1[2,6]), 3)), 
+                sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.marker2[1,6]), 3), round(unname(x$ci.marker2[2,6]), 3)), 
+                sprintf(" (%.3f,%.3f) ", round(unname(x$ci.diff[1,6]), 3),round(unname(x$ci.diff[2,6]), 3)), sep = ""))
 
   cat("\n\n\n")
   tmp.pval <- x$p.values[9]
@@ -180,9 +180,9 @@ function(x, ...){
                  sprintf("     %.3f    ", round(x$estimates.diff$Var.Delta,  3)), 
                  "     (", tmp.pval,")", sep=""))  
   cat("\n          ")
-  cat(paste(" ",sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.marker1[1,9]), 3), round(unname(x$ci.marker1[2,8]), 3)), 
-                sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.marker2[1,9]), 3), round(unname(x$ci.marker2[2,8]), 3)), 
-                sprintf(" (%.3f,%.3f) ", round(unname(x$ci.diff[1,9]), 3),round(unname(x$ci.diff[2,8]), 3)), sep = ""))
+  cat(paste(" ",sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.marker1[1,9]), 3), round(unname(x$ci.marker1[2,9]), 3)), 
+                sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.marker2[1,9]), 3), round(unname(x$ci.marker2[2,9]), 3)), 
+                sprintf(" (%.3f,%.3f) ", round(unname(x$ci.diff[1,9]), 3),round(unname(x$ci.diff[2,9]), 3)), sep = ""))
 
   cat("\n\n")
 
@@ -196,9 +196,9 @@ function(x, ...){
                  sprintf("     %.3f    ", round(x$estimates.diff$TG,  3)), 
                  "     (", tmp.pval,")", sep=""))  
   cat("\n          ")
-  cat(paste(" ",sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.marker1[1,10]), 3), round(unname(x$ci.marker1[2,9]), 3)), 
-                sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.marker2[1,10]), 3), round(unname(x$ci.marker2[2,9]), 3)), 
-                sprintf(" (%.3f,%.3f) ", round(unname(x$ci.diff[1,10]), 3),round(unname(x$ci.diff[2,9]), 3)), sep = ""))
+  cat(paste(" ",sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.marker1[1,10]), 3), round(unname(x$ci.marker1[2,10]), 3)), 
+                sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.marker2[1,10]), 3), round(unname(x$ci.marker2[2,10]), 3)), 
+                sprintf(" (%.3f,%.3f) ", round(unname(x$ci.diff[1,10]), 3),round(unname(x$ci.diff[2,10]), 3)), sep = ""))
 
   cat("\n\n")  
 }

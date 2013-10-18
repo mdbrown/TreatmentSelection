@@ -41,7 +41,7 @@ function(trtsel1, trtsel2, bootstraps = 500, alpha = .05, plot = TRUE,
   if(bootstraps > 1){
   #get bootstrap data
   boot.data <- replicate(bootstraps, one.boot.compare(data1 = data1, data2 = data2, rho = rho, study.design = study.design, obe.boot.sample = boot.sample, obe.get.summary.measures = get.summary.measures, link = link, d = trtsel1$model.fit$thresh, disc.marker.neg = trtsel1$model.fit$disc.marker.neg))
-
+  
   boot.data1 <- boot.data[c(1:4, 9:18),]
   boot.data2 <- boot.data[c(5:8, 25:34),]
 
@@ -78,7 +78,7 @@ function(trtsel1, trtsel2, bootstraps = 500, alpha = .05, plot = TRUE,
    }else{
 
      reject.all <- unname( mapply( cover, 
-                                   quantile(tmp.boot.data, potential.pvals/2, , type = 1, na.rm = TRUE),
+                                   quantile(tmp.boot.data, potential.pvals/2, type = 1, na.rm = TRUE),
                                    quantile(tmp.boot.data, 1 - potential.pvals/2, type = 1, na.rm = TRUE), 
                                    rep(0, bootstraps))  )
      reject.all <- c(reject.all, FALSE)
@@ -93,7 +93,7 @@ function(trtsel1, trtsel2, bootstraps = 500, alpha = .05, plot = TRUE,
   row.names(p.vals) <- c("p.values")
   row.names(ci.m1) <- c("lower", "upper")
   row.names(ci.m2) <- c("lower", "upper")
-
+  row.names(ci.diff) <- c("lower", "upper")
   result <- list(estimates.marker1   = data.frame(sm.m1),
                  estimates.marker2   = data.frame(sm.m2), 
                  estimates.diff = data.frame(sm.diff), 
@@ -127,6 +127,8 @@ result <- list(estimates.marker1   = data.frame(sm.m1),
   
 
   if(plot & is.null(trtsel1$model.fit$disc.marker.neg)){ 
+    if(!is.element(ci, c("vertical", "horizontal"))) stop("If plotting, ci must be one of `vertical` or `horizontal`")
+    
   if(length(fixed.values>0)) conf.bands = FALSE 
   if(conf.bands){
     

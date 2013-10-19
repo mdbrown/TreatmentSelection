@@ -9,7 +9,10 @@ Creates an object of class "trtsel" given a data.frame containing marker, treatm
 
 }
 \usage{
-trtsel(event, trt, marker, data, thresh = 0, 
+trtsel(event, trt, marker, data,
+                             fittedrisk.t0 = NULL, 
+                             fittedrisk.t1 = NULL,
+                             thresh = 0, 
                              study.design = "randomized cohort",
                              cohort.attributes = NULL, 
                              marker.bounds =NULL,
@@ -32,6 +35,15 @@ trtsel(event, trt, marker, data, thresh = 0,
   }
 \item{data}{
   data.frame object holding event, trt and marker data.   
+  }
+  
+  \item{fittedrisk.t0}{
+  Instead of providing a marker, fitted risks for T=0 and T=1 may be provided. This should be the column name of the fitted risk for T=0 that can be found in 'data'. If fitted risks are provided, a logistic model will not be fit, and all bootstrap confidence intervals will be conditional on the model fit provided. 
+  
+  
+  }
+  
+  \item{fittedrisk.t1}{ Name of for the fitted risks given treatment = 1. 
   }
 
   \item{thresh}{

@@ -82,6 +82,7 @@ plot.trtsel(trtsel.fitted.2, bootstraps = 50, plot.type = "cdf",
 #works!
 tmp <- eval.trtsel(trtsel.fitted.1, bootstraps = 50)
 
+
 #calibrate should already work
 
 calibrate.trtsel(trtsel.fitted)

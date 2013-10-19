@@ -4,7 +4,7 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands, rho, trt.names, xlab
 
   fittedrisk.t0 <- x$derived.data$fittedrisk.t0
   fittedrisk.t1 <- x$derived.data$fittedrisk.t1
-  
+ # browser()
   if(any(names(x$derived.data)=="marker")){
     marker <- x$derived.data$marker
     if(is.null(xlab)) xlab <- "% population below marker value"
@@ -20,9 +20,9 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands, rho, trt.names, xlab
   F.Y <- get.F(marker, event, trt, rho = rho)*100
   n = length(fittedrisk.t0)
   mydata <- data.frame(risk = c(fittedrisk.t0, fittedrisk.t1), trt = c(rep(1, n ), rep(0,n)), Fy = rep(F.Y,2))
- # mydata <- mydata[with(mydata, order(risk)),]
-  mydata <- unique(mydata)
-  #to appease check 
+  #mydata <- mydata[with(mydata, order(risk)),]
+  mydata <- mydata[!duplicated(mydata),]
+#to appease check 
   Fy <- risk <- NULL
 
   #legend(x=xlim[2]+diff(xlim)/15, y = quantile(ylim, prob = .75), legend = trt.names, lty = c(2, 1),lwd=c(2,2), bty="n", cex = 1, xpd = TRUE)

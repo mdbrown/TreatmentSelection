@@ -14,7 +14,7 @@ devtools::install_github("TreatmentSelection", "mdbrown")
 
 ```
 
-Alternatively, you could download the package from [here](http://labs.fhcrc.org/janes/) and install the package locally. 
+Alternatively, you could download the package from [here](http://mdbrown.github.io/TreatmentSelection/) and install the package locally. 
 
 
 Next load the package and look at the example data called `tsdata`. Four markers are included in the data example, a ''weak'' and a ''strong'' marker ($Y1$ and $Y2$ respectively), along with corresponding discrete versions. 
@@ -133,7 +133,7 @@ Plot risk curves:
 ```r
 tmp <- plot.trtsel(trtsel.Y1, main = "Y1: Oncotype-DX-like marker", plot.type = "risk", 
     ci = "horizontal", conf.bands = TRUE, bootstraps = 50, trt.names = c("chemo.", 
-        "no chemo."))
+        "no chemo."), show.marker.axis = FALSE)
 ```
 
 ![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11.png) 
@@ -463,3 +463,37 @@ compare.trtsel(trtsel1 = trtsel.Y1_disc, trtsel2 = trtsel.Y2_disc, ci = "vertica
 
 See `?compare.trtsel` for a list of all output values.
 
+Including fitted risks 
+----------------------------
+Alternative to including a marker and fitting a logistic model, the user can specify fitted risks for trt = 0 and trt = 1. In this case, no model fitting will be implemented and all bootstrap confidence intervals will be conditional on the model fit provided. 
+
+```{r}
+
+#calculate model fit
+mymod <- glm(event~trt*Y2, data= tsdata, family = binomial("logit"))
+
+tsdata$fitted.t0 <- predict(mymod, newdata=data.frame(trt = 0, Y2 = tsdata$Y2), type = "response")
+tsdata$fitted.t1 <- predict(mymod, newdata=data.frame(trt = 1, Y2 = tsdata$Y2), type = "response")
+
+
+myfitted.trtsel <- trtsel( event ="event", trt = "trt",  
+                         data = tsdata,
+                         fitted_risk_t0 = "fitted.t0",
+                         fitted_risk_t1 = "fitted.t1",
+                         study.design = "randomized cohort", 
+                         default.trt = "trt all")
+```
+
+We can now use this `trtsel` object just as before, but confidence intervals will be smaller because we do not account for the variation due to model fitting. 
+
+```r
+plot.trtsel(myfitted.trtsel, bootstraps = 50, plot.type = "risk",
+            ci = "horizontal", show.marker.axis = FALSE)
+```
+
+
+
+
+References
+------------------------
+Janes H, Brown MD, Pepe MS, Huang Y. Statistical methods for evaluating and comparing biomarkers for patient treatment selection. *International Journal of Biostatistics* (under review).

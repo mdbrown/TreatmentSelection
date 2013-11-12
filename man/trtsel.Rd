@@ -31,7 +31,7 @@ trtsel(event, trt, marker, data,
   }
 
   \item{marker}{
-  Name of the marker to be evaluated in data.frame "data". This should be a numeric vector of the same length as "event." Binary markers are allowed, and should be coded as a 0,1 numeric vector. 
+  Name of the marker to be evaluated in data.frame "data". Continuous or Binary markers are allowed. Binary markers should be coded as a 0,1 numeric vector. 
   }
 \item{data}{
   data.frame object holding event, trt and marker data.   

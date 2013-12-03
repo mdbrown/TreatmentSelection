@@ -1,4 +1,5 @@
-September 2 2013
+Last updated December 2013
+
 Tutorial for R package TreatmentSelection 
 ========================================================
 
@@ -15,13 +16,13 @@ devtools::install_github("TreatmentSelection", "mdbrown")
 
 Alternatively, you could download the package from [here](http://mdbrown.github.io/TreatmentSelection/) and install the package locally. 
 
-
-Next load the package and look at the example data called `tsdata`. Four markers are included in the data example, a ''weak'' and a ''strong'' marker ($Y1$ and $Y2$ respectively), along with a weak/strong discrete markers. 
-
-
 ```{r}
 library(TreatmentSelection)
+```
 
+First, load the data called `tsdata`. Four markers are included in the data example, a ''weak'' and a ''strong'' marker ($Y1$ and $Y2$ respectively), along with a weak/strong discrete markers. 
+
+```{r}
 data(tsdata)
 
 tsdata[1:5, ]
@@ -125,7 +126,7 @@ plot.trtsel(trtsel.Y2_disc,
 
 Evaluate marker performance
 ----------------------------------
-
+Calculate summary measures of marker performance along with bootstrap confidence intervals.
 
 ```{r}
 tmp <- eval.trtsel(trtsel.Y1, bootstraps = 50)

@@ -1,4 +1,5 @@
-September 2 2013
+Last updated December 2013
+
 Tutorial for R package TreatmentSelection 
 ========================================================
 
@@ -12,15 +13,10 @@ First, you need to download and install the package from github using:
 ```r
 if (!require("devtools")) install.packages("devtools")
 devtools::install_github("TreatmentSelection", "mdbrown")
-
 ```
 
 
 Alternatively, you could download the package from [here](http://mdbrown.github.io/TreatmentSelection/) and install the package locally. 
-
-
-Next load the package and look at the example data called `tsdata`. Four markers are included in the data example, a ''weak'' and a ''strong'' marker ($Y1$ and $Y2$ respectively), along with a weak/strong discrete markers. 
-
 
 
 ```r
@@ -35,20 +31,23 @@ library(TreatmentSelection)
 ## Loading required package: grid
 ```
 
-```r
 
+First, load the data called `tsdata`. Four markers are included in the data example, a ''weak'' and a ''strong'' marker ($Y1$ and $Y2$ respectively), along with a weak/strong discrete markers. 
+
+
+```r
 data(tsdata)
 
 tsdata[1:5, ]
 ```
 
 ```
-##     trt event    Y1      Y2 Y1_disc Y2_disc
-## 510   0     1 19.74 -0.2010       1       1
-## 945   0     0 24.40  0.1095       1       0
-## 476   1     0 20.30  1.2715       1       0
-## 600   1     0 16.41 -0.7615       1       1
-## 697   1     1 54.03 -1.8690       0       1
+##   trt event     Y1      Y2 Y1_disc Y2_disc
+## 1   1     1 39.912 -0.8535       0       1
+## 2   1     0  6.682  0.2905       1       0
+## 3   1     0  6.582  0.0800       1       0
+## 4   0     0  1.358  1.1925       1       0
+## 5   0     0  7.682 -0.2070       1       1
 ```
 
 
@@ -76,87 +75,33 @@ trtsel.Y1
 ##  Link function: logit 
 ## 
 ##  Coefficients: 
-##              Estimate Std. Error z value  Pr(>|z|)
-## (Intercept) -2.417536    0.45705 -5.2894 1.227e-07
-## trt          0.143513    0.63295  0.2267 8.206e-01
-## marker       0.041652    0.01194  3.4872 4.881e-04
-## trt:marker  -0.002608    0.01645 -0.1586 8.740e-01
+##             Estimate Std. Error z value  Pr(>|z|)
+## (Intercept) -2.51814   0.235643 -10.686 1.180e-26
+## trt          0.48939   0.311763   1.570 1.165e-01
+## marker       0.04760   0.006454   7.376 1.636e-13
+## trt:marker  -0.02319   0.008324  -2.786 5.340e-03
 ## 
 ## 
 ## Derived Data: (first ten rows)
 ## 
 ##    trt event marker fittedrisk.t0 fittedrisk.t1 trt.effect marker.neg
-## 1    0     1 19.742        0.1686        0.1819 -0.0132972          1
-## 2    0     0 24.402        0.1976        0.2106 -0.0129702          1
-## 3    1     0 20.302        0.1719        0.1852 -0.0132786          1
-## 4    1     0 16.412        0.1501        0.1634 -0.0133030          1
-## 5    1     1 54.032        0.4583        0.4590 -0.0006385          1
-## 6    1     0  6.582        0.1050        0.1174 -0.0124743          1
-## 7    0     0 28.472        0.2259        0.2382 -0.0123378          1
-## 8    1     1 60.072        0.5211        0.5178  0.0032908          0
-## 9    1     0 23.322        0.1906        0.2037 -0.0130819          1
-## 10   1     0 44.362        0.3613        0.3677 -0.0064385          1
+## 1    1     1 39.912       0.35017        0.2584   0.091792          0
+## 2    1     0  6.682       0.09974        0.1340  -0.034304          1
+## 3    1     0  6.582       0.09932        0.1338  -0.034447          1
+## 4    0     0  1.358       0.07918        0.1197  -0.040482          1
+## 5    0     0  7.682       0.10410        0.1369  -0.032806          1
+## 6    0     0 41.172       0.36393        0.2643   0.099621          0
+## 7    1     0 19.492       0.16934        0.1747  -0.005325          1
+## 8    1     1 20.822       0.17843        0.1794  -0.000962          1
+## 9    0     0  6.962       0.10095        0.1348  -0.033896          1
+## 10   0     0  2.502       0.08325        0.1226  -0.039393          1
 ```
 
 
 
-As we see above, the object contains information about the study design, model fit, fitted risks given treatment, and estimated treatment effect for each individual. To access information regarding the model fit (i.e. model coefficients), type:
-
-
-
-```r
-trtsel.Y1$model.fit
-```
-
-```
-## $coefficients
-##              Estimate Std. Error z value  Pr(>|z|)
-## (Intercept) -2.417536    0.45705 -5.2894 1.227e-07
-## trt          0.143513    0.63295  0.2267 8.206e-01
-## marker       0.041652    0.01194  3.4872 4.881e-04
-## trt:marker  -0.002608    0.01645 -0.1586 8.740e-01
-## 
-## $cohort.attributes
-## NULL
-## 
-## $study.design
-## [1] "randomized cohort"
-## 
-## $marker.bounds
-## NULL
-## 
-## $link
-## [1] "logit"
-## 
-## $thresh
-## [1] 0
-```
-
-
-
-and to access the data derived from modelling (`derived.data`):
-
-
-
-```r
-Y1derived.data <- trtsel.Y1$derived.data
-
-head(Y1derived.data)
-```
-
-```
-##   trt event marker fittedrisk.t0 fittedrisk.t1 trt.effect marker.neg
-## 1   0     1 19.742        0.1686        0.1819 -0.0132972          1
-## 2   0     0 24.402        0.1976        0.2106 -0.0129702          1
-## 3   1     0 20.302        0.1719        0.1852 -0.0132786          1
-## 4   1     0 16.412        0.1501        0.1634 -0.0133030          1
-## 5   1     1 54.032        0.4583        0.4590 -0.0006385          1
-## 6   1     0  6.582        0.1050        0.1174 -0.0124743          1
-```
-
+As we see above, the object contains information about the study design, model fit, fitted risks given treatment, and estimated treatment effect for each individual. 
 
 Now create a `trtsel` object using a discrete marker. 
-
 
 
 ```r
@@ -175,14 +120,18 @@ Use the plot function
 Plot risk curves:
 
 
-
 ```r
-plot.trtsel(trtsel.Y1, main = "Y1: Oncotype-DX-like marker", plot.type = "risk", 
-    ci = "horizontal", conf.bands = TRUE, bootstraps = 100, trt.names = c("chemo.", 
-        "no chemo."), show.marker.axis = FALSE)
+plot.trtsel(trtsel.Y1, 
+            main = "Y1: Oncotype-DX-like marker", 
+            plot.type = "risk", 
+            ci = "horizontal", 
+            conf.bands = TRUE, 
+            bootstraps = 50,       #more bootstraps should be run than this in practice!
+            trt.names = c("chemo.", "no chemo."), 
+            show.marker.axis = FALSE)
 ```
 
-![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7.png) 
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6.png) 
 
 
 
@@ -192,11 +141,11 @@ For a binary marker, we calculate vertical confidence bands:
 
 ```r
 tmp <- plot.trtsel(trtsel.Y2_disc, main = "Discrete version of Y2", plot.type = "risk", 
-    ci = "vertical", conf.bands = TRUE, offset = 0.01, bootstraps = 100, trt.names = c("chemo.", 
+    ci = "vertical", conf.bands = TRUE, offset = 0.01, bootstraps = 50, trt.names = c("chemo.", 
         "no chemo."))
 ```
 
-![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8.png) 
+![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7.png) 
 
 
 
@@ -209,11 +158,11 @@ tmp$ci.bounds
 ```
 
 ```
-##      risk trt marker   lower  upper
-## 1 0.23636   0      1 0.14154 0.3855
-## 2 0.25000   0      0 0.15093 0.3590
-## 3 0.09091   1      0 0.02996 0.1533
-## 4 0.44615   1      1 0.32836 0.5672
+##      risk trt marker   lower   upper
+## 1 0.35985   1      1 0.30952 0.41277
+## 2 0.06198   1      0 0.04132 0.09143
+## 4 0.32061   0      0 0.26256 0.36805
+## 5 0.17241   0      1 0.11846 0.22220
 ```
 
 
@@ -224,24 +173,24 @@ We can also plot the distribution of treatment effects.
 
 ```r
 plot.trtsel(trtsel.Y1, plot.type = "treatment effect", ci = "horizontal", conf.bands = TRUE, 
-    bootstraps = 100)
+    bootstraps = 50)
 ```
 
-![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10.png) 
+![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9.png) 
 
 
 
 ```r
 plot.trtsel(trtsel.Y2_disc, plot.type = "treatment effect", conf.bands = TRUE, 
-    bootstraps = 100)
+    bootstraps = 50)
 ```
 
-![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11.png) 
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10.png) 
 
 
 Evaluate marker performance
 ----------------------------------
-
+Calculate summary measures of marker performance along with bootstrap confidence intervals.
 
 
 ```r
@@ -251,62 +200,47 @@ tmp
 
 ```
 ## 
-##   ##############################################
-##   ###                WARNING!                ###
-##   ##############################################
-## 
-##   ### Not enough evidence to reject the      ###
-##   ### hypothesis test of:                    ###
-##   ###                                        ###
-##   ### H_0 : No marker-by-treatment           ###
-##   ###              interaction               ###
-##   ###                                        ###
-##   ### Inference for Theta may be unreliable! ###
-## 
-##   ##############################################
-## 
-## 
 ## 
 ##   Hypothesis test:
 ##  ------------------
 ##   H0: No marker-by-treatment interaction
-##                                        P value = 0.874
-##                                        Z statistic = -0.159
+##                                        P value = 0.00534
+##                                        Z statistic = -2.786
 ## 
 ##   Summary Measure Estimates (with 95% confidence intervals) 
 ##  -----------------------------------------------------------
 ##   Decrease in event rate under marker-based treatment (Theta)
-##     Empirical:    0.033 (-0.048,0.148) 
-##     Model Based:  0.01 (0,0.109) 
+##     Empirical:    0.013 (-0.003,0.045) 
+##     Model Based:  0.01 (0,0.04) 
 ## 
 ##   Proportion marker negative:
-##    0.9 (0,0.998) 
+##    0.461 (0,0.654) 
 ##   Proportion marker positive:
-##    0.1 (0.002,1) 
+##    0.539 (0.346,1) 
 ## 
 ##   Average benefit of no treatment among marker-negatives (B.neg)
-##     Empirical:    0.036 (-0.499,0.189) 
-##     Model Based:  0.011 (0,0.153) 
+##     Empirical:    0.029 (-0.018,0.076) 
+##     Model Based:  0.023 (0,0.066) 
 ## 
 ##   Average benefit of treatment among marker-positives (B.pos)
-##     Empirical:    0.156 (-0.047,0.354) 
-##     Model Based:  0.006 (0.001,0.146) 
+##     Empirical:    0.089 (0.021,0.149) 
+##     Model Based:  0.098 (0.049,0.16) 
 ## 
 ## 
 ##   Variance in estimated treatment effect: 
-##     0 (0,0.018) 
+##     0.007 (0.001,0.02) 
 ##   Total Gain: 
-##     0.014 (0.013,0.106) 
+##     0.066 (0.023,0.108) 
 ## 
-##   Marker positivity threshold:  54.74
+##   Marker positivity threshold:  21.08
 ## 
 ##   Event Rates:
 ##  --------------------
 ##              Treat all       Treat None    Marker-based Treatment
-##  Empirical:     0.244           0.267          0.234    
-##             (0.166,0.311)   (0.184,0.359)   (0.139,0.305) 
-##  Model Based:   0.251           0.261          0.251    
-##             (0.178,0.311)   (0.183,0.344)   (0.160,0.275)
+##  Empirical:     0.251           0.217          0.204    
+##             (0.221,0.276)   (0.179,0.258)   (0.159,0.242) 
+##  Model Based:   0.257           0.214          0.204    
+##             (0.224,0.286)   (0.174,0.252)   (0.166,0.232)
 ```
 
 
@@ -318,11 +252,11 @@ tmp$estimates
 
 ```
 ##   p.neg p.pos B.neg.emp B.neg.mod B.pos.emp B.pos.mod Theta.emp Theta.mod
-## 1   0.9   0.1   0.03632   0.01113    0.1558  0.006444   0.03269   0.01001
+## 1 0.461 0.539   0.02865   0.02253   0.08867   0.09846   0.01321   0.01039
 ##   Var.Delta      TG ER.trt0.emp ER.trt0.mod ER.trt1.emp ER.trt1.mod
-## 1  0.000239 0.01411      0.2437      0.2512      0.2672      0.2605
+## 1  0.007416 0.06579       0.251      0.2568      0.2174      0.2141
 ##   ER.mkrbased.emp ER.mkrbased.mod Marker.Thresh
-## 1          0.2345          0.2505         54.74
+## 1          0.2042          0.2037         21.08
 ```
 
 
@@ -338,36 +272,36 @@ eval.trtsel(trtsel.Y2_disc, bootstraps = 50)
 ##   Hypothesis test:
 ##  ------------------
 ##   H0: No marker-by-treatment interaction
-##                                        P value = 0.00098
-##                                        Z statistic = 3.296
+##                                        P value = 0
+##                                        Z statistic = 8.045
 ## 
 ##   Summary Measure Estimates (with 95% confidence intervals) 
 ##  -----------------------------------------------------------
 ##   Decrease in event rate under marker-based treatment (Theta)
-##     Empirical:    0.101 (0.03,0.179) 
-##     Model Based:  0.101 (0.03,0.179) 
+##     Empirical:    0.093 (0.061,0.126) 
+##     Model Based:  0.093 (0.061,0.126) 
 ## 
 ##   Proportion marker negative:
-##    0.48 (0.413,0.521) 
+##    0.496 (0.478,0.533) 
 ##   Proportion marker positive:
-##    0.52 (0.479,0.587) 
+##    0.504 (0.467,0.522) 
 ## 
 ##   Average benefit of no treatment among marker-negatives (B.neg)
-##     Empirical:    0.21 (0.067,0.391) 
-##     Model Based:  0.21 (0.067,0.391) 
+##     Empirical:    0.187 (0.124,0.256) 
+##     Model Based:  0.187 (0.124,0.256) 
 ## 
 ##   Average benefit of treatment among marker-positives (B.pos)
-##     Empirical:    0.159 (0.049,0.241) 
-##     Model Based:  0.159 (0.049,0.241) 
+##     Empirical:    0.259 (0.195,0.32) 
+##     Model Based:  0.259 (0.195,0.32) 
 ## 
 ## 
 ##   Event Rates:
 ##  --------------------
 ##              Treat all       Treat None    Marker-based Treatment
-##  Empirical:     0.244           0.267          0.166    
-##             (0.166,0.315)   (0.186,0.352)   (0.101,0.235) 
-##  Model Based:   0.243           0.261          0.161    
-##             (0.167,0.314)   (0.191,0.349)   (0.100,0.232)
+##  Empirical:     0.251           0.217          0.124    
+##             (0.204,0.281)   (0.183,0.252)   (0.087,0.149) 
+##  Model Based:   0.247           0.210          0.117    
+##             (0.201,0.273)   (0.180,0.239)   (0.086,0.138)
 ```
 
 
@@ -383,7 +317,7 @@ calibrate.trtsel(trtsel.Y1, groups = 10, plot = "calibration", trt.names = c("ch
     "no chemo."))
 ```
 
-![plot of chunk unnamed-chunk-15](figure/unnamed-chunk-15.png) 
+![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14.png) 
 
 ```
 ## 
@@ -393,10 +327,10 @@ calibrate.trtsel(trtsel.Y1, groups = 10, plot = "calibration", trt.names = c("ch
 ##    Number of Groups: 10 
 ## 
 ##    No Treatment (trt = 0):
-##     Test Statistic = 12.79,   DF = 8,   p value = 0.1192
+##     Test Statistic = 4.496,   DF = 8,   p value = 0.8099
 ## 
 ##    Treated (trt = 1):
-##     Test Statistic = 9.63,   DF = 8,   p value = 0.2919
+##     Test Statistic = 4.986,   DF = 8,   p value = 0.7591
 ```
 
 
@@ -421,7 +355,7 @@ mycompare <- compare.trtsel(trtsel1 = trtsel.Y1, trtsel2 = trtsel.Y2, marker.nam
     conf.bands = TRUE)
 ```
 
-![plot of chunk unnamed-chunk-16](figure/unnamed-chunk-16.png) 
+![plot of chunk unnamed-chunk-15](figure/unnamed-chunk-15.png) 
 
 ```r
 
@@ -436,86 +370,39 @@ mycompare
 ##  ------------------------------------------------------------------------
 ## 
 ## Decrease in event rate under marker-based treatment (Theta)
-##  Empirical:     0.033      |     0.089     |     -0.057         (0.02)
-##             (-0.032,0.097) | (0.044,0.256) | (-0.115,-0.075) 
-##  Model Based:   0.010      |     0.127      |     -0.117         (< 0.02)
-##             (0.000,0.127)  | (0.068,0.168)  | (-0.140,-0.004) 
+##  Empirical:     0.013      |     0.090     |     -0.076         (< 0.02)
+##             (-0.008,0.162) | (0.065,0.240) | (-0.116,-0.038) 
+##  Model Based:   0.010      |     0.099      |     -0.088         (< 0.02)
+##             (0.000,0.056)  | (0.077,0.127)  | (-0.111,-0.038) 
 ## 
 ## Proportion marker negative:
-##                 0.900      |     0.436      |     0.464         (0.6)
-##             (0.000,1.000)  | (0.321,0.583)  | (-0.366,0.540) 
+##                 0.461      |     0.377      |     0.084         (0.48)
+##             (0.009,0.693)  | (0.332,0.477)  | (-0.336,0.235) 
 ## Proportion marker positive:
-##                 0.100      |     0.564      |     -0.464         (0.58)
-##             (0.000,1.000)  | (0.417,0.679)  | (-0.540,0.366) 
+##                 0.539      |     0.623      |     -0.084         (0.46)
+##             (0.307,0.991)  | (0.523,0.668)  | (-0.235,0.336) 
 ## 
 ## Average benefit of no treatment among marker-negatives (B.neg)
-##  Empirical:     0.036      |     0.205     |     -0.169         (0.02)
-##             (-0.244,0.166) | (0.124,0.353) | (-0.400,-0.061) 
-##  Model Based:   0.011      |     0.291      |     -0.280         (< 0.02)
-##             (0.000,0.136)  | (0.173,0.393)  | (-0.356,-0.139) 
+##  Empirical:     0.029      |     0.238     |     -0.209         (< 0.02)
+##             (-0.128,0.086) | (0.179,0.301) | (-0.411,-0.128) 
+##  Model Based:   0.023      |     0.262      |     -0.239         (< 0.02)
+##             (0.001,0.070)  | (0.208,0.303)  | (-0.283,-0.170) 
 ## 
 ## Average benefit of treatment among marker-positives (B.pos)
-##  Empirical:     0.156      |     0.130     |     0.026         (0.34)
-##             (-0.062,0.265) | (0.042,0.226) | (-0.220,0.124) 
-##  Model Based:   0.006      |     0.190      |     -0.184         (< 0.02)
-##             (0.000,0.097)  | (0.116,0.256)  | (-0.236,-0.075) 
+##  Empirical:     0.089      |     0.203     |     -0.114         (0.02)
+##             (0.004,0.162) | (0.159,0.253) | (-0.222,-0.034) 
+##  Model Based:   0.098      |     0.211      |     -0.113         (< 0.02)
+##             (0.043,0.162)  | (0.175,0.240)  | (-0.172,-0.038) 
 ## 
 ## 
 ## Variance in estimated treatment effect : 
-##                 0.000      |     0.084      |     -0.084         (< 0.02)
-##             (0.000,0.013)  | (0.040,0.124)  | (-0.123,-0.036) 
+##                 0.007      |     0.080      |     -0.073         (< 0.02)
+##             (0.001,0.021)  | (0.058,0.103)  | (-0.092,-0.047) 
 ## 
 ## Total Gain: 
-##                 0.014      |     0.238      |     -0.224         (< 0.02)
-##             (0.006,0.094)  | (0.162,0.302)  | (-0.279,-0.123)
+##                 0.066      |     0.224      |     -0.158         (< 0.02)
+##             (0.026,0.113)  | (0.188,0.256)  | (-0.209,-0.103)
 ```
-
-
-
-
-
-```r
-## access the estimates and ci bounds.
-mycompare$estimates.marker1  #estimates from trtsel1
-```
-
-```
-##   p.neg p.pos B.neg.emp B.neg.mod B.pos.emp B.pos.mod Theta.emp Theta.mod
-## 1   0.9   0.1   0.03632   0.01113    0.1558  0.006444   0.03269   0.01001
-##   Var.Delta      TG ER.trt0.emp ER.trt0.mod ER.trt1.emp ER.trt1.mod
-## 1  0.000239 0.01411      0.2437      0.2512      0.2672      0.2605
-##   ER.mkrbased.emp ER.mkrbased.mod
-## 1          0.2345          0.2505
-```
-
-```r
-mycompare$estimates.marker2
-```
-
-```
-##   p.neg p.pos B.neg.emp B.neg.mod B.pos.emp B.pos.mod Theta.emp Theta.mod
-## 1 0.436 0.564    0.2051    0.2914    0.1302    0.1903   0.08942    0.1271
-##   Var.Delta     TG ER.trt0.emp ER.trt0.mod ER.trt1.emp ER.trt1.mod
-## 1   0.08377 0.2378      0.2437      0.2433      0.2672       0.263
-##   ER.mkrbased.emp ER.mkrbased.mod
-## 1          0.1778          0.1359
-```
-
-```r
-mycompare$ci.marker1
-```
-
-```
-##       p.neg p.pos B.neg.emp B.neg.mod B.pos.emp B.pos.mod Theta.emp
-## lower     0     0   -0.2437     0.000  -0.06211   0.00000  -0.03214
-## upper     1     1    0.1664     0.136   0.26548   0.09661   0.12719
-##       Theta.mod Var.Delta       TG
-## lower    0.0000 7.025e-05 0.005696
-## upper    0.0995 1.300e-02 0.094389
-```
-
-
-
 
 
 
@@ -530,7 +417,7 @@ compare.trtsel(trtsel1 = trtsel.Y1_disc, trtsel2 = trtsel.Y2_disc, ci = "vertica
     offset = 0.2, bootstraps = 50, plot = TRUE, conf.bands = TRUE, annotate.plot = FALSE)
 ```
 
-![plot of chunk unnamed-chunk-18](figure/unnamed-chunk-18.png) 
+![plot of chunk unnamed-chunk-16](figure/unnamed-chunk-16.png) 
 
 ```
 ##                       Summary Measure Estimates 
@@ -540,38 +427,38 @@ compare.trtsel(trtsel1 = trtsel.Y1_disc, trtsel2 = trtsel.Y2_disc, ci = "vertica
 ##  ------------------------------------------------------------------------
 ## 
 ## Decrease in event rate under marker-based treatment (Theta)
-##  Empirical:     0.025      |     0.101     |     -0.075         (0.1)
-##             (-0.023,0.182) | (0.036,0.280) | (-0.159,0.003) 
-##  Model Based:   0.025      |     0.101      |     -0.075         (0.1)
-##             (-0.023,0.087)  | (0.036,0.164)  | (-0.159,0.015) 
+##  Empirical:     0.011      |     0.093     |     -0.082         (< 0.02)
+##             (-0.024,0.188) | (0.063,0.316) | (-0.136,-0.066) 
+##  Model Based:   0.011      |     0.093      |     -0.082         (< 0.02)
+##             (-0.024,0.045)  | (0.063,0.135)  | (-0.136,-0.047) 
 ## 
 ## Proportion marker negative:
-##                 0.564      |     0.480      |     0.084         (0.12)
-##             (0.497,0.615)  | (0.413,0.548)  | (-0.013,0.156) 
+##                 0.570      |     0.496      |     0.074         (< 0.02)
+##             (0.542,0.589)  | (0.465,0.528)  | (0.015,0.117) 
 ## Proportion marker positive:
-##                 0.436      |     0.520      |     -0.084         (0.1)
-##             (0.385,0.503)  | (0.452,0.587)  | (-0.156,0.013) 
+##                 0.430      |     0.504      |     -0.074         (< 0.02)
+##             (0.411,0.458)  | (0.472,0.535)  | (-0.117,-0.015) 
 ## 
 ## Average benefit of no treatment among marker-negatives (B.neg)
-##  Empirical:     0.045      |     0.210     |     -0.165         (0.1)
-##             (-0.041,0.156) | (0.075,0.378) | (-0.312,0.014) 
-##  Model Based:   0.045      |     0.210      |     -0.165         (0.1)
-##             (-0.041,0.156)  | (0.075,0.378)  | (-0.312,0.014) 
+##  Empirical:     0.019      |     0.187     |     -0.168         (< 0.02)
+##             (-0.044,0.076) | (0.129,0.270) | (-0.274,-0.106) 
+##  Model Based:   0.019      |     0.187      |     -0.168         (< 0.02)
+##             (-0.044,0.076)  | (0.129,0.270)  | (-0.274,-0.106) 
 ## 
 ## Average benefit of treatment among marker-positives (B.pos)
-##  Empirical:     0.010      |     0.159     |     -0.149         (0.06)
-##             (-0.191,0.182) | (0.001,0.280) | (-0.320,0.003) 
-##  Model Based:   0.010      |     0.159      |     -0.149         (0.06)
-##             (-0.191,0.182)  | (0.001,0.280)  | (-0.320,0.003) 
+##  Empirical:     0.106      |     0.259     |     -0.153         (< 0.02)
+##             (0.006,0.188) | (0.211,0.316) | (-0.265,-0.066) 
+##  Model Based:   0.106      |     0.259      |     -0.153         (< 0.02)
+##             (0.006,0.188)  | (0.211,0.316)  | (-0.265,-0.066) 
 ## 
 ## 
 ## Variance in estimated treatment effect : 
-##                 0.001      |     0.034      |     -0.033         (0.06)
-##             (0.000,0.017)  | (0.007,0.085)  | (-0.081,0.001) 
+##                 0.004      |     0.050      |     -0.046         (< 0.02)
+##             (0.000,0.014)  | (0.034,0.081)  | (-0.080,-0.025) 
 ## 
 ## Total Gain: 
-##                 0.027      |     0.184      |     -0.158         (0.06)
-##             (0.004,0.129)  | (0.074,0.289)  | (-0.240,0.008)
+##                 0.061      |     0.223      |     -0.162         (< 0.02)
+##             (0.007,0.118)  | (0.184,0.284)  | (-0.267,-0.094)
 ```
 
 
@@ -606,7 +493,7 @@ plot.trtsel(myfitted.trtsel, bootstraps = 50, plot.type = "risk", ci = "horizont
     show.marker.axis = FALSE)
 ```
 
-![plot of chunk unnamed-chunk-20](figure/unnamed-chunk-20.png) 
+![plot of chunk unnamed-chunk-18](figure/unnamed-chunk-18.png) 
 
 
 

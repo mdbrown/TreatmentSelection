@@ -38,7 +38,7 @@ trtsel(event, trt, marker, data,
   }
   
   \item{fittedrisk.t0}{
-  Instead of providing a marker, fitted risks for T=0 and T=1 may be provided. This should be the column name of the fitted risk for T=0 that can be found in 'data'. If fitted risks are provided, a logistic model will not be fit, and all bootstrap confidence intervals will be conditional on the model fit provided. 
+  Instead of providing a marker, fitted risks for T=0 and T=1 may be provided. This should be the column name of the fitted risk for T=0 that can be found in 'data'. If fitted risks are provided, a model will not be fit, and all bootstrap confidence intervals will be conditional on the model fit provided. 
   
   
   }
@@ -135,6 +135,22 @@ trtsel.Y2 <- trtsel( event = "event",
                      study.design = "randomized cohort")
 trtsel.Y2
 
+
+# calculate fitted risks using a logistic model 
+#(one can use any model here, the point is that the fitted risks are provided )
+mymod <- glm(event~trt*Y2, data= tsdata, family = binomial("logit"))
+
+tsdata$fitted.t0 <- predict(mymod, newdata=data.frame(trt = 0, Y2 = tsdata$Y2), type = "response")
+tsdata$fitted.t1 <- predict(mymod, newdata=data.frame(trt = 1, Y2 = tsdata$Y2), type = "response")
+
+#all bootstrapping done using this object will be conditional on the model fit. 
+
+myfitted.trtsel <- trtsel( event ="event", trt = "trt",  
+                         data = tsdata,
+                         fittedrisk.t0 = "fitted.t0",
+                         fittedrisk.t1 = "fitted.t1",
+                         study.design = "randomized cohort", 
+                         default.trt = "trt all")
 
 
 

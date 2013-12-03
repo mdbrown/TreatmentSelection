@@ -3,7 +3,9 @@ function(event, trt, marker = NULL, data, fittedrisk.t0 = NULL, fittedrisk.t1 = 
 
   if(!is.data.frame(data)){stop('data must be a data.frame')}
   
-  tmpnames <- c(event, trt, marker, fitted_risk_t0, fitted_risk_t1)
+  tmpnames <- c(event, trt, marker, fittedrisk.t0, fittedrisk.t1)
+  if(!all(is.element(tmpnames, names(data)))) stop(paste("'", tmpnames[which(!is.element(tmpnames, names(data)))], "' cannot be found in data.frame provided", sep = ""))
+    
   mycomplete <- complete.cases(data[,tmpnames]); 
   
   #check for missing data and throw it out, print a warning
@@ -78,6 +80,7 @@ function(event, trt, marker = NULL, data, fittedrisk.t0 = NULL, fittedrisk.t1 = 
                               fraction of cases with trt == 0 sampled from cohort, 
                               fraction of cases with trt == 1 sampled from cohort )\n ")
     }
+    
     ca <- cohort.attributes
     cohort.attributes = c(ca[1], ca[2], ca[3], ca[4], 1-(ca[2]+ca[3]+ca[4]), ca[5], ca[6])
 
@@ -87,28 +90,7 @@ function(event, trt, marker = NULL, data, fittedrisk.t0 = NULL, fittedrisk.t1 = 
 
   }
   else { stop("study.design not specified correctly, must be one of ''randomized cohort'', ''nested case-control'', or ''stratified nested case-control''") }
-  
-  fitted_risk_t0 <- fittedrisk.t0
-  fitted_risk_t1 <- fittedrisk.t1
-  
-  
-  if(!is.null(fitted_risk_t0))
-    {
-    if(!is.null(marker)) warning("fitted risks provided: marker data will be ignored")
-    marker <- NULL
-    link <- "risks_provided"
-    if(is.null(fitted_risk_t1)) stop("must provide fitted risk for trt = 1 as well")
-    if(any(fitted_risk_t0 > 1) | any(fitted_risk_t0 <0)) stop("fitted risks for trt = 0 are outside of bounds (0,1)")
-  }
-    
-  
-  if(!is.null(fitted_risk_t1))
-  {
 
-    if(is.null(fitted_risk_t0)) stop("must provide fitted risk for trt = 0 as well")
-    if(any(fitted_risk_t1 > 1) | any(fitted_risk_t1 <0)) stop("fitted risks for trt = 1 are outside of bounds (0,1)")
-  }
-  
   
   functions <- list("boot.sample" = boot.sample, "get.F" = get.F, "get.summary.measures" = get.summary.measures)
 
@@ -125,8 +107,25 @@ function(event, trt, marker = NULL, data, fittedrisk.t0 = NULL, fittedrisk.t1 = 
   event = data[[event]]
   trt = data[[trt]]
   if(!is.null(marker)) marker = data[[marker]]
-  if(!is.null(fitted_risk_t0)) fitted_risk_t0 = data[[fitted_risk_t0]]
-  if(!is.null(fitted_risk_t1)) fitted_risk_t1 = data[[fitted_risk_t1]]
+  
+  if(!is.null(fittedrisk.t0)) {
+    fitted_risk_t0 = data[[fittedrisk.t0]]
+    if(!is.null(marker)) warning("fitted risks provided: marker data will be ignored")
+    marker <- NULL
+    link <- "risks_provided"
+    if(is.null(fittedrisk.t1)) stop("must provide fitted risk for trt = 1 as well")
+    if(any(fitted_risk_t0 > 1) | any(fitted_risk_t0 <0)) stop("fitted risks for trt = 0 are outside of bounds (0,1)")
+    
+  }
+  
+  if(!is.null(fittedrisk.t1)){
+    
+   fitted_risk_t1 = data[[fittedrisk.t1]]
+   if(is.null(fitted_risk_t0)) stop("must provide fitted risk for trt = 0 as well")
+   if(any(fitted_risk_t1 > 1) | any(fitted_risk_t1 <0)) stop("fitted risks for trt = 1 are outside of bounds (0,1)")
+   
+  }  
+
   
   # model.fit
   
@@ -140,19 +139,16 @@ function(event, trt, marker = NULL, data, fittedrisk.t0 = NULL, fittedrisk.t1 = 
   #now that we allow for different link functions for "randomized cohorts", we need to get the fitted risks directly from the model
 
   if(link == "risks_provided"){
-    
-    fittedrisk.t0 <- fitted_risk_t0
-    fittedrisk.t1 <- fitted_risk_t1
     linkinvfun <- NULL
   }else{
     linkinvfun <- binomial(link = link)$linkinv
-    fittedrisk.t0 <- get.risk.t0(coef, marker, linkinvfun)
-    fittedrisk.t1 <- get.risk.t1(coef, marker, linkinvfun)
+    fitted_risk_t0 <- get.risk.t0(coef, marker, linkinvfun)
+    fitted_risk_t1 <- get.risk.t1(coef, marker, linkinvfun)
     
   }
   
 
-  trt.effect <- fittedrisk.t0 - fittedrisk.t1
+  trt.effect <- fitted_risk_t0 - fitted_risk_t1
   if(length(unique(marker))==2){ 
     #find which value of the marker is marker negative
 
@@ -177,16 +173,16 @@ function(event, trt, marker = NULL, data, fittedrisk.t0 = NULL, fittedrisk.t1 = 
   {
     if(default.trt =="trt all"){
       derived.data <- data.frame( trt = trt, event = event, 
-                                  fittedrisk.t0 = fittedrisk.t0, 
-                                  fittedrisk.t1 = fittedrisk.t1,
+                                  fittedrisk.t0 = fitted_risk_t0, 
+                                  fittedrisk.t1 = fitted_risk_t1,
                                   trt.effect = trt.effect,
                                   marker.neg = marker.neg)
       
     }else{
       marker.pos <- 1-marker.neg # indicator of being marker negative
       derived.data <- data.frame( trt = trt, event = event,  
-                                  fittedrisk.t0 = fittedrisk.t0, 
-                                  fittedrisk.t1 = fittedrisk.t1,
+                                  fittedrisk.t0 = fitted_risk_t0, 
+                                  fittedrisk.t1 = fitted_risk_t1,
                                   trt.effect = trt.effect,
                                   marker.pos = marker.pos)
       
@@ -196,16 +192,16 @@ function(event, trt, marker = NULL, data, fittedrisk.t0 = NULL, fittedrisk.t1 = 
   {
      if(default.trt =="trt all"){
        derived.data <- data.frame( trt = trt, event = event, marker = marker, 
-                                     fittedrisk.t0 = fittedrisk.t0, 
-                                     fittedrisk.t1 = fittedrisk.t1,
+                                     fittedrisk.t0 = fitted_risk_t0, 
+                                     fittedrisk.t1 = fitted_risk_t1,
                                      trt.effect = trt.effect,
                                      marker.neg = marker.neg)
 
      }else{
        marker.pos <- 1-marker.neg # indicator of being marker negative
        derived.data <- data.frame( trt = trt, event = event, marker = marker, 
-                                fittedrisk.t0 = fittedrisk.t0, 
-                                fittedrisk.t1 = fittedrisk.t1,
+                                fittedrisk.t0 = fitted_risk_t0, 
+                                fittedrisk.t1 = fitted_risk_t1,
                                 trt.effect = trt.effect,
                                 marker.pos = marker.pos)
     

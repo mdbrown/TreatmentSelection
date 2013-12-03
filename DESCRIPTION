@@ -1,7 +1,7 @@
 Package: TreatmentSelection
 Type: Package
 Title: Evaluate Treatment Selection Biomarkers
-Version: 1.0.2
+Version: 1.1.0
 Date: 2013-09-19
 Author: Marshall Brown and Holly Janes
 Maintainer:  <mdbrown@fhcrc.org>

@@ -3,7 +3,7 @@ Last updated December 2013
 Tutorial for R package TreatmentSelection 
 ========================================================
 
-This tutorial uses the Treatment Selection package to analyze the example data provided in the package.
+This tutorial uses the Treatment Selection package (version 1.1.0) to analyze the example data provided in the package.
 
 
 First, you need to download and install the package from github using:
@@ -209,7 +209,7 @@ compare.trtsel(trtsel1 = trtsel.Y1_disc,
 
 See `?compare.trtsel` for more options.
 
-Including fitted risks 
+Including fitted risks (*new option with version 1.1.0*)
 ----------------------------
 Alternative to including a marker and fitting a logistic model, the user can specify fitted risks for trt = 0 and trt = 1. In this case, no model fitting will be implemented and all bootstrap confidence intervals will be conditional on the provided fitted model. 
 

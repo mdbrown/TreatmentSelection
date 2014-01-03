@@ -39,25 +39,36 @@ function( marker, trt, event, study.design, rho = rho, plot.type, ci, bootstraps
      #trteffect curve
      
         if(substr(myci, 1, 4) =="hori") {
-           ## predcurve plot with horizontal ci bands
+           
            fix.ind = 5    # fix delta
            out.ind = 4    # vary F.marker
         }else if(substr(myci, 1, 4) =="vert"){
-           ## predcurve plot with vertical ci bands
+           
            fix.ind = 4    #fix F.event
            out.ind = 5    #vary delta
         }
-     }else if(substr(myplot, 1, 4) =="cdf"){
+     }else if(substr(myplot, 1, 3) =="cdf"){
      #CDF delta curve
         if(substr(myci, 1, 4) =="hori") {
-           ## predcurve plot with horizontal ci bands
+           
            fix.ind = 4    
            out.ind = 5  
         }else if(substr(myci, 1, 4) =="vert"){
-           ## predcurve plot with vertical ci bands
+           
            fix.ind = 5
            out.ind = 4
         }
+     }else if(substr(myplot, 1, 4) =="thet"){
+       #CDF delta curve
+       if(substr(myci, 1, 4) =="hori") {
+         
+         fix.ind = 6    
+         out.ind = 4 
+       }else if(substr(myci, 1, 4) =="vert"){
+        
+         fix.ind = 4
+         out.ind = 6
+       }
      }
 
   

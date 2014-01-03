@@ -15,8 +15,8 @@ function(x, bootstraps = 500,
   
   if(!is.trtsel(x)) stop("x must be an object of class 'trtsel' created by using the function 'trtsel' see ?trtsel for more help")
  
-  if(!is.element(plot.type, c("risk", "treatment effect", "cdf"))){ 
-    stop("plot.type must be one of \"risk\", \"treatment effect\", or \"cdf\"")
+  if(!is.element(plot.type, c("risk", "treatment effect", "cdf", "theta"))){ 
+    stop("plot.type must be one of \"risk\", \"treatment effect\", \"cdf\" or \"theta\"")
   }
   stopifnot(length(plot.type) ==1)
   
@@ -28,15 +28,24 @@ function(x, bootstraps = 500,
   if(alpha<0 | alpha > 1) stop("Error: alpha should be between 0 and 1")
   if(bootstraps < 2) warning("Number of bootstraps must be greater than 1, bootstrap confidence intervals will not be computed") 
   if(ci == "none") bootstraps = 0; 
-
+  # theta curves can only be plotted for cohort data and with vertical ci's
+  if(substr(plot.type, 1, 3)=="the"){
+    if(substr(x$model.fit$study.design, 1, 3) != "ran") stop("theta curves cannot be created for subcohort designs")
+    if(substr(ci, 1, 1) =="h") {
+      
+      warning("horizontal ci's are not available fro theta curves, vertical ci's will be calculated")
+      ci = "vertical"
+    }
+  }
   #set default ci's 
-
+  
   if(ci =="default"){
     #continuous marker
     if(is.null(x$model.fit$disc.marker.neg)){
       if(substr(plot.type, 1, 3) =="ris") ci = "horizontal"
       if(substr(plot.type, 1, 3) =="tre") ci = "horizontal"
       if(substr(plot.type, 1, 3) =="cdf") ci = "vertical"
+      if(substr(plot.type, 1, 3) =="the") ci = "vertical"
     }else{
       
       if(substr(plot.type, 1, 3) =="ris") ci = "vertical"
@@ -77,7 +86,7 @@ function(x, bootstraps = 500,
   
 
  if(is.null(x$model.fit$disc.marker.neg)){
-    plot.functions <- list(  predcurvePLOT_gg, trteffectPLOT_gg, CDFdeltaPLOT_gg)
+    plot.functions <- list(  predcurvePLOT_gg, trteffectPLOT_gg, CDFdeltaPLOT_gg, SelectionImpactPLOT_gg)
     
   if(length(fixed.values)!=0) conf.bands = FALSE
   if(conf.bands & length(fixed.values)==0 ){
@@ -85,7 +94,7 @@ function(x, bootstraps = 500,
 
    if(substr(ci, 1,1 )=="v"){
        
-      if(is.element(substr(plot.type, 1,3), c("tre", "ris"))) fixed.values = seq(from = 1, to = 100, length.out = conf.bandsN)
+      if(is.element(substr(plot.type, 1,3), c("tre", "ris", "the"))) fixed.values = seq(from = 1, to = 100, length.out = conf.bandsN)
       else if(substr(plot.type, 1,3)=="cdf") fixed.values = seq(from = min(delta), to = max(delta), length.out = conf.bandsN)
       
    }else{
@@ -97,6 +106,7 @@ function(x, bootstraps = 500,
        fixed.values = seq(from = min(allrisks), to = max(allrisks), length.out = conf.bandsN)
 
       }
+      ## add case for theta curve
 
    }
    offset = 0
@@ -138,7 +148,7 @@ function(x, bootstraps = 500,
     
   }
 
-  tmp.plotfun <- plot.functions[[match(plot.type, c("risk", "treatment effect", "cdf"))]]
+  tmp.plotfun <- plot.functions[[match(plot.type, c("risk", "treatment effect", "cdf", "theta"))]]
    
 
 if(is.null(x$model.fit$disc.marker.neg)){

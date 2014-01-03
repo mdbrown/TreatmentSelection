@@ -31,10 +31,11 @@ function(event, trt, marker, ci, rho = rho, study.design, obp.boot.sample, obp.g
   obsdelta.b <-obsrisk.t0.b - obsrisk.t1.b#
 
   F.Y <- obp.get.F( marker.b,        event.b, trt.b, rho.b)*100#
-  F.D <- obp.get.F( obsdelta.b, event.b, trt.b, rho.b)*100#  
+  F.D <- obp.get.F( obsdelta.b, event.b, trt.b, rho.b)*100#
+  theta.c <- Theta.cutoff(obsdelta.b, F.D)
 
   #all 
-  all  <- cbind( F.Y, obsrisk.t0.b, obsrisk.t1.b, F.D, obsdelta.b)
+  all  <- cbind( F.Y, obsrisk.t0.b, obsrisk.t1.b, F.D, obsdelta.b, theta.c)
   all <- unique(all)
 #  browser()
   if(length(fix.ind) > 1){

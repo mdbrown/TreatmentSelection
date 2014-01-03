@@ -35,7 +35,7 @@ function( event, trt, rho ){
    # Pr.D1.cond.trt0.b <- mean(event.b[trt.b==0])*sum(trt.b==0)/(N-N.t)
     
 
-    rho.b <- c( N, rho[2], (N.d1.star)/N, f, 0, 0, 0)  
+    rho.b <- c( N, rho[2], (N.d1.star)/N, f, -9999, -9999, -9999)  
     
     return(c(rho.b, ind))
 }

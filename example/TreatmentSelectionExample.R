@@ -49,7 +49,7 @@ tmp <- plot.trtsel(trtsel.Y1, main = "Y1: Oncotype-DX-like marker", plot.type = 
 
 
 tmp <- plot.trtsel(trtsel.Y1, plot.type = "theta", ci = "default",
-                   conf.bands = TRUE, bootstraps = 50)
+                   conf.bands = TRUE, bootstraps = 0)
 
 tmp <- plot.trtsel(trtsel.Y1, main = "Y1: Oncotype-DX-like marker", plot.type = "risk", ci = "horizontal",
                     bootstraps = 50,trt.names=c("chemo.","no chemo."))

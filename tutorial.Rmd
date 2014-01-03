@@ -228,6 +228,24 @@ myfitted.trtsel <- trtsel( event ="event", trt = "trt",
                          fittedrisk.t1 = "fitted.t1",
                          study.design = "randomized cohort", 
                          default.trt = "trt all")
+
+
+#calculate model fit
+mymod <- glm(event~trt*Y1, data= tsdata, family = binomial("logit"))
+
+tsdata$fitted.t0 <- predict(mymod, newdata=data.frame(trt = 0, Y1 = tsdata$Y1), type = "response")
+tsdata$fitted.t1 <- predict(mymod, newdata=data.frame(trt = 1, Y1 = tsdata$Y1), type = "response")
+
+
+myfitted.trtsel <- trtsel( event ="event", trt = "trt",  
+                         data = tsdata,
+                         fittedrisk.t0 = "fitted.t0",
+                         fittedrisk.t1 = "fitted.t1",
+                         study.design = "randomized cohort", 
+                         default.trt = "trt all")
+
+
+
 ```
 
 We can now use this `trtsel` object just as before, but confidence intervals will be smaller because we do not account for the variation due to model fitting. 

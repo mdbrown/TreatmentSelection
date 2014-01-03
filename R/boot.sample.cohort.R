@@ -13,9 +13,8 @@ function( event, trt, rho){
     # event.b <- c(event[boot0])
  
     # Y2.b <- c(Y2[boot0])
-  Resample <- TRUE
-    return(c(rep(0, 7), sample(length(trt),replace=TRUE)))
     Resample <- TRUE
+
     tryN = 0
 
     while(Resample){
@@ -29,6 +28,6 @@ function( event, trt, rho){
     if(tryN >100) stop("Had to resample too many bootstrap replicates due to too few observations in trt/event strata")
     }
    
-return(c(rep(0, 7), ind))
+return(c(rep(-9999, 7), ind))
 
 }

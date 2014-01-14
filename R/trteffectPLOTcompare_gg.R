@@ -25,8 +25,14 @@ function(x1, x2, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, xlab, yla
   mydata <- rbind(mydata, mydata2)
  # mydata <- rbind(mydata, mydata2, c(-100, -100, 3,.5), c(-100, 100, 4, .5))
   
+  
+  ## need to adjust these for scc and cc sampling designs
+  allMeasures <- x1$functions$get.summary.measures( x$derived.data, rho, x$model.fit$thresh)
+  
   avglines <- cbind(0, sort(F.D), 4, .5)
-  avglines <- rbind(avglines, cbind(mean(event[trt==0])-mean(event[trt==1]), sort(F.D), 3, .5))
+  avglines <- rbind(avglines, 
+                    cbind(allMeasures$ER.trt0.emp-allMeasures$ER.trt1.emp, 
+                          sort(F.D), 3, .5))
   avglines = data.frame(avglines); names(avglines) = names(mydata)
   mydata <- rbind(mydata, avglines)
 

@@ -118,12 +118,12 @@ cat("\n")
   cat("             Treat all       Treat None    Marker-based Treatment") 
   cat("\n")
   cat(" Empirical: ")
-  cat(paste(" ", sprintf("   %.3f      ", round(x$estimates$ER.trt0.emp,  3)),  
-            sprintf("     %.3f     ",round(x$estimates$ER.trt1.emp,  3)), 
+  cat(paste(" ", sprintf("   %.3f      ", round(x$estimates$ER.trt1.emp,  3)),  
+            sprintf("     %.3f     ",round(x$estimates$ER.trt0.emp,  3)), 
             sprintf("     %.3f    ", round(x$estimates$ER.mkrbased.emp,  3)), sep=""))
   cat("\n          ")
-  cat(paste(" ",sprintf(" (%.3f,%.3f)  ", round(unname(x$c[1,11]), 3), round(unname(x$c[2,11]), 3)), 
-            sprintf(" (%.3f,%.3f)  ",     round(unname(x$c[1,13]), 3), round(unname(x$c[2,13]), 3)), 
+  cat(paste(" ",sprintf(" (%.3f,%.3f)  ", round(unname(x$c[1,13]), 3), round(unname(x$c[2,13]), 3)), 
+            sprintf(" (%.3f,%.3f)  ",     round(unname(x$c[1,11]), 3), round(unname(x$c[2,11]), 3)), 
             sprintf(" (%.3f,%.3f) ",      round(unname(x$c[1,15]), 3),round(unname(x$c[2,15]), 3)), sep = ""))
   
   cat("\n Model Based:   ")
@@ -131,8 +131,8 @@ cat("\n")
             sprintf("     %.3f     ",round(x$estimates$ER.trt1.mod,  3)), 
             sprintf("     %.3f    ", round(x$estimates$ER.mkrbased.mod,  3)), sep=""))
   cat("\n          ")
-  cat(paste(" ",sprintf(" (%.3f,%.3f)  ", round(unname(x$c[1,12]), 3), round(unname(x$c[2,12]), 3)), 
-            sprintf(" (%.3f,%.3f)  ",     round(unname(x$c[1,14]), 3), round(unname(x$c[2,14]), 3)), 
+  cat(paste(" ",sprintf(" (%.3f,%.3f)  ", round(unname(x$c[1,14]), 3), round(unname(x$c[2,14]), 3)), 
+            sprintf(" (%.3f,%.3f)  ",     round(unname(x$c[1,12]), 3), round(unname(x$c[2,12]), 3)), 
             sprintf(" (%.3f,%.3f) ",      round(unname(x$c[1,16]), 3),round(unname(x$c[2,16]), 3)), sep = ""))
   
   

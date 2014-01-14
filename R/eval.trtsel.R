@@ -112,7 +112,25 @@ function(x, bootstraps = 1000, alpha = .05){
 
   summary.measures <- data.frame(get.summary.measures(data, rho))
 
-
+  #marker threshold st delta(mthresh) = 0
+  if(any(data$marker.neg==0) & any(data$marker.neg==1) &is.null(x$model.fit$disc.marker.neg)& link != "risks_provided"){
+    
+    summary.measures$Marker.Thresh <-ifelse( with(data, trt.effect[which.min(marker)]) < 0 , 
+                                             max(data$marker[data$marker.neg == 1]), 
+                                             min(data$marker[data$marker.neg == 1]))
+    
+    
+  }else if(any(data$marker.pos==1) & any(data$marker.pos==0) &is.null(x$model.fit$disc.marker.neg)& link != "risks_provided"){
+    
+    summary.measures$Marker.Thresh <-ifelse( with(data, trt.effect[which.min(marker)]) < 0 , 
+                                             max(data$marker[data$marker.pos == 0]), 
+                                             min(data$marker[data$marker.pos == 0]))
+    
+    
+  }else{
+    summary.measures$Marker.Thresh <- NA
+  }
+  
   
   result <- list(test.Null          = test.Null.val, estimates = summary.measures)
   }

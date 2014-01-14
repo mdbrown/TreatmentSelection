@@ -49,7 +49,7 @@ tmp <- plot.trtsel(trtsel.Y1, main = "Y1: Oncotype-DX-like marker", plot.type = 
 
 
 tmp <- plot.trtsel(trtsel.Y1, plot.type = "theta", ci = "default",
-                   conf.bands = TRUE, bootstraps = 0)
+                   conf.bands = TRUE, bootstraps = 50)
 
 tmp <- plot.trtsel(trtsel.Y1, main = "Y1: Oncotype-DX-like marker", plot.type = "risk", ci = "horizontal",
                     bootstraps = 50,trt.names=c("chemo.","no chemo."))
@@ -347,5 +347,97 @@ tmp <- compare.trtsel(trtsel1 = trtsel.Y3, trtsel2 = trtsel.Y4,
 
 
 tmp <- calibrate.trtsel(trtsel.Y1, plot.type = "treatment effect", groups =20)
+
+
+
+
+
+########################3
+## subcohort examples
+n = 1000
+nmatch = 2
+
+D <- tsdata$event
+T <- tsdata$trt
+Y1 <- tsdata$Y1
+Y2 <- tsdata$Y2
+
+# generate case-control subset (sample based on D only)
+S <- NULL
+S[D==1] <- 1 #select all cases
+numcontrols <- length(D[D==1])*nmatch
+S[D==0] <- sample(c(rep(1,numcontrols),rep(0,length(D[D==0])-numcontrols)))
+
+myD<-D[S==1]; myT<-T[S==1]; myY<-Y2[S==1]
+
+my.trtsel<-trtsel(event="event",trt="trt",marker="Y2", data = tsdata,
+                  default.trt = "trt none")
+
+tsdata_cc <- tsdata[S==1,]
+
+cc.trtsel<-trtsel(event="event",trt="trt",marker="Y", data = subdata.cc,
+                  cohort.attributes = c(n, mean(T), mean(D), 1),
+                  study.design="nested case control", 
+                  default.trt = "trt none")
+
+
+#rho = c(mean(D), 1000000, mean(D[T==0]), mean(D[T==1]), nmatch, sum(T==1),0)
+tmp <- eval.trtsel(cc.trtsel, bootstraps=50)
+
+plot(cc.trtsel, bootstraps=0)
+
+plot(cc.trtsel, bootstraps=50, plot.type = "theta")
+plot(my.trtsel, bootstraps = 50, plot.type = "theta")
+
+mean(1-myT[myD==1])
+
+##STRATIFIED CASE CONTROL
+
+nmatch = 1
+# generate case-control subset (sample based on R and T)
+S <- NULL
+
+S[D==1] <- 1 #select all cases
+numcontrols <- length(D[D==1 & T==0])*nmatch
+#numcontrols <- sum(myconts.t0)*nmatch
+S[D==0 & T==0] <- sample(c(rep(1,numcontrols),rep(0,length(D[D==0 & T==0])-numcontrols)))
+
+#numcontrols <- sum(myconts.t0)*nmatch
+numcontrols <- length(D[D==1 & T==1])*nmatch
+S[D==0 & T==1] <- sample(c(rep(1,numcontrols),rep(0,length(D[D==0 & T==1])-numcontrols)))
+
+# fit risk model
+
+myD<-D[S==1]; myT<-T[S==1]; myY<-Y2[S==1]
+
+tsdata_scc <- tsdata[S==1,]
+
+scc.trtsel<-trtsel(event="event",trt="trt",marker="Y", data = tsdata_scc,
+                   cohort.attributes = c(n, mean(D==0 & T==0), mean(D==1 & T==0), mean(D==0 & T==1), 1,1),
+                   study.design="stratified nested case control", 
+                   default.trt = "trt none")
+
+tmp <- eval.trtsel(scc.trtsel, bootstraps = 10)$estimates
+plot.trtsel(scc.trtsel, bootstraps = 10, plot.type = "theta")
+
+
+eval.trtsel(my.trtsel, bootstraps = 10)#500)
+
+
+
+
+eval.trtsel(cc.trtsel, bootstraps = 10)
+$estimates#500)
+
+eval.trtsel(scc.trtsel, bootstraps = 10)#500)
+
+
+
+### plots
+
+plot.trtsel(cc.trtsel, bootstraps = 10, plot.type = "treatment effect")
+plot.trtsel(scc.trtsel, bootstraps = 10, plot.type = "treatment effect")
+
+
 
 

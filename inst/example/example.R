@@ -4,10 +4,10 @@ source("main.R")
 load("../simData_example.Rdata") #loads example data set called simData
 
 
-D <- simData$D
-T <- simData$T
-Y1 <- simData$Y1
-Y2 <- simData$Y2
+D <- tsdata$event
+T <- tsdata$trt
+Y1 <- tsdata$Y1
+Y2 <- tsdata$Y2
 
 #trtsel objects
 trtsel.Y1 <- TrtSel(disease = D, trt = T, marker = Y1, cohort.type="randomized cohort")
@@ -61,12 +61,12 @@ cali.coh.Y2 <- calibrate(trtsel.Y2)
 
 ### different sample designs
 
-source("../sim_functions.R")
-load("../my_sim_FY.Rdata")
+source("../trtsel_Aug2013/sim_functions.R")
+load("../trtsel_Aug2013/my_sim_FY.Rdata")
 alpha.strong <- c( -1.2402598, -0.6910426,  0.6, -2.25) #need to provide this for the bounded marker
 #y.strong <- seq( -15, 15, by = .01)
 
-n = 10000
+n = 50000
 simData <- sim.data(n=n, d.vec = d.vec,
                 grid.y = grid.y, FY.11 = FY.11, FY.10 = FY.10, FY.01 = FY.01, FY.00 = FY.00)
 
@@ -132,8 +132,13 @@ scc.trtsel<-trtsel(event="D",trt="T",marker="Y2", data = simData[S==1,],
                   study.design="stratified nested case control", 
                   default.trt = "trt none")
 
-eval.trtsel(my.trtsel, bootstraps = 10)#500)
+coh <- eval.trtsel(my.trtsel, bootstraps = 0)#500)
 
-eval.trtsel(cc.trtsel, bootstraps = 10)#500)
+cc <- eval.trtsel(cc.trtsel, bootstraps = 0)#500)
 
-eval.trtsel(scc.trtsel, bootstraps = 10)#500)
+scc <- eval.trtsel(scc.trtsel, bootstraps = 0)#500)
+
+
+rbind(coh$estimates,  
+      cc$estimates, 
+      scc$estimates)

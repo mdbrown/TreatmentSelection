@@ -13,8 +13,16 @@ function(x, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, xlab, ylab, xl
   mydata = data.frame(trt.effect, F.D, lty )
   mydata = mydata[with(mydata, order(F.D)),]
 
+  
+  
+  ## need to adjust these for scc and cc sample designs. 
+  allMeasures <- x$functions$get.summary.measures( x$derived.data, rho, x$model.fit$thresh)
+  
+  
   avglines <- cbind(0, sort(F.D), 4)
-  avglines <- rbind(avglines, cbind(mean(event[trt==0])-mean(event[trt==1]), sort(F.D), 3))
+  avglines <- rbind(avglines,
+                    cbind(allMeasures$ER.trt0.mod - allMeasures$ER.trt1.mod,
+                          sort(F.D), 3))
   avglines = data.frame(avglines); names(avglines) = names(mydata)
   mydata <- rbind(mydata, avglines)
   

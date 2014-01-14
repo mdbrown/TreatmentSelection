@@ -1,7 +1,6 @@
 SelectionImpactPLOT_gg <-
 function(x, ci, ci.bounds, get.F, fixed.values,conf.bands,  rho, xlab, ylab, xlim, ylim, main){ 
   
-  
   risk.t0 <- x$derived.data$fittedrisk.t0
   risk.t1 <- x$derived.data$fittedrisk.t1
   trt.effect <- x$derived.data$trt.effect
@@ -11,14 +10,20 @@ function(x, ci, ci.bounds, get.F, fixed.values,conf.bands,  rho, xlab, ylab, xli
   n = length(trt)
   
   F.D <- get.F(trt.effect, event, trt, rho = rho)*100
-  theta.curve <- EventRateVec(risk.t0, risk.t1, F.D, rho)
+  theta.curve <- EventRateVec(risk.t0, risk.t1, F.D, rho, event, trt)
   
-  lty = 1 #not really needed
+  lty = 1 #define the lty for the main curve
   mydata = data.frame(theta.curve, F.D, lty )
   mydata = mydata[with(mydata, order(F.D)),]
+
+  ## need the mean risk given t=0 and t=1. We need to account for subsampling in this. 
+  allMeasures <- x$functions$get.summary.measures( x$derived.data, rho, x$model.fit$thresh)
   
-  avglines <- cbind(0, sort(F.D), 4)
-  avglines <- rbind(avglines, cbind(mean(event[trt==0])-mean(event[trt==1]), sort(F.D), 3))
+  
+  avglines <- cbind(allMeasures$ER.trt0.mod, sort(F.D), 4)
+  avglines <- rbind(avglines, 
+              cbind(allMeasures$ER.trt1.mod, sort(F.D), 3))
+  
   avglines = data.frame(avglines); names(avglines) = names(mydata)
   mydata <- rbind(mydata, avglines)
   
@@ -33,7 +38,7 @@ function(x, ci, ci.bounds, get.F, fixed.values,conf.bands,  rho, xlab, ylab, xli
     mylim <- c(cen-ran/2, cen+ran/2)
     
     if(is.null(xlab)) xlab <- "d = % population below treatment effect"
-    if(is.null(ylab)) ylab <- "theta(d)"
+    if(is.null(ylab)) ylab <- "Event rate given trt rule: T = 1 if F(v) > d"
     if(is.null(xlim)) xlim <- c(0,100)
     if(is.null(ylim)) ylim <- mylim
     if(is.null(main)) main <- "Selection impact curve"
@@ -69,10 +74,10 @@ function(x, ci, ci.bounds, get.F, fixed.values,conf.bands,  rho, xlab, ylab, xli
   
   
   p <- p+geom_step(data =  mydata[(1:(n)),], aes(x = F.D, y = theta.curve), size = 1, direction = "vh")
- # p <- p+geom_line(data =  mydata[-c(1:(n)),], aes(x = F.D, y = theta.curve, linetype = factor(lty)), size = 0.5)
+  p <- p+geom_line(data =  mydata[-c(1:(n)),], aes(x = F.D, y = theta.curve, linetype = factor(lty)), size = 0.5)
   
   
-  #p <- p+ scale_linetype_manual(name = "Treatment Effect", breaks = c( "3", "4"), values = c( 3, 4), labels = c("Mean", "Zero"))
+  p <- p+ scale_linetype_manual(name = "Event Rate", breaks = c( "3", "4"), values = c( 3, 4), labels = c("treat all", "treat none"))
   
   
   print(p) 

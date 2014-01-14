@@ -97,9 +97,10 @@ function(data, rho, d=0){
     
   #event rates
   ER.trt0.emp = ifelse( sum(trt==0)>0, expit( logit(mean(event[trt==0])) + logit(rho[3]) - logit(mean(event)) ), 0)
-  ER.trt0.mod = mean(data$fittedrisk.t0)
+  ER.trt0.mod = mean(data$fittedrisk.t0[event==1])*rho[3] + mean(data$fittedrisk.t0[event==0])*(1-rho[3])
+
   ER.trt1.emp = ifelse( sum(trt==1)>0, expit( logit(mean(event[trt==1])) + logit(rho[3]) - logit(mean(event)) ), 0)
-  ER.trt1.mod = mean(data$fittedrisk.t1)
+  ER.trt1.mod = mean(data$fittedrisk.t1[event==1])*rho[3] + mean(data$fittedrisk.t1[event==0])*(1-rho[3])
   
   if(is.null(data[["marker.pos"]])){
     #default is trt all

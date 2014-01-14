@@ -128,7 +128,7 @@ function(event, trt, marker = NULL, data, fittedrisk.t0 = NULL, fittedrisk.t1 = 
 
   
   # model.fit
-  
+  #returns null if risks are provided
   coef <- get.coef( event, trt, marker, study.design, rho, link)
 
   model.fit <- list( "coefficients" = coef, "cohort.attributes" = rho, "study.design" = study.design, "marker.bounds" = marker.bounds, "link" = link, "thresh" = d)

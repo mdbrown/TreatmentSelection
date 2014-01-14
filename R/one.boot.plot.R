@@ -33,7 +33,7 @@ function(event, trt, marker, ci, rho = rho, study.design, obp.boot.sample, obp.g
   F.Y <- obp.get.F( marker.b,        event.b, trt.b, rho.b)*100#
   F.D <- obp.get.F( obsdelta.b, event.b, trt.b, rho.b)*100#
   
-  theta.c <- EventRateVec(obsrisk.t0.b, obsrisk.t1.b, F.D, rho.b)
+  theta.c <- EventRateVec(obsrisk.t0.b, obsrisk.t1.b, F.D, rho.b, event.b, trt.b)
 
   #all 
   all  <- cbind( F.Y, obsrisk.t0.b, obsrisk.t1.b, F.D, obsdelta.b, theta.c)

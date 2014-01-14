@@ -30,7 +30,7 @@ function(x, bootstraps = 500,
   if(ci == "none") bootstraps = 0; 
   # theta curves can only be plotted for cohort data and with vertical ci's
   if(substr(plot.type, 1, 3)=="the"){
-    if(substr(x$model.fit$study.design, 1, 3) != "ran") stop("theta curves cannot be created for subcohort designs")
+   # if(substr(x$model.fit$study.design, 1, 3) != "ran") stop("theta curves cannot be created for subcohort designs")
     if(substr(ci, 1, 1) =="h") {
       
       warning("horizontal ci's are not available fro theta curves, vertical ci's will be calculated")
@@ -71,6 +71,8 @@ function(x, bootstraps = 500,
 
   n <- length(marker)
   rho  <- x$model.fit$cohort.attributes
+  if(length(rho) == 4) rho = c(rho, -9999, -9999, -9999) #accomodate the nested case-control design
+  
   study.design <- x$model.fit$study.design
   link <- x$model.fit$link
   boot.sample <- x$functions$boot.sample
@@ -151,7 +153,7 @@ function(x, bootstraps = 500,
   tmp.plotfun <- plot.functions[[match(plot.type, c("risk", "treatment effect", "cdf", "theta"))]]
    
 
-if(is.null(x$model.fit$disc.marker.neg)){
+if(is.null(x$model.fit$disc.marker.neg)){  # continous marker 
   if(substring(plot.type, 1, 4) == "risk"){
 
   curves <- tmp.plotfun(x, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, trt.names, xlab, ylab, xlim, ylim, main, show.marker.axis, offset = offset)
@@ -171,7 +173,7 @@ if(is.null(x$model.fit$disc.marker.neg)){
       }
     }
   
-}else{
+}else{  # discrete marker
   
 
     

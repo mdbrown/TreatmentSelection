@@ -54,14 +54,16 @@ function(x, ci, ci.bounds, get.F,  xlab, ylab, xlim, ylim, main, markerTWO=FALSE
   
 }
   
+  #so that the mean trt effect is scaled properly for subcohort designs
+  allMeasures <- x$functions$get.summary.measures( x$derived.data, rho =x$model.fit$cohort.attributes, x$model.fit$thresh)
   
-
 
     #add x/y labels and main
     p <- p + xlab(xlab) + ylab(ylab) + ylim(ylim[1], ylim[2])+ ggtitle(main) 
 
     #change the names for the legend
-    p <- p + stat_hline(yintercept  = mean(trt.effect), aes(linetype = factor(3)))+
+    p <- p + stat_hline(yintercept  = allMeasures$ER.trt0.mod - allMeasures$ER.trt1.mod,
+                        aes(linetype = factor(3)))+
       stat_hline(yintercept = 0, aes( linetype = factor(4))) + scale_linetype_manual(name = "Treatment Effect",breaks = c("3", "4"), values = c(3, 4), labels = c("Mean", "Zero"))
     
     p <- p + theme( text = element_text(size=14)) #, 

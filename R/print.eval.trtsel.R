@@ -127,8 +127,8 @@ cat("\n")
             sprintf(" (%.3f,%.3f) ",      round(unname(x$c[1,15]), 3),round(unname(x$c[2,15]), 3)), sep = ""))
   
   cat("\n Model Based:   ")
-  cat(paste("", sprintf("%.3f      ", round(x$estimates$ER.trt0.mod,  3)),  
-            sprintf("     %.3f     ",round(x$estimates$ER.trt1.mod,  3)), 
+  cat(paste("", sprintf("%.3f      ", round(x$estimates$ER.trt1.mod,  3)),  
+            sprintf("     %.3f     ",round(x$estimates$ER.trt0.mod,  3)), 
             sprintf("     %.3f    ", round(x$estimates$ER.mkrbased.mod,  3)), sep=""))
   cat("\n          ")
   cat(paste(" ",sprintf(" (%.3f,%.3f)  ", round(unname(x$c[1,14]), 3), round(unname(x$c[2,14]), 3)), 

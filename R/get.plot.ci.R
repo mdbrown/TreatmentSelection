@@ -1,8 +1,13 @@
 get.plot.ci <-
-function( marker, trt, event, study.design, rho = rho, plot.type, ci, bootstraps, fixed.values, obp.boot.sample, obp.get.F, link, alpha, provided_risk = NULL){
+function( x, plot.type, 
+          ci, bootstraps, 
+          fixed.values,
+          alpha){
   ##first we need to look at what is fixed and what needs to vary to get the ci's we want
   ## I am just storing some index variables that make me able to calculate the 
-  ## proper ci's later.  
+  ## proper ci's later. 
+  
+
   fix.ind <- NULL 
   out.ind <- NULL 
 
@@ -19,7 +24,7 @@ function( marker, trt, event, study.design, rho = rho, plot.type, ci, bootstraps
         if(substr(myci, 1, 4) =="hori") {
            ## predcurve plot with horizontal ci bands
            fix.ind = 2:3    #fix risk_trt
-          if(is.null(provided_risk)){ 
+          if(x$model.fit$link == "risks_provided"){ 
             out.ind = c(1,1) #output F.marker 
           }else{
             out.ind = c(4,4) #output F.delta
@@ -27,7 +32,7 @@ function( marker, trt, event, study.design, rho = rho, plot.type, ci, bootstraps
                           
         }else if(substr(myci, 1, 4) =="vert"){
            ## predcurve plot with vertical ci bands
-          if(is.null(provided_risk)){ 
+          if(x$model.fit$link == "risks_provided"){ 
             fix.ind = c(1,1) #fix F.marker 
           }else{
             fix.ind = c(4,4) #fix F.delta
@@ -77,7 +82,7 @@ function( marker, trt, event, study.design, rho = rho, plot.type, ci, bootstraps
   
   # now bootstrap
   #browser()
-  boot.data <- replicate(bootstraps, one.boot.plot( event, trt, marker, ci, rho, study.design, obp.boot.sample, obp.get.F, fixed.values, fix.ind, out.ind, link, provided_risk))
+  boot.data <- replicate(bootstraps, one.boot.plot( x, ci, fixed.values, fix.ind, out.ind))
 
  # if(substr(myplot, 1,3)=="ris"){ boot.data[is.na(boot.data)] <- 0 }
 

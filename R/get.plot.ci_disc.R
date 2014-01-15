@@ -1,5 +1,5 @@
 get.plot.ci_disc <-
-function( marker, trt, event, rho = rho, plot.type, ci, bootstraps, obp.boot.sample, obp.get.F,  alpha){
+function( x, plot.type, ci, bootstraps, alpha){
   ##first we need to look at what is fixed and what needs to vary to get the ci's we want
   ## I am just storing some index variables that make me able to calculate the 
   ## proper ci's later.  
@@ -7,34 +7,13 @@ function( marker, trt, event, rho = rho, plot.type, ci, bootstraps, obp.boot.sam
   #the data will be set up as 
   # F.marker, risk_t0, risk_t1 (all sorted by F.marker), F.event, obs delta (sorted by F.event)
 
-  one.boot.plot_disc <-
-    function(event, trt, marker, rho = rho,  obp.boot.sample){
-      
-      myboot.sample <- obp.boot.sample( event, trt, rho)
-      
-      rho.b <- myboot.sample[1:7]
-      ind   <- myboot.sample[-c(1:7)]
-      
-      event.b  <- event[ind]
-      trt.b  <- trt[ind]
-      marker.b  <- marker[ind] 
-
-      mval <- sort(unique(marker))
-      c(   event.trt0.mkr0 = mean(event.b[trt.b==0 & marker.b ==mval[1]]), 
-           event.trt1.mkr0 = mean(event.b[trt.b==1 & marker.b ==mval[1]]), 
-           event.trt0.mkr1 = mean(event.b[trt.b==0 & marker.b ==mval[2]]),
-           event.trt1.mkr1 = mean(event.b[trt.b==1 & marker.b ==mval[2]]), 
-           trteff.mkr0 =mean(event.b[trt.b==0 & marker.b ==mval[1]]) - mean(event.b[trt.b==1 & marker.b ==mval[1]]), 
-           trteff.mkr1 =mean(event.b[trt.b==0 & marker.b ==mval[2]]) - mean(event.b[trt.b==1 & marker.b ==mval[2]])
-           )
-
-    }
-
+ 
   
   # now bootstrap
 
-  boot.data <- replicate(bootstraps, one.boot.plot_disc( event, trt, marker, rho,obp.boot.sample))
-  mval <- sort(unique(marker))
+  boot.data <- replicate(bootstraps, one.boot.plot_disc(x))
+  
+  mval <- sort(unique(x$derived.data$marker))
   row.names(boot.data) = c(paste("risk.trt0.mkr", mval[1], sep = ""), 
                        paste("risk.trt1.mkr", mval[1], sep = ""), 
                        paste("risk.trt0.mkr", mval[2], sep = ""), 
@@ -55,3 +34,5 @@ function( marker, trt, event, rho = rho, plot.type, ci, bootstraps, obp.boot.sam
   
   list(myconf.ints = myconf.ints, newci = ci)
 }
+
+

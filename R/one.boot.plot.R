@@ -1,7 +1,9 @@
 one.boot.plot <-
-function(event, trt, marker, ci, rho = rho, study.design, obp.boot.sample, obp.get.F, fixed.values, fix.ind, out.ind, link, provided_risk = NULL){
+function(x, ci, fixed.values, fix.ind, out.ind){
 
-  myboot.sample <- obp.boot.sample( event, trt, rho)
+  myboot.sample <- x$functions$boot.sample( x$derived.data$event, 
+                                            x$derived.data$trt, 
+                                            rho = x$derived.data$cohort.attributes)
   #this makes it work for step function
   if(substr(ci, 1,1)=="h") addind = 0 
   else addind = 1
@@ -10,28 +12,30 @@ function(event, trt, marker, ci, rho = rho, study.design, obp.boot.sample, obp.g
   rho.b <- myboot.sample[1:7]
   ind   <- myboot.sample[-c(1:7)]
 
-  event.b  <- event[ind]
-  trt.b  <- trt[ind]
-  marker.b  <- marker[ind] 
+  event.b  <- x$derived.data$event[ind]
+  trt.b    <- x$derived.data$trt[ind]
+  marker.b <- x$derived.data$marker[ind] 
   
 
-  coef <- unname(get.coef(event.b, trt.b, marker.b, study.design, rho.b, link = link)[,1])
+  coef <- unname(get.coef(event.b, trt.b, marker.b, 
+                          x$model.fit$study.design, 
+                          rho.b, 
+                          link = x$model.fit$link)[,1])
 
-  if(is.null(provided_risk)) linkinvfun <- binomial(link = link)$linkinv
-  else linkinvfun <- NULL
-
-  if(link == "risks_provided"){
+  if(x$model.fit$link == "risks_provided"){
     obsrisk.t0.b <- provided_risk[ind,1]
     obsrisk.t1.b <- provided_risk[ind,2]
+    linkinvfun <- NULL
   }else{
+    linkinvfun <- binomial(link = x$model.fit$link)$linkinv
   obsrisk.t0.b  <-  get.risk.t0(coef,  marker.b, linkinvfun)
   obsrisk.t1.b  <-  get.risk.t1(coef,  marker.b, linkinvfun)
   }
   
   obsdelta.b <-obsrisk.t0.b - obsrisk.t1.b#
 
-  F.Y <- obp.get.F( marker.b,        event.b, trt.b, rho.b)*100#
-  F.D <- obp.get.F( obsdelta.b, event.b, trt.b, rho.b)*100#
+  F.Y <- x$functions$get.F( marker.b,        event.b, trt.b, rho.b)*100#
+  F.D <- x$functions$get.F( obsdelta.b, event.b, trt.b, rho.b)*100#
   
   theta.c <- EventRateVec(obsrisk.t0.b, obsrisk.t1.b, F.D, rho.b, event.b, trt.b)
 

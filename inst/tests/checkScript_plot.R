@@ -13,14 +13,19 @@
 
  ## plot
    #risk curves
-   plot.trtsel(myTrtsel, bootstraps = 50, plot.type = "risk", 
+   out <- plot.trtsel(myTrtsel, bootstraps = 50, plot.type = "risk", 
                ci = "horizontal")
+   
+   
    plot.trtsel(myTrtsel, bootstraps = 50, plot.type = "risk", 
                ci = "horizontal", fixed.values = seq(0, 1, by = .2))
    
    
    plot.trtsel(myTrtsel, bootstraps = 50, plot.type = "risk", 
                ci = "vertical")
+   plot.trtsel(myTrtsel.all, bootstraps = 50, plot.type = "risk", 
+               ci = "vertical")
+   
    plot.trtsel(myTrtsel, bootstraps = 50, plot.type = "risk", 
                ci = "vertical", fixed.values = seq(0, 100, by = 20))
    

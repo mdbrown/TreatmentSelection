@@ -81,13 +81,13 @@ function(x, bootstraps = 500,
   
   if(link == "risks_provided") 
     {
-    provided_risk <- cbind(x$derived.data$fittedrisk.t0, x$derived.data$fittedrisk.t1)
+    provided_risk <- cbind(x$derived.data$fittedrisk.t0, 
+                           x$derived.data$fittedrisk.t1)
     show.marker.axis = FALSE
-  }
-  else provided_risk = NULL
+  } else provided_risk = NULL
   
 
- if(is.null(x$model.fit$disc.marker.neg)){
+ if(is.null(x$model.fit$disc.marker.neg)){  #continuous marker 
     plot.functions <- list(  predcurvePLOT_gg, trteffectPLOT_gg, CDFdeltaPLOT_gg, SelectionImpactPLOT_gg)
     
   if(length(fixed.values)!=0) conf.bands = FALSE
@@ -104,7 +104,8 @@ function(x, bootstraps = 500,
       if(is.element(substr(plot.type, 1,3), c("cdf"))) fixed.values = seq(from = 1, to = 100, length.out = conf.bandsN)
       else if(substr(plot.type, 1,3)=="tre") fixed.values = seq(from = min(delta), to = max(delta), length.out = conf.bandsN)
       else if(substr(plot.type, 1,3)=="ris"){
-       allrisks <- c(x$derived.data$fittedrisk.t0, x$derived.data$fittedrisk.t1)
+       allrisks <- c(x$derived.data$fittedrisk.t0, 
+                     x$derived.data$fittedrisk.t1)
        fixed.values = seq(from = min(allrisks), to = max(allrisks), length.out = conf.bandsN)
 
       }
@@ -118,7 +119,12 @@ function(x, bootstraps = 500,
     #bootstrapping done by fixing response and strapping marker 
     
     if((conf.bands & bootstraps>1) | (length(fixed.values)>0 & bootstraps > 1)){ 
-      ci.bounds <- get.plot.ci(marker, trt, event, study.design, rho, plot.type, ci, bootstraps, fixed.values =fixed.values, obp.boot.sample = boot.sample, obp.get.F = get.F, link = link, alpha = alpha, provided_risk = provided_risk)
+
+      ci.bounds <- get.plot.ci(x, 
+                               plot.type, 
+                               ci, bootstraps, 
+                               fixed.values =fixed.values,  
+                               alpha = alpha)
     }else{ 
       ci.bounds <- NULL
       conf.bands = FALSE
@@ -138,7 +144,9 @@ function(x, bootstraps = 500,
 
     if(( conf.bands & bootstraps>1) ){ 
       
-      ci.bounds <- get.plot.ci_disc(marker, trt, event, rho, plot.type, ci, bootstraps, obp.boot.sample = boot.sample, obp.get.F = get.F, alpha = alpha)
+      ci.bounds <- get.plot.ci_disc(x, plot.type, 
+                                    ci, bootstraps, 
+                                    alpha)
       ci = ci.bounds$newci
       ci.bounds = ci.bounds$myconf.ints
       }else{ 

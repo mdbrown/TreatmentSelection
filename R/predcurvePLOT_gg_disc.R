@@ -7,6 +7,7 @@ function(x, ci, ci.bounds, get.F,  xlab, ylab, xlim, ylim, main, trt.names){
   marker <- x$derived.data$marker
   event <- x$derived.data$event
   trt <- x$derived.data$trt
+  
   mydata <- data.frame(risk = fittedrisk.t0*(1-trt)+fittedrisk.t1*trt, trt = trt,  marker)
 
   mydata <- unique(mydata)
@@ -16,7 +17,7 @@ function(x, ci, ci.bounds, get.F,  xlab, ylab, xlim, ylim, main, trt.names){
    
   #appease check 
   risk <- lower <- upper <- NULL
-  
+
   if(!is.null(ci.bounds)){
     
   
@@ -49,8 +50,8 @@ function(x, ci, ci.bounds, get.F,  xlab, ylab, xlim, ylim, main, trt.names){
   #add x/y labels and main
   p <- p + xlab(xlab) + ylab(ylab) + ylim(ylim[1], ylim[2]) + ggtitle(main) 
   #change the names for the legend
-  p <- p + scale_shape_discrete(labels = trt.names) +
-    scale_linetype_discrete( labels = trt.names)+
+  p <- p + scale_shape_discrete(breaks=factor(c(1,0)), labels = trt.names) +
+    scale_linetype_discrete(breaks=factor(c(1,0)), labels = trt.names)+
     theme(legend.title = element_blank(),  text = element_text(size=14))
   #legend.text = element_text(size = 16))
   p <- p + scale_x_discrete(labels = c(paste(mval[1], "\n(", round(mean(marker==mval[1])*100, 1),"%)", sep = ""), 

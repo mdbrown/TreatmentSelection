@@ -10,8 +10,8 @@ eval.trtsel:
 
 plot.trtsel: 
   -added new plot.type that plots event rate under different marker based treatment assignment rules vs. F_delta(v).
-  - the mean trt effect line for subcohort designs was not weighted correctly. this has been fixed. 
-
+  - the mean trt effect line for subcohort designs was not weighted correctly. this has been fixed for continuous and discrete markers. 
+  - fixed a bug building plots for subcohort designs with discrete markers 
 
 
 

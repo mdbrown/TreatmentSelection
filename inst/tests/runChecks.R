@@ -18,4 +18,6 @@ myTrtsel <- trtsel( event = "event", trt = "trt", marker ="Y2_disc",
                     cohort.attributes = rho.cc,
                     study.design = "nested case-control")
 
+myTrtsel.all <- trtsel( event = "event", trt = "trt", marker ="Y2", 
+                    data = tsdata)
 

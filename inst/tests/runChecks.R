@@ -18,6 +18,17 @@ myTrtsel <- trtsel( event = "event", trt = "trt", marker ="Y2_disc",
                     cohort.attributes = rho.cc,
                     study.design = "nested case-control")
 
-myTrtsel.all <- trtsel( event = "event", trt = "trt", marker ="Y2", 
+myTrtsel.all <- trtsel( event = "event", trt = "trt", marker ="Y2_disc", 
                     data = tsdata)
 
+
+rho.scc <- c(nrow(tsdata), 
+             mean(tsdata$trt==0 & tsdata$event==0), 
+             mean(tsdata$trt==0 & tsdata$event==1), 
+             mean(tsdata$trt==1 & tsdata$event==0), 
+              1.0, 1.0 )
+
+myTrtsel <- trtsel( event = "event", trt = "trt", marker ="Y2_disc", 
+                    data = tsdata_scc,
+                    cohort.attributes = rho.scc,
+                    study.design = "stratified nested case-control")

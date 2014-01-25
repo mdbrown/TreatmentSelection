@@ -27,7 +27,7 @@ function(x1, x2, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, xlab, yla
   
   
   ## need to adjust these for scc and cc sampling designs
-  allMeasures <- x1$functions$get.summary.measures( x$derived.data, rho, x$model.fit$thresh)
+  allMeasures <- x1$functions$get.summary.measures( x1$derived.data, rho, x1$model.fit$thresh)
   
   avglines <- cbind(0, sort(F.D), 4, .5)
   avglines <- rbind(avglines, 

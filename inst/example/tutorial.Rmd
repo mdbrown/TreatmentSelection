@@ -182,7 +182,6 @@ mycompare <- compare.trtsel(trtsel1 = trtsel.Y1,
                             ci = "vertical", 
                             offset = 0.01, 
                             conf.bands = TRUE)
-
 mycompare
 ```
 
@@ -214,7 +213,6 @@ Including fitted risks (*new option with version 1.1.0*)
 Alternative to including a marker and fitting a logistic model, the user can specify fitted risks for trt = 0 and trt = 1. In this case, no model fitting will be implemented and all bootstrap confidence intervals will be conditional on the provided fitted model. 
 
 ```{r}
-
 #calculate model fit
 mymod <- glm(event~trt*Y2, data= tsdata, family = binomial("logit"))
 
@@ -228,23 +226,6 @@ myfitted.trtsel <- trtsel( event ="event", trt = "trt",
                          fittedrisk.t1 = "fitted.t1",
                          study.design = "randomized cohort", 
                          default.trt = "trt all")
-
-
-#calculate model fit
-mymod <- glm(event~trt*Y1, data= tsdata, family = binomial("logit"))
-
-tsdata$fitted.t0 <- predict(mymod, newdata=data.frame(trt = 0, Y1 = tsdata$Y1), type = "response")
-tsdata$fitted.t1 <- predict(mymod, newdata=data.frame(trt = 1, Y1 = tsdata$Y1), type = "response")
-
-
-myfitted.trtsel <- trtsel( event ="event", trt = "trt",  
-                         data = tsdata,
-                         fittedrisk.t0 = "fitted.t0",
-                         fittedrisk.t1 = "fitted.t1",
-                         study.design = "randomized cohort", 
-                         default.trt = "trt all")
-
-
 
 ```
 

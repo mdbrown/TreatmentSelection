@@ -23,8 +23,8 @@ function(x, ci, fixed.values, fix.ind, out.ind){
                           link = x$model.fit$link)[,1])
 
   if(x$model.fit$link == "risks_provided"){
-    obsrisk.t0.b <- provided_risk[ind,1]
-    obsrisk.t1.b <- provided_risk[ind,2]
+    obsrisk.t0.b <- x$derived.data$fittedrisk.t0[ind]
+    obsrisk.t1.b <- x$derived.data$fittedrisk.t1[ind]
     linkinvfun <- NULL
   }else{
     linkinvfun <- binomial(link = x$model.fit$link)$linkinv

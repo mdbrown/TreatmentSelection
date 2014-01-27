@@ -25,9 +25,9 @@ function( x, plot.type,
            ## predcurve plot with horizontal ci bands
            fix.ind = 2:3    #fix risk_trt
           if(x$model.fit$link == "risks_provided"){ 
-            out.ind = c(1,1) #output F.marker 
+            out.ind = c(4,4) #output F.delta 
           }else{
-            out.ind = c(4,4) #output F.delta
+            out.ind = c(1,1) #output F.marker
           }
                           
         }else if(substr(myci, 1, 4) =="vert"){

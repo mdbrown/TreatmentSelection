@@ -32,3 +32,9 @@ myTrtsel <- trtsel( event = "event", trt = "trt", marker ="Y2_disc",
                     data = tsdata_scc,
                     cohort.attributes = rho.scc,
                     study.design = "stratified nested case-control")
+
+
+
+x<- lineprof(trtsel( event = "event", trt = "trt", marker ="Y2", 
+                    data = tsdata), torture = TRUE)
+shine(x)

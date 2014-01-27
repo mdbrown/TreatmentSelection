@@ -33,7 +33,7 @@ trtsel.Y1$model.fit  #information regarding the model fit
 # "strong" marker
 trtsel.Y2 <- trtsel( event ="event", trt = "trt", marker = "Y2", data = tsdata,
                      study.design = "randomized cohort", link = "logit", 
-                     default.trt = "trt all")
+                     default.trt = "trt none")
 trtsel.Y2
 
 
@@ -49,6 +49,8 @@ tmp <- plot.trtsel(trtsel.Y1, main = "Y1: Oncotype-DX-like marker", plot.type = 
 
 
 tmp <- plot.trtsel(trtsel.Y1, plot.type = "theta", ci = "default",
+                   conf.bands = TRUE, bootstraps = 50)
+tmp <- plot.trtsel(trtsel.Y2, plot.type = "theta", ci = "default",
                    conf.bands = TRUE, bootstraps = 50)
 
 tmp <- plot.trtsel(trtsel.Y1, main = "Y1: Oncotype-DX-like marker", plot.type = "risk", ci = "horizontal",

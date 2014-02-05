@@ -21,4 +21,4 @@ devtools::install_github("TreatmentSelection", "mdbrown")
 
 ```
 
-A manuscript describing the methods employed in the package can be found [here](http://biostats.bepress.com/uwbiostat/paper389/) and a brief tutorial is available [here](http://rpubs.com/mdbrown/TreatmentSelectionTutorial).
+A manuscript describing the methods employed in the package can be found [here](http://biostats.bepress.com/uwbiostat/paper389/) and a brief tutorial is available [here](http://rpubs.com/mdbrown/TreatmentSelection).

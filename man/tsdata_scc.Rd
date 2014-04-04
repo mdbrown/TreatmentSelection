@@ -1,16 +1,16 @@
-\name{tsdata}
-\alias{tsdata}
+\name{tsdata_scc}
+\alias{tsdata_scc}
 \docType{data}
 \title{
 %%   ~~ data name/kind ... ~~
-sample data for R package TreatmentSelection
+sample stratified nested case-control data for R package TreatmentSelection
 }
 \description{
-   Simulated data set consisting of two continuous markers, two discrete markers, treatment, and event status.
+   Simulated stratified case-control data set consisting of two continuous markers, two discrete markers, treatment, and event status.
 }
 \usage{data(tsdata)}
 \format{
-  A data frame with 1000 simulated observations reflecting the following clinical context.  Markers Y1 and Y2 are candidates for identifying a subset of women with estrogen-receptor positive breast cancer who do not benefit from adjuvant chemotherapy over and above tamoxifen.  The clinical outcome of interest, termed "event", is 5-year breast cancer recurrence or death.  Data come from a hypothetical randomized trial where subjects are randomly assigned to tamoxifen alone or tamoxifen plus chemotherapy and followed to ascertain this outcome; markers Y1 and Y2 are measured at baseline.
+  A data frame with 468 observations reflecting a 1:1 stratified case control subcohort sample from the \code{tsdata} dataset. Observations are stratified on treatment status. See ?tsdata for the clinical context these data were simulated under. 
   \describe{
     \item{\code{trt}}{a numeric vector distinguishing chemotherapy-treated individuals (trt = 1) vs individuals treated with tamoxifen alone (trt = 0)}
     \item{\code{event}}{a numeric vector indicating event status  (1 for recurrence or death within 5 years, 0 otherwise)}
@@ -19,6 +19,10 @@ sample data for R package TreatmentSelection
     \item{\code{Y1_disc}}{a discrete version of marker 1, coded 1 if Y1 > mean(Y1) and 0 otherwise. }
   \item{\code{Y2_disc}}{a discrete version of marker 2, coded 1 if Y2 > 0, and 0 otherwise. }
   }
+}
+
+\note{
+  In order to evaluate the markers in this dataset, we need to provide the function \code{trtsel} with information from the full cohort \code{tsdata}. See the example below for help.  
 }
 
 \references{
@@ -31,27 +35,38 @@ Janes, Holly; Brown, Marshall D; Pepe, Margaret; Huang, Ying; "An Approach to Ev
 
 
 \examples{
-data(tsdata)
+data(tsdata_scc)
+data(tsdata) #need this to provide cohort.attribute information to function trtsel 
 
-tsdata[1:10, ]
+tsdata_scc[1:10, ]
 
 ###########################
 ## Create trtsel objects 
 ###########################
 
-trtsel.Y1 <- trtsel( event = "event",
-                     trt = "trt",
-                     marker = "Y1",
-                     data = tsdata,
-                     study.design = "randomized cohort")
-trtsel.Y1
+#create cohort.attributes using the full cohort dataset tsdata
+# c(cohort sample size, 
+#Pr(trt==0 & event==0) in cohort, 
+#Pr(trt==0 & event==1) in cohort, 
+#Pr(trt==1 & event==0) in cohort, 
+#fraction of cases with trt == 0 sampled from cohort, 
+#fraction of cases with trt == 1 sampled from cohort )
 
-trtsel.Y2 <- trtsel( event = "event",
-                     trt = "trt",
-                     marker = "Y2",
-                     data = tsdata,
-                     study.design = "randomized cohort")
-trtsel.Y2
+rho.scc <- c( nrow(tsdata), with(tsdata, mean(trt==0 & event==0)), 
+                            with(tsdata, mean(trt==0 & event==1)), 
+                            with(tsdata, mean(trt==1 & event==0)),
+                            1.0, 
+                            1.0)
+
+trtsel.Y1 <- trtsel( event = "event", trt = "trt", marker ="Y1", 
+                    data = tsdata_scc,
+                    cohort.attributes = rho.scc,
+                    study.design = "stratified nested case-control")
+
+trtsel.Y2 <- trtsel( event = "event", trt = "trt", marker ="Y2", 
+                    data = tsdata_scc,
+                    cohort.attributes = rho.scc,
+                    study.design = "stratified nested case-control")
 
 #############################################
 ## Plot fitted risks and treatment effects
@@ -59,21 +74,21 @@ trtsel.Y2
 
 # Plot risk curves
 tmp <- plot.trtsel(trtsel.Y1, main = "Marker Y1", 
-                       plot.type = "risk", bootstraps = 500,
+                       plot.type = "risk", bootstraps = 50,
                        trt.names=c("chemo.","no chemo."))
 
 plot.trtsel(trtsel.Y2, main = "Marker Y2",  
-                       plot.type = "risk", bootstraps = 500,
+                       plot.type = "risk", bootstraps = 50,
                        trt.names=c("chemo.","no chemo."))
 
 # Plot treatment effect curves
 plot.trtsel(trtsel.Y1, main = "Marker Y1", 
                        plot.type = "treatment effect", 
-                       ci = "vertical",  bootstraps = 500 )
+                       ci = "vertical",  bootstraps = 50 )
 
 plot.trtsel(trtsel.Y2, main = "Marker Y2",
                        plot.type = "treatment effect",
-                       ci = "vertical", bootstraps = 500)
+                       ci = "vertical", bootstraps = 50)
 
 
 

@@ -54,7 +54,7 @@ function( x, groups = 10, plot.type = "calibration", trt.names = c("Treatment", 
     F.risk.t1 <- get.F.case.control( fittedrisk.c.t1, D.t1, trt.t1, rho, return.fun=TRUE)
     F.delta   <- get.F.case.control( fitteddelta    , event, trt, rho, return.fun=TRUE)
     
-  }else if( substr(study.design, 5) =="strat") { 
+  }else if( substr(study.design, 1,5) =="strat") { 
 
     #we split up by treatment here, so we cant calculate F in the same way for strat. cc. 
     # instead we calculate F(marker | trt = tmp.trt)
@@ -150,7 +150,7 @@ breaks.delta <- sort(fitteddelta)[ sum.I( seq(0, 1, 1/groups), "<",F.delta(fitte
     obs.delta   = expit(logit(obs.risk.t1.tmp)+ logit(rho[3]) - logit(mean(event))) - 
                   expit(logit(obs.risk.t0.tmp)+ logit(rho[3]) - logit(mean(event)))
     
- }else if(substr(study.design, 1, 4) =="strat"){
+ }else if(substr(study.design, 1, 5) =="strat"){
 
 
     Pr.D1.givT0 <- rho[3]/(rho[2]+rho[3])

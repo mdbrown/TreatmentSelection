@@ -377,12 +377,12 @@ my.trtsel<-trtsel(event="event",trt="trt",marker="Y2", data = tsdata,
 
 tsdata_cc <- tsdata[S==1,]
 
-cc.trtsel<-trtsel(event="event",trt="trt",marker="Y", data = subdata.cc,
+cc.trtsel<-trtsel(event="event",trt="trt",marker="Y1", data = tsdata_cc,
                   cohort.attributes = c(n, mean(T), mean(D), 1),
                   study.design="nested case control", 
                   default.trt = "trt none")
 
-
+calibrate.trtsel(cc.trtsel)
 #rho = c(mean(D), 1000000, mean(D[T==0]), mean(D[T==1]), nmatch, sum(T==1),0)
 tmp <- eval.trtsel(cc.trtsel, bootstraps=50)
 
@@ -395,7 +395,7 @@ mean(1-myT[myD==1])
 
 ##STRATIFIED CASE CONTROL
 
-nmatch = 1
+nmatch = 2
 # generate case-control subset (sample based on R and T)
 S <- NULL
 
@@ -414,10 +414,13 @@ myD<-D[S==1]; myT<-T[S==1]; myY<-Y2[S==1]
 
 tsdata_scc <- tsdata[S==1,]
 
-scc.trtsel<-trtsel(event="event",trt="trt",marker="Y", data = tsdata_scc,
+scc.trtsel<-trtsel(event="event",trt="trt",marker="Y1", data = tsdata_scc,
                    cohort.attributes = c(n, mean(D==0 & T==0), mean(D==1 & T==0), mean(D==0 & T==1), 1,1),
                    study.design="stratified nested case control", 
                    default.trt = "trt none")
+
+calibrate.trtsel(scc.trtsel)
+
 
 tmp <- eval.trtsel(scc.trtsel, bootstraps = 10)$estimates
 plot.trtsel(scc.trtsel, bootstraps = 10, plot.type = "theta")

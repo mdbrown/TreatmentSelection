@@ -1,12 +1,15 @@
 shade_gg <-
 function(p, bounds, fixed, type, lty = 1, bands, width=5){
   
-   low <- high <- NULL #appease check
+   low <- high <- y <- NULL #appease check
   
    if(any(dim(bounds)==0)){
      
      return(p )
    }
+   
+   
+   yend <- xend <- NULL #to appease check
    
    numbounds <- ncol(bounds)
    if(is.null(numbounds)) {

@@ -3,7 +3,7 @@ function(x, ci, fixed.values, fix.ind, out.ind){
 
   myboot.sample <- x$functions$boot.sample( x$derived.data$event, 
                                             x$derived.data$trt, 
-                                            rho = x$derived.data$cohort.attributes)
+                                            rho = x$model.fit$cohort.attributes)
   #this makes it work for step function
   if(substr(ci, 1,1)=="h") addind = 0 
   else addind = 1

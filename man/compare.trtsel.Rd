@@ -115,10 +115,7 @@ compare.trtsel(trtsel1, trtsel2, bootstraps = 500,
 }
 \references{
 
-Janes, Holly; Brown, Marshall D.; Pepe, Margaret; and Huang, Ying, "Statistical Methods for Evaluating and Comparing Biomarkers for Patient Treatment Selection" (January 2013). UW Biostatistics Working Paper Series. Working Paper 389.
-http://biostats.bepress.com/uwbiostat/paper389
-
-}
+Janes, Holly; Brown, Marshall D; Pepe, Margaret; Huang, Ying; "An Approach to Evaluating and Comparing Biomarkers for Patient Treatment Selection" The International Journal of Biostatistics. Volume 0, Issue 0, ISSN (Online) 1557-4679, ISSN (Print) 2194-573X, DOI: 10.1515/ijb-2012-0052, April 2014}
 
 \seealso{
 \code{\link{trtsel}} for creating trtsel objects, \code{\link{plot.trtsel}} for plotting risk curves and more, \code{\link{eval.trtsel}} for evaluating marker performance, and \code{\link{calibrate.trtsel}} for assessing model calibration.. 

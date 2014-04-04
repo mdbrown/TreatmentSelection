@@ -33,7 +33,7 @@ function(x, bootstraps = 500,
    # if(substr(x$model.fit$study.design, 1, 3) != "ran") stop("theta curves cannot be created for subcohort designs")
     if(substr(ci, 1, 1) =="h") {
       
-      warning("horizontal ci's are not available fro theta curves, vertical ci's will be calculated")
+      warning("horizontal ci's are not available for theta curves, vertical ci's will be calculated")
       ci = "vertical"
     }
   }

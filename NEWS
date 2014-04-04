@@ -1,17 +1,23 @@
 
-TreatmentSelection 1.1.1 
+TreatmentSelection 1.1.1  
 ========================
 
  * eval.trtsel: modeled estimates of event rates calculated for subcohort designs had a bug. Calculations now are correct. 
+
  * eval.trtsel:  also fixed bug where event rates werent calculated when bootstraps = 0. 
+
  * eval.trtsel:  fixed event rate labeling bug that swapped trt all for trt none. 
 
  * plot.trtsel: added new plot.type that plots event rate under different marker based treatment assignment rules vs. F_delta(v).
+
  * plot.trtsel:  the mean trt effect line for subcohort designs was not weighted correctly. this has been fixed for continuous and discrete markers. 
+
  * plot.trtsel:  fixed a bug building plots for subcohort designs with discrete markers 
 
  * fixed various small things so that the package now has no warnings from R CMD Check
+
  * added manual files for tsdata_scc and tsdata_cc
+
  * calibrate.trtsel: fixed bug when calibrating models fit using stratified case-control data. 
 
 

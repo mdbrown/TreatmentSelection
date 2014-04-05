@@ -63,32 +63,15 @@ trtsel.Y1 <- trtsel( event = "event", trt = "trt", marker ="Y1",
                     cohort.attributes = rho.scc,
                     study.design = "stratified nested case-control")
 
-trtsel.Y2 <- trtsel( event = "event", trt = "trt", marker ="Y2", 
-                    data = tsdata_scc,
-                    cohort.attributes = rho.scc,
-                    study.design = "stratified nested case-control")
-
-#############################################
-## Plot fitted risks and treatment effects
+############################################
+## Plot risk curves
 #############################################
 
 # Plot risk curves
 tmp <- plot.trtsel(trtsel.Y1, main = "Marker Y1", 
-                       plot.type = "risk", bootstraps = 50,
+                       plot.type = "risk", bootstraps = 10, # set higher in practice
                        trt.names=c("chemo.","no chemo."))
 
-plot.trtsel(trtsel.Y2, main = "Marker Y2",  
-                       plot.type = "risk", bootstraps = 50,
-                       trt.names=c("chemo.","no chemo."))
-
-# Plot treatment effect curves
-plot.trtsel(trtsel.Y1, main = "Marker Y1", 
-                       plot.type = "treatment effect", 
-                       ci = "vertical",  bootstraps = 50 )
-
-plot.trtsel(trtsel.Y2, main = "Marker Y2",
-                       plot.type = "treatment effect",
-                       ci = "vertical", bootstraps = 50)
 
 
 
@@ -100,31 +83,13 @@ plot.trtsel(trtsel.Y2, main = "Marker Y2",
 cali.Y1 <- calibrate.trtsel(trtsel.Y1)
 cali.Y1
 
-cali.Y2 <- calibrate.trtsel(trtsel.Y2)
-cali.Y2
-
 
 #########################################
 ## Evaluate performance of each marker 
 #########################################
 
-estimates.Y1 <- eval.trtsel(trtsel.Y1, bootstraps = 50)
+estimates.Y1 <- eval.trtsel(trtsel.Y1, bootstraps = 10)
 estimates.Y1
-
-estimates.Y2 <- eval.trtsel(trtsel.Y2, bootstraps = 50)
-estimates.Y2
-
-
-###############################
-## Compare marker performance
-###############################
-
-
-# Compare the markers based on summary measures
-mycompare <- compare.trtsel(trtsel1 = trtsel.Y1, 
-                            trtsel2 = trtsel.Y2,
-                                bootstraps = 50)
-mycompare
 
 
 }

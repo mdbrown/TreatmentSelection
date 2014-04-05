@@ -103,6 +103,7 @@ Janes, Holly; Brown, Marshall D; Pepe, Margaret; Huang, Ying; "An Approach to Ev
 
 
 \examples{
+
 data(tsdata)
 
 ###########################
@@ -114,14 +115,8 @@ trtsel.Y1 <- trtsel( event = "event",
                      marker = "Y1",
                      data = tsdata,
                      study.design = "randomized cohort")
-trtsel.Y1
 
-trtsel.Y2 <- trtsel( event = "event",
-                     trt = "trt",
-                     marker = "Y2",
-                     data = tsdata,
-                     study.design = "randomized cohort")
-trtsel.Y2
+
 
 #discrete marker
 trtsel.Y1_disc <- trtsel( event ="event", trt = "trt", marker = "Y1_disc", 
@@ -134,33 +129,28 @@ trtsel.Y1_disc <- trtsel( event ="event", trt = "trt", marker = "Y1_disc",
 
 # Plot risk curves
 plot.trtsel(trtsel.Y1, main = "Marker Y1", 
-                       plot.type = "risk", bootstraps = 50,
+                       plot.type = "risk", bootstraps = 10, #set higher in practice
                        trt.names=c("chemo.","no chemo."))
      
 # Now with confidence intervals around fixed.values 
  plot.trtsel(trtsel.Y1, main = "Marker Y1",
                         plot.type = "risk", ci = "horizontal", 
                         fixed.values = c(.2, .5), 
-                        offset = .01, bootstraps = 50,
+                        offset = .01, bootstraps = 10,
                         trt.names=c("chemo.","no chemo."))
                         
 #discrete marker
 plot.trtsel(trtsel.Y1_disc, main = "Discrete Marker Y1", 
-            plot.type = "risk" , bootstraps = 50)
+            plot.type = "risk" , bootstraps = 10)
 
    
 
 # Plot treatment effect curves
-plot.trtsel(trtsel.Y1, main = "Marker Y1",
-                       plot.type = "treatment effect",
-                       ci = "horizontal",  bootstraps = 50 )
-
-# Now with confidence intervals around fixed.values
-plot.trtsel(trtsel.Y2, main = "Marker Y2", 
+#with confidence intervals around fixed.values
+plot.trtsel(trtsel.Y1, main = "Marker Y1", 
                        plot.type = "treatment effect",
                        ci = "vertical", conf.bands = FALSE,
-                       fixed.values = c(.1, .2), bootstraps = 500)
-
+                       fixed.values = c(10, 20), bootstraps = 10)
 
 
 }

@@ -15,8 +15,8 @@ function(x, bootstraps = 500,
   
   if(!is.trtsel(x)) stop("x must be an object of class 'trtsel' created by using the function 'trtsel' see ?trtsel for more help")
  
-  if(!is.element(plot.type, c("risk", "treatment effect", "cdf", "theta"))){ 
-    stop("plot.type must be one of \"risk\", \"treatment effect\", \"cdf\" or \"theta\"")
+  if(!is.element(plot.type, c("risk", "treatment effect", "cdf", "selection impact"))){ 
+    stop("plot.type must be one of \"risk\", \"treatment effect\", \"cdf\" or \"selection impact\"")
   }
   stopifnot(length(plot.type) ==1)
   
@@ -33,7 +33,7 @@ function(x, bootstraps = 500,
    # if(substr(x$model.fit$study.design, 1, 3) != "ran") stop("theta curves cannot be created for subcohort designs")
     if(substr(ci, 1, 1) =="h") {
       
-      warning("horizontal ci's are not available for theta curves, vertical ci's will be calculated")
+      warning("horizontal ci's are not available for selection impact curves, vertical ci's will be calculated")
       ci = "vertical"
     }
   }
@@ -57,7 +57,7 @@ function(x, bootstraps = 500,
   }
   #no cdf plots for binary marker
   if(!is.null(x$model.fit$disc.marker.neg)){
-  if(substr(plot.type, 1, 3) =="cdf") stop("cdf plots cannot be created for a binary marker. Please choose plot.type to be \"risk\" or \"treatment effect\" ")
+  if(is.element(substr(plot.type, 1, 3), c("cdf", "selection impact"))) stop("cdf or selection impact plots cannot be created for a binary marker. Please choose plot.type to be \"risk\" or \"treatment effect\" ")
   }
   #save the current plot parameters
   #old.par <- par(no.readonly = TRUE)
@@ -158,7 +158,7 @@ function(x, bootstraps = 500,
     
   }
 
-  tmp.plotfun <- plot.functions[[match(plot.type, c("risk", "treatment effect", "cdf", "theta"))]]
+  tmp.plotfun <- plot.functions[[match(plot.type, c("risk", "treatment effect", "cdf", "selection impact"))]]
    
 
 if(is.null(x$model.fit$disc.marker.neg)){  # continous marker 

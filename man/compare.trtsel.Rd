@@ -125,6 +125,7 @@ Janes, Holly; Brown, Marshall D; Pepe, Margaret; Huang, Ying; "An Approach to Ev
 
 
 \examples{
+
 data(tsdata)
 
 ###########################
@@ -160,19 +161,14 @@ trtsel.Y2_disc <- trtsel( event ="event", trt = "trt", marker = "Y2_disc",
 ###############################
 
 
-# Compare the markers based on summary measures 
-mycompare <- compare.trtsel(trtsel1 = trtsel.Y1,trtsel2 = trtsel.Y2,
-                            bootstraps = 50, plot = FALSE)
-mycompare
-
 # Plot treatment effect curves with pointwise confidence intervals
 compare.trtsel(trtsel1 = trtsel.Y1, trtsel2 = trtsel.Y2,
-                                bootstraps = 50, plot = TRUE, 
-                                ci = "horizontal",  conf.bands = TRUE)
+                                bootstraps = 10, plot = TRUE,      ## use more bootstraps in practice
+                                ci = "horizontal",  conf.bands = TRUE) 
                                 
 #compare discrete markers, plots are different                  
-compare.trtsel(trtsel1 = trtsel.Y1_disc, trtsel2 = trtsel.Y2_disc, 
-               bootstraps = 50, plot = TRUE)                
+compare.trtsel(trtsel1 = trtsel.Y1_disc, trtsel2 = trtsel.Y2_disc, ci = "vertical" , 
+               bootstraps = 10, plot = TRUE, offset = .1)                
                                 
 
 }

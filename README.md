@@ -12,8 +12,13 @@ functions included are:
 - `calibrate.trtsel` for assessing model calibration
 - `compare.trtsel` to compare two trtsel objects. 
 
+To dowload the package from CRAN, type:
 
-To download and install the package directly from github, type:
+```r 
+install.packages("TreatmentSelection")
+```
+
+To download and install the most recent version of the package directly from github, type:
 
 ```r
 if (!require("devtools")) install.packages("devtools")

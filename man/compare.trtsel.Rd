@@ -162,8 +162,9 @@ trtsel.Y2_disc <- trtsel( event ="event", trt = "trt", marker = "Y2_disc",
 
 
 # Plot treatment effect curves with pointwise confidence intervals
+## use more bootstraps in practice
 compare.trtsel(trtsel1 = trtsel.Y1, trtsel2 = trtsel.Y2,
-                                bootstraps = 10, plot = TRUE,      ## use more bootstraps in practice
+                                bootstraps = 10, plot = TRUE,      
                                 ci = "horizontal",  conf.bands = TRUE) 
                                 
 #compare discrete markers, plots are different                  

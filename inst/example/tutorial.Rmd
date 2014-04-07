@@ -1,28 +1,27 @@
-Last updated December 2013
+---
+title: 'Tutorial for R package TreatmentSelection '
+output:
+  html_document:
+    theme: journal
+    toc: yes
+---
 
-Tutorial for R package TreatmentSelection 
-========================================================
+*Last updated December 2013*
 
-This tutorial uses the Treatment Selection package (version 1.1.0) to analyze the example data provided in the package.
+This tutorial uses the Treatment Selection package (version 1.1.1) to analyze the example data provided in the package.
 
-
-First, you need to download and install the package from github using:
-
+First, you need to download and install the package:
 
 ```{r, eval=FALSE}
-if (!require("devtools")) install.packages("devtools")
-devtools::install_github("TreatmentSelection", "mdbrown")
-```
+install.packages("TreatmentSelection")
 
-Alternatively, you could download the package from [here](http://mdbrown.github.io/TreatmentSelection/) and install the package locally. 
-
-```{r}
-library(TreatmentSelection)
 ```
 
 First, load the data called `tsdata`. Four markers are included in the data example, a ''weak'' and a ''strong'' marker ($Y1$ and $Y2$ respectively), along with a weak/strong discrete markers. 
 
 ```{r}
+library(TreatmentSelection)
+
 data(tsdata)
 
 tsdata[1:5, ]

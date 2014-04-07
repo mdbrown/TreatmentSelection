@@ -1,7 +1,12 @@
-Last updated December 2013
+---
+title: 'Tutorial for R package TreatmentSelection '
+output:
+  html_document:
+    theme: cosmo
+    toc: yes
+---
 
-Tutorial for R package TreatmentSelection 
-========================================================
+*Last updated December 2013*
 
 This tutorial uses the Treatment Selection package (version 1.1.0) to analyze the example data provided in the package.
 

@@ -21,10 +21,10 @@
           <h1 id="project_title">R package TreatmentSelection</h1>
           <h2 id="project_tagline">evaluate biomarkers used to guide patient treatment decisions</h2>
 
-            <section id="downloads">
+           <!-- <section id="downloads">
               <a class="zip_download_link" href="https://github.com/mdbrown/TreatmentSelection/releases/download/v1.1.0/TreatmentSelection_1.1.0.zip">Download package as a .zip file</a>
               <a class="tar_download_link" href="https://github.com/mdbrown/TreatmentSelection/releases/download/v1.1.0/TreatmentSelection_1.1.0.tar.gz">Download package as a tar.gz file</a>
-            </section>
+            </section> -->
         </header>
     </div>
 
@@ -48,7 +48,10 @@ individual treatment selection markers and to compare candidate markers.  </p>
 <li>
 <code>compare.trtsel</code> to compare two trtsel objects. </li>
 </ul>
-<p>Please download the current version of the package as a .zip (for windows) or as a .tar.gz (for unix) using the links above.</p>
+<p>Install the current version of the package by opening an R session and typing:</p>
+<div class="highlight highlight-r"><pre><span class="c">if (!require("devtools")) install.packages("devtools")</span>
+<span class="c">install.packages("TreatmentSelection")</span>
+</pre></div>
 
 <p>Alternatively, to download and install the package directly from github, type:</p>
 
@@ -57,7 +60,7 @@ individual treatment selection markers and to compare candidate markers.  </p>
 
 </pre></div>
 
-<h4> <a href="http://rpubs.com/mdbrown/TreatmentSelection">Tutorial</a> </h4> 
+<h4> Here is a <a href="http://rpubs.com/mdbrown/TreatmentSelection">Tutorial</a> to get you started. </h4> 
 <h4> References</h4>
 <p><a href="http://biostats.bepress.com/uwbiostat/paper389/">Janes H, Brown MD, Pepe MS, Huang Y. Statistical methods for evaluating and comparing biomarkers for 
 patient treatment selection. <em>International Journal of Biostatistics</em> (under review).</a> </p>

@@ -29,7 +29,7 @@ function(x, bootstraps = 500,
   if(bootstraps < 2) warning("Number of bootstraps must be greater than 1, bootstrap confidence intervals will not be computed") 
   if(ci == "none") bootstraps = 0; 
   # theta curves can only be plotted for cohort data and with vertical ci's
-  if(substr(plot.type, 1, 3)=="the"){
+  if(substr(plot.type, 1, 3)=="sel"){
    # if(substr(x$model.fit$study.design, 1, 3) != "ran") stop("theta curves cannot be created for subcohort designs")
     if(substr(ci, 1, 1) =="h") {
       
@@ -45,7 +45,7 @@ function(x, bootstraps = 500,
       if(substr(plot.type, 1, 3) =="ris") ci = "horizontal"
       if(substr(plot.type, 1, 3) =="tre") ci = "horizontal"
       if(substr(plot.type, 1, 3) =="cdf") ci = "vertical"
-      if(substr(plot.type, 1, 3) =="the") ci = "vertical"
+      if(substr(plot.type, 1, 3) =="sel") ci = "vertical"
     }else{
       
       if(substr(plot.type, 1, 3) =="ris") ci = "vertical"
@@ -57,7 +57,7 @@ function(x, bootstraps = 500,
   }
   #no cdf plots for binary marker
   if(!is.null(x$model.fit$disc.marker.neg)){
-  if(is.element(substr(plot.type, 1, 3), c("cdf", "selection impact"))) stop("cdf or selection impact plots cannot be created for a binary marker. Please choose plot.type to be \"risk\" or \"treatment effect\" ")
+  if(is.element(substr(plot.type, 1, 3), c("cdf", "sel"))) stop("cdf or selection impact plots cannot be created for a binary marker. Please choose plot.type to be \"risk\" or \"treatment effect\" ")
   }
   #save the current plot parameters
   #old.par <- par(no.readonly = TRUE)

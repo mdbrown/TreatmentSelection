@@ -63,7 +63,7 @@ function( x, plot.type,
            fix.ind = 5
            out.ind = 4
         }
-     }else if(substr(myplot, 1, 4) =="thet"){
+     }else if(substr(myplot, 1, 4) =="sele"){
        #CDF delta curve
        if(substr(myci, 1, 4) =="hori") {
          

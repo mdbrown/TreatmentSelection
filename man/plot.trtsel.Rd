@@ -36,7 +36,7 @@ plot risk curves, treatment effect curves or cdf of risk for a trtsel object.
 }
 
   \item{plot.type}{
-   Type of plot to produce. Options are "risk" (default) for risk curves which show risk of adverse event as a function of marker and treatment, "treatment effect" for the treatment effect curve which shows the difference in marker-specific risk of adverse event with vs. without treatment, or "cdf" for the cumulative distribution function of the treatment effect. Cdf plots cannot be generated for a discrete marker. 
+   Type of plot to produce. Options are "risk" (default) for risk curves which show risk of adverse event as a function of marker and treatment, "treatment effect" for the treatment effect curve which shows the difference in marker-specific risk of adverse event with vs. without treatment, "cdf" for the cumulative distribution function of the treatment effect, or "selection impact" to show a plot of the estimated event rate if different proportions of the population are treated.  Cdf plots cannot be generated for a discrete marker. 
 }
   \item{ci}{
    Indication of whether horizontal or vertical confidence intervals are desired. Character string of either "horizontal" (default) or "vertical." For a discrete marker only vertical confidence bands can be produced. See note below for more information. 

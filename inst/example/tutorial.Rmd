@@ -2,11 +2,11 @@
 title: 'Tutorial for R package TreatmentSelection '
 output:
   html_document:
-    theme: journal
+    theme: united
     toc: yes
 ---
 
-*Last updated December 2013*
+*Last updated June 2014*
 
 This tutorial uses the Treatment Selection package (version 1.1.1) to analyze the example data provided in the package.
 
@@ -15,6 +15,13 @@ First, you need to download and install the package:
 ```{r, eval=FALSE}
 install.packages("TreatmentSelection")
 
+```
+
+If you would like the current version of the package directly from github, use the `devtools` package:
+
+```{r, eval=FALSE}
+if (!require("devtools")) install.packages("devtools")
+devtools::install_github("TreatmentSelection", "mdbrown")
 ```
 
 First, load the data called `tsdata`. Four markers are included in the data example, a ''weak'' and a ''strong'' marker ($Y1$ and $Y2$ respectively), along with a weak/strong discrete markers. 
@@ -40,7 +47,7 @@ trtsel.Y1 <- trtsel(event = "event",
                     trt = "trt", 
                     marker = "Y1", 
                     data = tsdata, 
-                    study.design = "randomized cohort", 
+                    study.design = "randomized cohort",
                     link = "logit", 
                     default.trt = "trt all")
 
@@ -104,7 +111,7 @@ tmp <- plot.trtsel(trtsel.Y2_disc,
 tmp$ci.bounds
 ```
 
-
+#### Treatment effect curves
 We can also plot the distribution of treatment effects. 
 
 
@@ -122,6 +129,17 @@ plot.trtsel(trtsel.Y2_disc,
             conf.bands = TRUE, 
             bootstraps = 50)
 ```
+#### Selection impact plot
+**As of June 2014**, if you install the package from github using `devtools`, an option has been added to plot 'selection impact' curves. Which show the estimated event rate if different proportions of observations where treated using the marker of interest.
+
+```{r}
+plot.trtsel(trtsel.Y1, 
+            plot.type = "selection impact", 
+            ci = "vertical", 
+            conf.bands = TRUE, 
+            bootstraps = 50)
+```
+
 
 Evaluate marker performance
 ----------------------------------

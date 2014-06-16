@@ -12,7 +12,7 @@ function(x, bootstraps = 500,
             ...)
 
 {
-  
+ 
   if(!is.trtsel(x)) stop("x must be an object of class 'trtsel' created by using the function 'trtsel' see ?trtsel for more help")
  
   if(!is.element(plot.type, c("risk", "treatment effect", "cdf", "selection impact"))){ 
@@ -65,11 +65,9 @@ function(x, bootstraps = 500,
 
 #extract the needed data from x, which is our TrtSel object
     
-  marker <- x$derived.data$marker
   trt <- x$derived.data$trt
   event <- x$derived.data$event
 
-  n <- length(marker)
   rho  <- x$model.fit$cohort.attributes
   if(length(rho) == 4) rho = c(rho, -9999, -9999, -9999) #accomodate the nested case-control design
   
@@ -78,14 +76,13 @@ function(x, bootstraps = 500,
   boot.sample <- x$functions$boot.sample
   get.F <- x$functions$get.F
   delta <- x$derived.data$trt.effect  
-  
-  if(link == "risks_provided") 
-    {
-    provided_risk <- cbind(x$derived.data$fittedrisk.t0, 
-                           x$derived.data$fittedrisk.t1)
+
+  if(link == "risks_provided") {
+    marker = NULL
     show.marker.axis = FALSE
-  } else provided_risk = NULL
-  
+  }else{
+    marker <- x$derived.data$marker 
+  }
 
  if(is.null(x$model.fit$disc.marker.neg)){  #continuous marker 
     plot.functions <- list(  predcurvePLOT_gg, trteffectPLOT_gg, CDFdeltaPLOT_gg, SelectionImpactPLOT_gg)

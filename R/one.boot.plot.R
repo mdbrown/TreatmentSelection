@@ -7,29 +7,31 @@ function(x, ci, fixed.values, fix.ind, out.ind){
   #this makes it work for step function
   if(substr(ci, 1,1)=="h") addind = 0 
   else addind = 1
-   
+
 
   rho.b <- myboot.sample[1:7]
   ind   <- myboot.sample[-c(1:7)]
 
   event.b  <- x$derived.data$event[ind]
   trt.b    <- x$derived.data$trt[ind]
-  marker.b <- x$derived.data$marker[ind] 
-  
-
-  coef <- unname(get.coef(event.b, trt.b, marker.b, 
-                          x$model.fit$study.design, 
-                          rho.b, 
-                          link = x$model.fit$link)[,1])
 
   if(x$model.fit$link == "risks_provided"){
     obsrisk.t0.b <- x$derived.data$fittedrisk.t0[ind]
     obsrisk.t1.b <- x$derived.data$fittedrisk.t1[ind]
     linkinvfun <- NULL
+    marker.b <- obsrisk.t0.b - obsrisk.t1.b#
   }else{
+    marker.b <- x$derived.data$marker[ind] 
+    
+    
+    coef <- unname(get.coef(event.b, trt.b, marker.b, 
+                            x$model.fit$study.design, 
+                            rho.b, 
+                            link = x$model.fit$link)[,1])
+    
     linkinvfun <- binomial(link = x$model.fit$link)$linkinv
-  obsrisk.t0.b  <-  get.risk.t0(coef,  marker.b, linkinvfun)
-  obsrisk.t1.b  <-  get.risk.t1(coef,  marker.b, linkinvfun)
+    obsrisk.t0.b  <-  get.risk.t0(coef,  marker.b, linkinvfun)
+    obsrisk.t1.b  <-  get.risk.t1(coef,  marker.b, linkinvfun)
   }
   
   obsdelta.b <-obsrisk.t0.b - obsrisk.t1.b#

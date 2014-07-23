@@ -21,6 +21,7 @@ First, load the data called `tsdata`. Four markers are included in the data exam
 
 ```{r}
 library(TreatmentSelection)
+set.seed(12321)
 
 data(tsdata)
 

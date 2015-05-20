@@ -64,7 +64,7 @@ function(x, bootstraps = 500,
  
 
 #extract the needed data from x, which is our TrtSel object
-    
+
   trt <- x$derived.data$trt
   event <- x$derived.data$event
 

@@ -4,11 +4,11 @@ function(x, ci, ci.bounds, get.F, fixed.values,conf.bands,  rho, xlab, ylab, xli
   risk.t0 <- x$derived.data$fittedrisk.t0
   risk.t1 <- x$derived.data$fittedrisk.t1
   trt.effect <- x$derived.data$trt.effect
-  marker <- x$derived.data$marker
+
   event <- x$derived.data$event
   trt <- x$derived.data$trt
   n = length(trt)
-  
+
   F.D <- get.F(trt.effect, event, trt, rho = rho)*100
   theta.curve <- EventRateVec(risk.t0, risk.t1, F.D, rho, event, trt)
   

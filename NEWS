@@ -1,3 +1,8 @@
+TreatmentSelection 1.1.2
+========================
+ * added plot.type 'selection impact'. see ?plot.trtsel for more information. 
+
+ * fixed a small bug that caused warnings when plotting a trtsel object created from providing fixed risk estimates. 
 
 TreatmentSelection 1.1.1  
 ========================

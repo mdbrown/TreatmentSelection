@@ -3,12 +3,12 @@ function(x1, x2, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, xlab, yla
   
   mylim <- NULL
   trt.effect <- x1$derived.data$trt.effect
-  marker <- x1$derived.data$marker
+
   event <- x1$derived.data$event
   trt <- x1$derived.data$trt
   
   trt.effect2 <- x2$derived.data$trt.effect
-  marker2 <- x2$derived.data$marker
+
   event2 <- x2$derived.data$event
   trt2 <- x2$derived.data$trt
   

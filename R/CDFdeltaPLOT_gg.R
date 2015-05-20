@@ -2,7 +2,7 @@ CDFdeltaPLOT_gg <-
 function(x, ci, ci.bounds, get.F, fixed.values,conf.bands,  rho, xlab, ylab, xlim, ylim, main){ 
 
   trt.effect <- x$derived.data$trt.effect
-  marker <- x$derived.data$marker
+
   event <- x$derived.data$event
   trt <- x$derived.data$trt
   n = length(trt.effect)

@@ -3,10 +3,10 @@ function( x, groups = 10, plot.type = "calibration", trt.names = c("Treatment", 
 
   if(!is.trtsel(x)) stop("x must be an object of class 'trtsel' created by using the function 'trtsel' see ?trtsel for more help")
   if(!is.null(x$model.fit$disc.marker.neg)) stop("Calibration not supported for a discrete marker")
-  marker <- x$derived.data$marker
+
   event <- x$derived.data$event
   trt <- x$derived.data$trt
-  n <- length(marker)
+  n <- length(trt)
   if(!is.numeric(groups)) stop("groups must be an integer")
   
   if(groups < 2) stop("Must have more than 2 groups!")
@@ -23,12 +23,12 @@ function( x, groups = 10, plot.type = "calibration", trt.names = c("Treatment", 
   fittedrisk.c.t0 <- x$derived.data$fittedrisk.t0[trt==0] #fitted risk conditional on trt
   fittedrisk.c.t1 <- x$derived.data$fittedrisk.t1[trt==1]
 
-  marker.t0 <- marker[trt==0]
+
   D.t0 <- event[trt==0]
   trt.t0 <- trt[trt==0]
   n.t0 <- sum(trt==0)
 
-  marker.t1 <- marker[trt==1]
+
   D.t1 <- event[trt==1]
   trt.t1 <- trt[trt==1]
   n.t1 <- sum(trt==1)
@@ -164,14 +164,15 @@ breaks.delta <- sort(fitteddelta)[ sum.I( seq(0, 1, 1/groups), "<",F.delta(fitte
 
 
 
-if(study.design=="cohort"){
+if(study.design=="randomized cohort"){
 
   hl.t0 <- sum( ng.t0 * ( obs.risk.t0 - exp.risk.t0)^2 / (exp.risk.t0*(1-exp.risk.t0))) 
   hl.t1 <- sum( ng.t1 * ( obs.risk.t1 - exp.risk.t1)^2 / (exp.risk.t1*(1-exp.risk.t1)))
 
 }else{
-  
-  risk.naive.all <- fitted(glm(event ~ marker + trt + marker*trt, family = binomial(link = "logit")))
+  if(x$model.fit$link == "risks_provided") stop("cannot calculate Hosmer Lemeshow statistic when fitted risks are provided and study design is not cohort")
+  marker <- x$derived.data$marker
+  risk.naive.all <- fitted(glm(event ~ marker + trt + marker*trt, family = binomial(link = x$model.fit$link)))
   
   risk.naive.t0.all <- risk.naive.all[trt==0]
   risk.naive.t1.all <- risk.naive.all[trt==1]

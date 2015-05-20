@@ -78,7 +78,7 @@ function(data, rho, d=0){
        #if(sum(wi > 25) > 0 ) { warning("Warning: there exist sampling weights > 25, Variance Estimate may be unstable")}
 
      
-     Var.Delta = mean((trt.effect[event==1])^2)*rho[3] + mean((trt.effect[event==0])^2)*(1-rho[3]) 
+   #  Var.Delta = mean((trt.effect[event==1])^2)*rho[3] + mean((trt.effect[event==0])^2)*(1-rho[3]) 
                    
                   # mean(trt.effect[event==1]^2)*rho[3] + mean(trt.effect[event==0]^2)*(1-rho[3]) - 
                   #(mean(trt.effect[event==1])*rho[3]   + mean(trt.effect[event==0])*(1-rho[3]))^2  #sum((wi*(trt.effect- d )^2))/sum(wi)
@@ -111,6 +111,10 @@ function(data, rho, d=0){
     ER.mkrbased.mod = ER.trt0.mod - Theta.mod    
   }
   
+ 
+ 
+ Var.Delta = mean((trt.effect[event==1])^2)*rho[3] + mean((trt.effect[event==0])^2)*(1-rho[3]) - (ER.trt0.emp - ER.trt1.emp)^2
+ 
   
   list(     p.neg = p.marker.neg,
             p.pos = p.marker.pos,

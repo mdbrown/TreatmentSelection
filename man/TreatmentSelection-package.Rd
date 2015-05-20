@@ -15,8 +15,8 @@ individual treatment selection markers and to compare candidate markers.
 \tabular{ll}{
 Package: \tab TreatmentSelection\cr
 Type: \tab Package\cr
-Version: \tab 1.1.1\cr
-Date: \tab 2014-4-4\cr
+Version: \tab 1.1.2\cr
+Date: \tab 2014-06-16\cr
 License: \tab GPL-2\cr
 }
 

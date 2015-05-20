@@ -104,5 +104,7 @@ print(round(VD[s,], 4))
 
 
 colMeans(VD)
+VD.long <- melt(VD)
+ggplot(VD.long, aes(value, color = variable, fill = variable)) + geom_histogram(alpha = .2) + facet_grid(variable~.)
 
 

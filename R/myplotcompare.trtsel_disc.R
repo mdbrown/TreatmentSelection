@@ -82,18 +82,6 @@ function(x, bootstraps = 500, alpha = .05,
     ts1.curves <- trteffectPLOTcompare_gg_disc(x1=ts1, x2 = ts2, ci.bounds = myconf.ints, conf.bands = conf.bands, offset = offset, xlab=xlab, ylab = ylab, xlim=xlim, ylim = ylim, main = main,marker.names = marker.names,  annotate.plot = annotate.plot) 
   
     p <- ts1.curves[[1]]
-
-  if(is.null(myconf.ints)){
-    p <- p + scale_linetype_manual(name = "", breaks = c( "3", "4"), values = c(3, 4), labels = c("Mean", "Zero"))
-    p <- p + scale_shape_manual(name = "", breaks = c(marker.names), values = c(16,17), labels = c(marker.names))
-    p <- p + scale_size_manual(name = "", breaks = c(marker.names, "3", "4"), values = c(.5, .5, 1,1), labels = c(marker.names, "Mean", "Zero"))
-    
-    
-  }else{
-    p <- p + scale_linetype_manual(name = "", breaks = c(marker.names, "3", "4"), values = c(3, 4, 1 ,2), labels = c(marker.names, "Mean", "Zero"))
-    p <- p + scale_shape_manual(name = "", breaks = c(marker.names, "3", "4"), values = c(32, 32, 16,17), labels = c(marker.names, "Mean", "Zero"))
-    p <- p + scale_size_manual(name = "", breaks = c(marker.names, "3", "4"), values = c(.5, .5, 1,1), labels = c(marker.names, "Mean", "Zero"))
-  }
   print(p)
     #if(is.null(xlim)) xlim = c(0,100)
     #legend(x=xlim[2]+diff(xlim)/15, y = quantile(ylim, prob = .5), legend = marker.names, lty = c(1,2), col = c("black", "black"), bty="n", cex = 1, xpd = TRUE, lwd=c(2,2))

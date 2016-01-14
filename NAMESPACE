@@ -1,2 +1,6 @@
 export( calibrate.trtsel, compare.trtsel, eval.trtsel, is.trtsel, plot.trtsel, print.calibrate.trtsel, print.trtsel, print.compare.trtsel, print.eval.trtsel, trtsel)
-import( ggplot2, grid )
+import( ggplot2)
+importFrom(grid, gpar)
+importFrom(grid, xaxisGrob)
+importFrom(grid, textGrob)
+importFrom(grid, grid.draw)

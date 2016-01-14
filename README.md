@@ -14,7 +14,7 @@ functions included are:
 
 To dowload the package from CRAN, type:
 
-```r 
+```r
 install.packages("TreatmentSelection")
 ```
 

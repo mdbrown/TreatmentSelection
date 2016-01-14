@@ -16,7 +16,7 @@ function(x1, x2, ci.bounds, conf.bands, offset,  xlab, ylab, xlim, ylim, main, m
   mval2 = sort(unique(marker2))
   markerValue <- markerName <- trt.effect <- lower <- upper <- NULL
 
-  mydata = data.frame(trt.effect = c(trt.effect1, trt.effect2),
+  mydata = data.frame("trt.effect" = c(trt.effect1, trt.effect2),
                       "markerValue" = c(marker1, marker2), 
                       "markerName" = c(rep(marker.names, c(n,n))))
   
@@ -30,7 +30,10 @@ function(x1, x2, ci.bounds, conf.bands, offset,  xlab, ylab, xlim, ylim, main, m
     if(is.null(main)) main <- "Treatment effect distribution"
     p <- ggplot(mydata)     
     
-
+    
+    hlines.dat <- data.frame("trt.effect" = c(as.numeric(mean(event[trt==0]) - mean(event[trt==1])), 0), 
+                             "markerName" = c("Mean", "Zero"))
+    
   if(!is.null(ci.bounds)){
     
     #order matters here!
@@ -39,25 +42,29 @@ function(x1, x2, ci.bounds, conf.bands, offset,  xlab, ylab, xlim, ylim, main, m
     mydata[mydata$markerValue==mval2[1] & mydata$markerName == marker.names[2], 4:5] <- ci.bounds[,3]
     mydata[ mydata$markerValue==mval2[2]& mydata$markerName == marker.names[2], 4:5] <- ci.bounds[,4]
     
-    
-    
-    
-    
-    
-    
+
     p <- ggplot(data = mydata, aes(x = markerValue, y =trt.effect, shape = factor(markerName), linetype = factor(markerName), ymin = lower, ymax = upper ))
-    p <- p + geom_errorbar( width = .05, aes(size = markerName)) + geom_point(size = 4)
-    p <- p + stat_hline(yintercept  = as.numeric(mean(event[trt==0]) - mean(event[trt==1])), aes(linetype = factor(3), size = factor(3), shape = factor(3)))+
-      stat_hline(yintercept = 0, aes( linetype = factor(4), size = factor(4), shape = factor(4))) 
+    p <- p + geom_errorbar( width = .05, size = .9) + geom_point(size = 4)
+  
+    #change the names for the legend
+    p <- p + 
+      geom_hline(data = hlines.dat, aes(yintercept = trt.effect,  
+                                        linetype = factor(markerName), 
+                                        shape = factor(markerName)), size = .5) + 
+      scale_shape_manual(name = "", values = c(16,17, 32,32)) + 
+      scale_linetype_manual(name = "", values = c(1,2, 3, 4))
     
     
   }else{
     
     p <- ggplot(data = mydata, aes(x = markerValue, y =trt.effect, shape = factor(markerName)))
     p <- p +geom_point(size = 4)
-    p <- p + stat_hline(yintercept  = as.numeric(mean(event[trt==0]) - mean(event[trt==1])), aes(linetype = factor(3), size = factor(3)))+
-      stat_hline(yintercept = 0, aes( linetype = factor(4), size = factor(4))) 
     
+    p <- p + 
+      geom_hline(data = hlines.dat, aes(yintercept = trt.effect,  
+                                        linetype = factor(markerName)), size = .5) +  
+      scale_shape_manual(name = "", values = c(16,17)) + 
+      scale_linetype_manual(name = "", values = c(1,2)) + guides(shape = guide_legend(order = 1))
     
   }
   

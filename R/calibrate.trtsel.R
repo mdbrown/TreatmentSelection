@@ -267,7 +267,7 @@ if(is.element(plot.type, "calibration")){
    data <- subset(data, expectedRisk >0)
  
  p <- ggplot(data = data, aes(x= observedRisk, y = expectedRisk, shape = factor(trt)))
- p <- p + coord_trans(xtrans = "log", ytrans = "log") +
+ p <- p + coord_trans(x = "log", y = "log") +
    scale_shape_discrete("", labels = trt.names) + 
    ylab(ylab) + xlab(xlab) + ggtitle(main) + theme( text = element_text(size=16)) +
    geom_line(aes(x = observedRisk, y = observedRisk), colour = "grey50", linetype = 2, size = .8 ) + 

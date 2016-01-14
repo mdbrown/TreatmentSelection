@@ -7,7 +7,7 @@ function(x, ci, ci.bounds, get.F,  xlab, ylab, xlim, ylim, main, markerTWO=FALSE
   trt <- x$derived.data$trt
   n = length(trt.effect)
   mval = sort(unique(marker))
-  lower <- upper <- NULL ## appease check
+  Treatment.Effect <- lower <- upper <- NULL ## appease check
   mydata = data.frame(trt.effect, marker )
 
   mydata <- unique(mydata)
@@ -57,14 +57,22 @@ function(x, ci, ci.bounds, get.F,  xlab, ylab, xlim, ylim, main, markerTWO=FALSE
   #so that the mean trt effect is scaled properly for subcohort designs
   allMeasures <- x$functions$get.summary.measures( x$derived.data, rho =x$model.fit$cohort.attributes, x$model.fit$thresh)
   
-
+    
     #add x/y labels and main
     p <- p + xlab(xlab) + ylab(ylab) + ylim(ylim[1], ylim[2])+ ggtitle(main) 
 
+   
+    hlines.dat <- data.frame("Treatment.Effect" = c(allMeasures$ER.trt0.mod - allMeasures$ER.trt1.mod, 0), 
+                             "lty" = factor(c(3,4)), 
+                             "labels" = c("Mean", "Zero"))
+    
     #change the names for the legend
-    p <- p + stat_hline(yintercept  = allMeasures$ER.trt0.mod - allMeasures$ER.trt1.mod,
-                        aes(linetype = factor(3)))+
-      stat_hline(yintercept = 0, aes( linetype = factor(4))) + scale_linetype_manual(name = "Treatment Effect",breaks = c("3", "4"), values = c(3, 4), labels = c("Mean", "Zero"))
+    p <- p + geom_hline(data = hlines.dat, aes(yintercept  = Treatment.Effect, linetype = lty))+
+      
+      scale_linetype_manual(name = "Treatment Effect",
+                            breaks = c("3", "4"), 
+                            values = c(3, 4), 
+                            labels = c("Mean", "Zero"))
     
     p <- p + theme( text = element_text(size=14)) #, 
   p <- p + scale_x_discrete(labels = c(paste(mval[1], "\n(", round(mean(marker==mval[1])*100, 1),"%)", sep = ""), 

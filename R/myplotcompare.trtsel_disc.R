@@ -7,6 +7,7 @@ function(x, bootstraps = 500, alpha = .05,
                            ylim = NULL, 
                            main = NULL, offset = offset, conf.bands,  annotate.plot)
 {
+  quantile <- NULL #appease check
   ts1 <- x$trtsel1
   ts2 <- x$trtsel2
   fittedrisk.t0.y1 <- ts1$derived.data$fittedrisk.t0

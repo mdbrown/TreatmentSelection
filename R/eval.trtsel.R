@@ -33,7 +33,8 @@ function(x, bootstraps = 1000, alpha = .05){
                                                    link = link, 
                                                    disc.marker.neg = x$model.fit$disc.marker.neg, 
                                                    provided_risk = provided_risk))
- 
+ #appease check
+  quantile <- NULL
   ## 1. Test the null hypothesis of Theta = 0   
 
 

@@ -11,7 +11,10 @@ plot risk curves, treatment effect curves or cdf of risk for a trtsel object.
 \usage{
 #S3 method for class ''trtsel''
 \method{plot}{trtsel}(x, bootstraps = 500,  
-                         plot.type = "risk",
+                         plot.type = c("risk", 
+                                       "treatment effect", 
+                                       "cdf", 
+                                       "selection impact"),
                          ci = "default",
                          alpha = .05,
                          fixed.values = NULL,

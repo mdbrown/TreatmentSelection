@@ -7,7 +7,7 @@ function( x, plot.type, ci, bootstraps, alpha){
   #the data will be set up as 
   # F.marker, risk_t0, risk_t1 (all sorted by F.marker), F.event, obs delta (sorted by F.event)
 
- 
+  quantile <- NULL #appease check
   
   # now bootstrap
 

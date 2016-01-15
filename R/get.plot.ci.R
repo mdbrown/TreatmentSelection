@@ -7,7 +7,7 @@ function( x, plot.type,
   ## I am just storing some index variables that make me able to calculate the 
   ## proper ci's later. 
   
-
+  quantile <- NULL #appease check
   fix.ind <- NULL 
   out.ind <- NULL 
 

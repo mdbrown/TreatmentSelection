@@ -7,7 +7,7 @@ function(trtsel1, trtsel2, bootstraps = 500, alpha = .05, plot = TRUE,
                            xlim = NULL, 
                            ylim = NULL, 
                            main = NULL, annotate.plot = TRUE){
-
+  quantile <- NULL #appease check
   # assume paired data here, so each individual has a measurement on y1 and y2. Also I am assuming each data set is ordered the same way. 
 
 

@@ -1,6 +1,6 @@
 plot.trtsel <-
 function(x, bootstraps = 500,  
-            plot.type = "risk", 
+            plot.type = c("risk", "treatment effect", "cdf", "selection impact"), 
             ci = "default", 
             alpha = .05, 
             fixed.values = NULL,  
@@ -14,7 +14,9 @@ function(x, bootstraps = 500,
 {
  
   if(!is.trtsel(x)) stop("x must be an object of class 'trtsel' created by using the function 'trtsel' see ?trtsel for more help")
- 
+  
+  plot.type <- match.arg(plot.type) 
+  
   if(!is.element(plot.type, c("risk", "treatment effect", "cdf", "selection impact"))){ 
     stop("plot.type must be one of \"risk\", \"treatment effect\", \"cdf\" or \"selection impact\"")
   }

@@ -1,0 +1,9 @@
+{
+    "path" : "~/TreatmentSelection/R",
+    "sortOrder" : [
+        {
+            "ascending" : true,
+            "columnIndex" : 2
+        }
+    ]
+}

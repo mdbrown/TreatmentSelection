@@ -171,6 +171,8 @@ calibrate.trtsel(trtsel.Y1,
                  groups = 10, 
                  plot = "calibration", 
                  trt.names = c("chemo.", "no chemo."))
+
+
 ```
 
 See `?calibrate.trtsel` for more plot options. 

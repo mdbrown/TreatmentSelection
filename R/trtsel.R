@@ -1,9 +1,153 @@
+#' create a trtsel object
+#' 
+#' Creates an object of class "trtsel" given a data.frame containing marker,
+#' treatment, and adverse event status information.  The functions "plot",
+#' "evaltrtsel", and "calibrate" can then be used to plot risk and treatment
+#' effect curves, estimate summary measures, and check model calibration. The
+#' function "compare" can also be used to compare two treatment selection
+#' markers.
+#' 
+#' 
+#' @param event Name of indicator vector for adverse event found in data.frame
+#' "data". Coded 1 for occurrence of event and 0 otherwise.
+#' 
+#' @param trt Name of treatment status in data.frame "data". Coded 1 for
+#' "treated" and 0 for "un-treated."
+#' @param marker Name of the marker to be evaluated in data.frame "data".
+#' Continuous or Binary markers are allowed. Binary markers should be coded as
+#' a 0,1 numeric vector.
+#' @param data data.frame object holding event, trt and marker data.
+#' @param fittedrisk.t0 Instead of providing a marker, fitted risks for T=0 and
+#' T=1 may be provided. This should be the column name of the fitted risk for
+#' T=0 that can be found in 'data'. If fitted risks are provided, a model will
+#' not be fit, and all bootstrap confidence intervals will be conditional on
+#' the model fit provided.
+#' 
+#' @param fittedrisk.t1 Name of for the fitted risks given treatment = 1.
+#' @param thresh The treatment effect threshold used to define the treatment
+#' rule: Do not treat if the marker-specific treatment effect is less than
+#' "thresh". This is a numeric constant with a default value of 0.
+#' @param study.design Character string indicating the study design used to
+#' collect the data. The three options are "randomized cohort" (default),
+#' "nested case-control", or "stratified nested case-control".  A "randomized
+#' cohort" design is simply a randomized trial comparing T = 0 to T = 1 with
+#' the marker measured at baseline.  A nested case-control or stratified nested
+#' case-control study samples cases and controls for marker measurement,
+#' perhaps stratified on treatment assignment, from a randomized trial
+#' comparing T = 0 to T = 1.  See Janes et al. (2013) for a full description of
+#' these designs.
+#' 
+#' If a "nested case-control" or "stratified nested case-control" design is
+#' specified, "cohort.attributes"" must be provided (see below).
+#' @param cohort.attributes If a "nested case-control" or "stratified nested
+#' case-control" design is specified, "cohort.attributes" must be provided.
+#' Order does matter.
+#' 
+#' For the "nested case-control" design, specify the following attributes of
+#' the randomized trial "cohort" from which the case-control sample was
+#' selected: \cr \cr cohort.attributes = c(cohort sample size, \cr proportion
+#' treated in cohort (Pr(trt==1)), \cr adverse event prevalance in cohort
+#' (Pr(event==1)), \cr fraction of cases sampled from cohort) \cr \cr
+#' 
+#' For the "stratitified nested case-control" design, specify the following
+#' attributes of the randomized trial "cohort" from which the stratified
+#' case-control sample was selected: \cr \cr cohort.attributes = c(cohort
+#' sample size, \cr Pr(trt==0 & event==0) in cohort, \cr Pr(trt==0 & event==1)
+#' in cohort, \cr Pr(trt==1 & event==0) in cohort, \cr fraction of cases with
+#' trt == 0 sampled from cohort, \cr fraction of cases with trt == 1 sampled
+#' from cohort )\cr \cr
+#' @param marker.bounds For bounded markers, a vector of lower and upper
+#' bounds.
+#' @param link Link function used to fit the risk model. Options are
+#' "logit"(default), "probit", "cauchit", "log" and "cloglog." Link functions
+#' other than "logit" are available only when study.design = "randomized
+#' cohort".
+#' 
+#' @param default.trt The default treatment assignment to compare with
+#' marker-based treatment. Can either be set at "trt all" (default) or "trt
+#' none". Use "trt all" if everyone is treated and the aim is to discover those
+#' who would benefit from no treatment, but use "trt none" if the common
+#' practice is to treat no-one and the goal is to discover those who would
+#' benefit from treatment.
+#' @return
+#' 
+#' An object of class "trtsel," which is a list containing:
+#' 
+#' \item{model.fit }{ A list containing "coefficients" -- a 4 x 4 matrix with
+#' columns for coefficient estimates, standard errors, t-statistics, and
+#' two-sided p-values.  "cohort.attributes" -- the vector of cohort.attributes
+#' provided "study.design" -- character string of study.design provided }
+#' \item{derived.data }{ A data.frame with "event", "trt", "marker",
+#' "fittedrisk.t0" (risk estimates given no treatment), "fittedrisk.t1" (risk
+#' estimates given treatment), "trt.effect" (treatment effect estimates), and
+#' "marker.neg" (indicator of trt.effect < thresh) columns.  }
+#' \item{functions}{ For internal package use only }
+#' @seealso \code{\link{plot.trtsel}} for plotting risk curves and more,
+#' \code{\link{eval.trtsel}} for evaluating marker performance,
+#' \code{\link{calibrate.trtsel}} for assessing model calibration, and
+#' \code{\link{compare.trtsel}} to compare two trtsel object.
+#' @references Janes, Holly; Brown, Marshall D; Pepe, Margaret; Huang, Ying;
+#' "An Approach to Evaluating and Comparing Biomarkers for Patient Treatment
+#' Selection" The International Journal of Biostatistics. Volume 0, Issue 0,
+#' ISSN (Online) 1557-4679, ISSN (Print) 2194-573X, DOI: 10.1515/ijb-2012-0052,
+#' April 2014
+#' @examples
+#' 
+#' 
+#' data(tsdata)
+#' 
+#' ###########################
+#' ## Create trtsel objects 
+#' ###########################
+#' 
+#' trtsel.Y1 <- trtsel( event = "event",
+#'                      trt = "trt",
+#'                      marker = "Y1",
+#'                      data = tsdata,
+#'                      study.design = "randomized cohort")
+#' trtsel.Y1
+#' 
+#' trtsel.Y2 <- trtsel( event = "event",
+#'                      trt = "trt",
+#'                      marker = "Y2",
+#'                      data = tsdata,
+#'                      study.design = "randomized cohort")
+#' trtsel.Y2
+#' 
+#' 
+#' # calculate fitted risks using a logistic model 
+#' #(one can use any model here, the point is that the fitted risks are provided )
+#' mymod <- glm(event~trt*Y2, data= tsdata, family = binomial("logit"))
+#' 
+#' tsdata$fitted.t0 <- predict(mymod, newdata=data.frame(trt = 0, Y2 = tsdata$Y2), type = "response")
+#' tsdata$fitted.t1 <- predict(mymod, newdata=data.frame(trt = 1, Y2 = tsdata$Y2), type = "response")
+#' 
+#' #all bootstrapping done using this object will be conditional on the model fit. 
+#' 
+#' myfitted.trtsel <- trtsel( event ="event", trt = "trt",  
+#'                          data = tsdata,
+#'                          fittedrisk.t0 = "fitted.t0",
+#'                          fittedrisk.t1 = "fitted.t1",
+#'                          study.design = "randomized cohort", 
+#'                          default.trt = "trt all")
+#' 
+#' 
+#' 
+#' 
+#' @export trtsel
 trtsel <-
-function(event, trt, marker = NULL, data, fittedrisk.t0 = NULL, fittedrisk.t1 = NULL, thresh=0, study.design = "randomized cohort", cohort.attributes = NULL, marker.bounds = NULL, link = "logit", default.trt = "trt all" ){
-
+function(formula, treatment.name, data, 
+         fittedrisk.t0 = NULL, fittedrisk.t1 = NULL, thresh=0, 
+         study.design = c("randomized cohort", "nested case-control", "stratified nested case-control"), 
+         cohort.attributes = NULL, 
+         marker.bounds = NULL, link = c("logit", "probit", "cauchit", "log", "cloglog"), 
+         default.trt = c("trt all", "trt none") ){
+  
+  call <- match.call() 
+  
   if(!is.data.frame(data)){stop('data must be a data.frame')}
   
-  tmpnames <- c(event, trt, marker, fittedrisk.t0, fittedrisk.t1)
+  tmpnames <- c(treatment.name, fittedrisk.t0, fittedrisk.t1, all.vars(formula))
   if(!all(is.element(tmpnames, names(data)))) stop(paste("'", tmpnames[which(!is.element(tmpnames, names(data)))], "' cannot be found in data.frame provided", sep = ""))
     
   mycomplete <- complete.cases(data[,tmpnames]); 
@@ -16,19 +160,35 @@ function(event, trt, marker = NULL, data, fittedrisk.t0 = NULL, fittedrisk.t1 = 
   }
   ## Error Checking
   
+  event.name <- as.character(formula[[2]])
+
   #check event
-  if(!is.numeric(data[[event]]) | !all(is.element(unique(data[[event]]), c(0,1)))) stop( "event must be a numeric vector with elements 1 or 0")
+  if(!is.numeric(data[[event.name]]) | !all(is.element(unique(data[[event.name]]), c(0,1)))) stop( "event must be a numeric vector with elements 1 or 0")
  
+  link = match.arg(link)
   if(!is.element(link, c("logit", "probit", "cauchit", "log", "cloglog"))) stop("link must be one of ''logit'', ''probit'', ''cauchit'', ''log'', ''cloglog''")
 
-  if(!is.numeric(data[[trt]]) | !all(is.element(unique(data[[trt]]), c(0,1)))) stop( "trt must be a numeric vector with elements 1 or 0") 
+  trt <- data[[treatment.name]]
+  if(!is.numeric(trt) | !all(is.element(unique(trt), c(0,1)))) stop( "trt must be a numeric vector with elements 1 or 0") 
   
- # if(!is.numeric(data[[marker]])) stop( "marker must be a numeric") 
-  if(length(marker) >1){ stop("only a single marker is allowed")}
+  ## if there is only one marker in the model, we keep it around, otherwise set marker to null 
+  
+  marker.names = all.vars(formula)[!is.element( all.vars(formula), c(event.name, treatment.name)) ]
+  if(length(marker.names)==1){ 
+    marker = data[[marker.names]] 
+  }else{
+    marker = NULL
+  }
+  
+  #if(!is.numeric(data[[marker.name]])) stop( "marker must be a numeric") 
+  #if(length(marker) >1){ stop("only a single marker is allowed")}
+  default.trt <- match.arg(default.trt)
   if(!is.element(default.trt, c("trt all", "trt none"))){ stop( "default.trt must be either 'trt all' or 'trt none'")}
   ## End Error Checking
 
   d <- thresh
+  study.design = match.arg(study.design) 
+  
 #find out which bootstrapping functions to use based on type
   if( substr(study.design,1,4)  == "rand" ) { 
    
@@ -103,11 +263,10 @@ function(event, trt, marker = NULL, data, fittedrisk.t0 = NULL, fittedrisk.t1 = 
   #  warning( "   Function assumes Pr(event = 1 | trt = 1) < Pr(event = 1 | trt = 0)\n   Redefining trt <- (1-trt)\n")
   #  trt <- 1-trt 
   # }
-  
-  event = data[[event]]
-  trt = data[[trt]]
-  if(!is.null(marker)) marker = data[[marker]]
-  
+
+  event = data[[event.name]]
+
+
   if(!is.null(fittedrisk.t0)) {
     fitted_risk_t0 = data[[fittedrisk.t0]]
     if(!is.null(marker)) warning("fitted risks provided: marker data will be ignored")
@@ -129,9 +288,18 @@ function(event, trt, marker = NULL, data, fittedrisk.t0 = NULL, fittedrisk.t1 = 
   
   # model.fit
   #returns null if risks are provided
-  coef <- get.coef( event, trt, marker, study.design, rho, link)
+  
+  coef <- get.coef( formula = formula, 
+                    treatment.name= treatment.name,
+                    data = data,
+                    study.design = study.design, 
+                    rho = rho, 
+                    link = link)
 
-  model.fit <- list( "coefficients" = coef, "cohort.attributes" = rho, "study.design" = study.design, "marker.bounds" = marker.bounds, "link" = link, "thresh" = d)
+  model.fit <- list( "coef" = coef, "cohort.attributes" = rho, 
+                     "study.design" = study.design, 
+                     "marker.bounds" = marker.bounds, 
+                     "link" = link, "thresh" = d)
   
   
   # derived.data
@@ -142,11 +310,10 @@ function(event, trt, marker = NULL, data, fittedrisk.t0 = NULL, fittedrisk.t1 = 
     linkinvfun <- NULL
   }else{
     linkinvfun <- binomial(link = link)$linkinv
-    fitted_risk_t0 <- get.risk.t0(coef, marker, linkinvfun)
-    fitted_risk_t1 <- get.risk.t1(coef, marker, linkinvfun)
+    fitted_risk_t0 <- get.risk.t0(coef[,1], formula, treatment.name, data, linkinvfun)
+    fitted_risk_t1 <- get.risk.t1(coef[,1], formula, treatment.name, data, linkinvfun)
     
   }
-  
 
   trt.effect <- fitted_risk_t0 - fitted_risk_t1
   if(length(unique(marker))==2){ 
@@ -167,49 +334,34 @@ function(event, trt, marker = NULL, data, fittedrisk.t0 = NULL, fittedrisk.t1 = 
     marker.neg <- ifelse( trt.effect < d, 1, 0) # indicator of being marker negative
   }
 
-  
   ## if we dont use marker; we use fitted risks
-  if(is.null(marker))
-  {
+  derived.data <- data.frame( data[,c(all.vars(formula))] , 
+              fittedrisk.t0 = fitted_risk_t0, 
+              fittedrisk.t1 = fitted_risk_t1,
+              trt.effect = trt.effect)
+  
+  derived.data$marker <- marker
     if(default.trt =="trt all"){
-      derived.data <- data.frame( trt = trt, event = event, 
-                                  fittedrisk.t0 = fitted_risk_t0, 
-                                  fittedrisk.t1 = fitted_risk_t1,
-                                  trt.effect = trt.effect,
-                                  marker.neg = marker.neg)
+      derived.data$marker.neg <- marker.neg
       
     }else{
       marker.pos <- 1-marker.neg # indicator of being marker negative
-      derived.data <- data.frame( trt = trt, event = event,  
-                                  fittedrisk.t0 = fitted_risk_t0, 
-                                  fittedrisk.t1 = fitted_risk_t1,
-                                  trt.effect = trt.effect,
-                                  marker.pos = marker.pos)
-      
+      derived.data$marker.pos <- marker.pos = marker.pos
     }
     
-  }else # if we do use marker
-  {
-     if(default.trt =="trt all"){
-       derived.data <- data.frame( trt = trt, event = event, marker = marker, 
-                                     fittedrisk.t0 = fitted_risk_t0, 
-                                     fittedrisk.t1 = fitted_risk_t1,
-                                     trt.effect = trt.effect,
-                                     marker.neg = marker.neg)
-
-     }else{
-       marker.pos <- 1-marker.neg # indicator of being marker negative
-       derived.data <- data.frame( trt = trt, event = event, marker = marker, 
-                                fittedrisk.t0 = fitted_risk_t0, 
-                                fittedrisk.t1 = fitted_risk_t1,
-                                trt.effect = trt.effect,
-                                marker.pos = marker.pos)
-    
-     }
-  }
-  out <- list(derived.data=derived.data, model.fit = model.fit, functions  = functions)
+   
+  out <- list(derived.data=derived.data, 
+              formula = formula, 
+              treatment.name = treatment.name, 
+              model.fit = model.fit, 
+              functions  = functions,
+              default.trt = default.trt, 
+              call = call)
   class(out) = "trtsel"
   
   out
 
 }
+
+
+

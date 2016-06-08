@@ -1,2 +1,0 @@
-get.risk.t0 <-
-function(coef, marker) expit(coef[1] + coef[3]*marker)

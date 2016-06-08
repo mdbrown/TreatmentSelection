@@ -3,17 +3,18 @@ title: 'Tutorial for R package TreatmentSelection '
 output:
   html_document:
     theme: united
-    toc: yes
 ---
 
+#  {.tabset .tabset-fade .tabset-pills}
 
-This tutorial uses the Treatment Selection package (version 1.2.0) to analyze the example data provided in the package.
+## Install the package 
+
+This tutorial uses the Treatment Selection package to analyze the example data provided in the package.
 
 First, you need to download and install the package:
 
-```{r, eval=FALSE}
+```{r, eval=FALSE, message = FALSE, warning = FALSE}
 install.packages("TreatmentSelection")
-
 ```
 
 If you would like the current version of the package directly from github, use the `devtools` package:
@@ -23,9 +24,9 @@ if (!require("devtools")) install.packages("devtools")
 devtools::install_github("TreatmentSelection", "mdbrown")
 ```
 
-First, load the data called `tsdata`. Four markers are included in the data example, a ''weak'' and a ''strong'' marker ($Y1$ and $Y2$ respectively), along with a weak/strong discrete markers. 
+First, load the example data set for this package called `tsdata`. Four markers are included in the data example, a ''weak'' and a ''strong'' marker ($Y1$ and $Y2$ respectively), along with a weak/strong discrete markers. 
 
-```{r}
+```{r, warning = FALSE}
 library(TreatmentSelection)
 set.seed(12321)
 
@@ -34,18 +35,20 @@ data(tsdata)
 tsdata[1:5, ]
 ```
 
-Create TrtSel objects
--------------------------
+
+## Create TrtSel objects 
+
 
 Once we have the package and our data loaded into R, we need to create a treatment selection R object using the function `trtsel`. This function takes as inputs a data.frame of treatment indicators, adverse event status, marker values, and other optional information. Once we have created this object, we can then use it to plot risk/treatment effect curves, estimate summary measures, and check model calibration. 
 
-First let's create a `trtsel` object using the weak marker data `Y1`, and take a look at it's contents:
+`tsdata` contains indicators for event and treatment. There are also two continous biomarkers `Y1` and `Y2` along with dichotomous versions of the two markers. First let's create a `trtsel` object using the marker `Y1`, and take a look at it's contents:
 
 
 ```{r}
-trtsel.Y1 <- trtsel(event = "event", 
-                    trt = "trt", 
-                    marker = "Y1", 
+tsdata$outcome <- tsdata$event
+
+trtsel.Y1 <- trtsel(outcome ~ Y1*trt, 
+                    treatment.name = "trt", 
                     data = tsdata, 
                     study.design = "randomized cohort",
                     link = "logit", 
@@ -61,9 +64,9 @@ Now create a `trtsel` object using a discrete marker.
 
 ```{r}
 # Y2_disc = as.numeric(Y2>0)
-trtsel.Y2_disc <- trtsel(event = "event", 
-                         trt = "trt", 
-                         marker = "Y2_disc", 
+
+trtsel.Y2_disc <- trtsel(outcome ~ trt*(Y2_disc), 
+                         treatment.name = "trt",
                          data = tsdata, 
                          study.design = "randomized cohort", 
                          link = "logit")
@@ -72,13 +75,15 @@ trtsel.Y2_disc <- trtsel(event = "event",
 
 See `?trtsel` for more information. Now that we have created trtsel objects, we can plot, evaluate, calibrate and compare them. 
 
-Use the plot function
---------------------------
+## Plot  
+
+### Use the plot function  
+
 
 Plot risk curves:
 
 ```{r}
-plot.trtsel(trtsel.Y1, 
+plot(trtsel.Y1, 
             main = "Y1: Oncotype-DX-like marker", 
             plot.type = "risk", 
             ci = "horizontal", 
@@ -93,7 +98,7 @@ For a binary marker, we calculate vertical confidence bands:
 
 
 ```{r}
-tmp <- plot.trtsel(trtsel.Y2_disc,
+tmp <- plot(trtsel.Y2_disc,
                    main = "Discrete version of Y2", 
                    plot.type = "risk", 
                    ci = "vertical", 
@@ -112,11 +117,12 @@ tmp$ci.bounds
 ```
 
 #### Treatment effect curves
+
 We can also plot the distribution of treatment effects. 
 
 
 ```{r}
-plot.trtsel(trtsel.Y1, 
+plot(trtsel.Y1, 
             plot.type = "treatment effect", 
             ci = "horizontal", 
             conf.bands = TRUE, 
@@ -129,8 +135,10 @@ plot.trtsel(trtsel.Y2_disc,
             conf.bands = TRUE, 
             bootstraps = 50)
 ```
+
 #### Selection impact plot
-With v1.1.2, an option has been added to plot 'selection impact' curves. Which show the estimated event rate if different proportions of observations where treated based off the marker of interest.
+
+Plot 'selection impact' curves, which show the estimated event rate if different proportions of observations where treated based off the marker of interest.
 
 ```{r}
 plot.trtsel(trtsel.Y1, 
@@ -141,12 +149,12 @@ plot.trtsel(trtsel.Y1,
 ```
 
 
-Evaluate marker performance
-----------------------------------
+## Evaluate marker performance  
+
 Calculate summary measures of marker performance along with bootstrap confidence intervals.
 
 ```{r}
-tmp <- eval.trtsel(trtsel.Y1, bootstraps = 50)
+tmp <- evaluate(trtsel.Y1, bootstraps = 50)
 tmp
 ```
 
@@ -157,17 +165,16 @@ tmp$estimates
 
 ```{r}
 # discrete marker
-eval.trtsel(trtsel.Y2_disc, bootstraps = 50)
+evaluate(trtsel.Y2_disc, bootstraps = 50)
 ```
 
-Assess model calibration
---------------------------------------------
+## Assess model calibration 
 
 Currently, model calibration is only available for continuous markers. 
 
 
 ```{r}
-calibrate.trtsel(trtsel.Y1, 
+calibrate(trtsel.Y1, 
                  groups = 10, 
                  plot = "calibration", 
                  trt.names = c("chemo.", "no chemo."))
@@ -178,38 +185,35 @@ calibrate.trtsel(trtsel.Y1,
 See `?calibrate.trtsel` for more plot options. 
 
 
-Compare markers
----------------------------------------
+## Compare markers 
 
 To compare markers, the trt and event labels must be identical for the two markers. Plots can not be generated if comparing a discrete marker with a continuous marker. 
 
 
 ```{r}
 # trtsel object for the stronger marker 2
-trtsel.Y2 <- trtsel(event = "event", 
-                    trt = "trt", 
-                    marker = "Y2", 
+trtsel.Y2 <- trtsel(event~trt*(Y2 + Y1), 
+                    treatment.name = "trt", 
                     data = tsdata, 
                     default.trt = "trt all")
 
 # Compare the markers based on summary measures
-mycompare <- compare.trtsel(trtsel1 = trtsel.Y1, 
-                            trtsel2 = trtsel.Y2, 
-                            marker.names = c("Weak", "Strong"), 
-                            bootstraps = 50, 
-                            plot = TRUE, 
-                            ci = "vertical", 
-                            offset = 0.01, 
-                            conf.bands = TRUE)
+mycompare <- compare(trtsel1 = trtsel.Y1, 
+                     trtsel2 = trtsel.Y2, 
+                     model.names = c("Model 1", "Model 2"), 
+                     bootstraps = 50, 
+                     plot = TRUE, 
+                     ci = "vertical", 
+                     offset = 0.01, 
+                     conf.bands = TRUE)
 mycompare
 ```
 
 
 ```{r}
 ## Compare two discrete markers Y1_disc = as.numeric(Y1>mean(Y1))
-trtsel.Y1_disc <- trtsel(event = "event",
-                         trt = "trt", 
-                         marker = "Y1_disc", 
+trtsel.Y1_disc <- trtsel(event~Y1_disc*trt, 
+                         treatment.name = "trt", 
                          data = tsdata, 
                          study.design = "randomized cohort", 
                          link = "logit")
@@ -227,19 +231,20 @@ compare.trtsel(trtsel1 = trtsel.Y1_disc,
 
 See `?compare.trtsel` for more options.
 
-Including fitted risks (*new option with version 1.1.0*)
-----------------------------
+## Additional features 
+
+### Including fitted risks 
+
 Alternative to including a marker and fitting a logistic model, the user can specify fitted risks for trt = 0 and trt = 1. In this case, no model fitting will be implemented and all bootstrap confidence intervals will be conditional on the provided fitted model. 
 
 ```{r}
 #calculate model fit
-mymod <- glm(event~trt*Y2, data= tsdata, family = binomial("logit"))
+mymod <- glm(event~trt*(Y2), data= tsdata, family = binomial("logit"))
 
-tsdata$fitted.t0 <- predict(mymod, newdata=data.frame(trt = 0, Y2 = tsdata$Y2), type = "response")
-tsdata$fitted.t1 <- predict(mymod, newdata=data.frame(trt = 1, Y2 = tsdata$Y2), type = "response")
+tsdata$fitted.t0 <- predict(mymod, newdata=data.frame(trt = 0,Y1 = tsdata$Y1, Y2 = tsdata$Y2), type = "response")
+tsdata$fitted.t1 <- predict(mymod, newdata=data.frame(trt = 1,Y1 = tsdata$Y1, Y2 = tsdata$Y2), type = "response")
 
-
-myfitted.trtsel <- trtsel( event ="event", trt = "trt",  
+myfitted.trtsel <- trtsel( event~trt, treatment.name = "trt", 
                          data = tsdata,
                          fittedrisk.t0 = "fitted.t0",
                          fittedrisk.t1 = "fitted.t1",
@@ -256,8 +261,26 @@ plot.trtsel(myfitted.trtsel, bootstraps = 50, plot.type = "risk",
 ```
 
 
+### Simple function to estimate summary measures
 
 
-References
-------------------------
-Janes H, Brown MD, Pepe MS, Huang Y. Statistical methods for evaluating and comparing biomarkers for patient treatment selection. *International Journal of Biostatistics* (under review).
+```{r}
+
+estimate_measures(event = tsdata$event, trt = tsdata$trt, marker.neg = 1-tsdata$Y1_disc)
+
+
+mod <- glm(event~trt*Y1_disc,  data = tsdata, family = binomial())
+
+tsdata.0 <- tsdata; 
+tsdata.0$trt = 0 
+tsdata.1 <- tsdata;
+tsdata.1$trt = 1
+delta.hat <- predict(mod, newdata= tsdata.0, type = "response") - predict(mod, newdata= tsdata.1, type = "response")
+
+estimate_measures(event = tsdata$event, trt = tsdata$trt, marker.neg = 1- tsdata$Y1_disc, trt.effect = delta.hat )
+
+```
+
+## References
+
+Janes H, Brown MD, Huang Y, Pepe MS. 2014. An Approach to Evaluating and Comparing Biomarkers for Patient Treatment Selection. **International Journal of Biostatistics**

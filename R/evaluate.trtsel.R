@@ -1,4 +1,6 @@
-eval.trtsel <-
+evaluate <- function(x, ...) UseMethod("evaluate")
+
+evaluate.trtsel <-
 function(x, bootstraps = 1000, alpha = .05){
 
   if(!is.trtsel(x)) stop("x must be an object of class 'trtsel' created by using the function 'trtsel' see ?trtsel for more help")
@@ -14,6 +16,8 @@ function(x, bootstraps = 1000, alpha = .05){
   get.summary.measures <- x$functions$get.summary.measures
   marker.bounds <- x$model.fit$marker.bounds
   test.Null.val <- test.Null(x, alpha = alpha)
+  event.name = as.character(x$formula[[2]])
+  treatment.name = x$treatment.name 
   
   link <- x$model.fit$link
   
@@ -25,6 +29,8 @@ function(x, bootstraps = 1000, alpha = .05){
   #get bootstrap data
 
   boot.data <- replicate(bootstraps, one.boot.eval(data = data, 
+                                                   formula = x$formula, 
+                                                   treatment.name = x$treatment.name, 
                                                    rho = rho, 
                                                    d = x$model.fit$thresh, 
                                                    study.design = study.design, 
@@ -40,22 +46,26 @@ function(x, bootstraps = 1000, alpha = .05){
 
   ## 2. Estimate summary measures
   
-  summary.measures <- data.frame(get.summary.measures(data, rho))
+  summary.measures <- data.frame(get.summary.measures(data, event.name, treatment.name,  rho))
   #marker threshold st delta(mthresh) = 0
   if(any(data$marker.neg==0) & any(data$marker.neg==1) &is.null(x$model.fit$disc.marker.neg)& link != "risks_provided"){
 
+    #only calculate marker threshold if there is a single marker 
+     if(!is.null(data[["marker"]])){
     summary.measures$Marker.Thresh <-ifelse( with(data, trt.effect[which.min(marker)]) < 0 , 
                                              max(data$marker[data$marker.neg == 1]), 
                                              min(data$marker[data$marker.neg == 1]))
-
+    }else{summary.measures$Marker.Thresh <- NA}
 
   }else if(any(data$marker.pos==1) & any(data$marker.pos==0) &is.null(x$model.fit$disc.marker.neg)& link != "risks_provided"){
     
+    #only calculate marker threshold if there is a single marker 
+    if(!is.null(data[["marker"]])){
     summary.measures$Marker.Thresh <-ifelse( with(data, trt.effect[which.min(marker)]) < 0 , 
                                              max(data$marker[data$marker.pos == 0]), 
                                              min(data$marker[data$marker.pos == 0]))
     
-    
+    }else{summary.measures$Marker.Thresh <- NA}
   }else{
   summary.measures$Marker.Thresh <- NA
   }
@@ -86,12 +96,12 @@ function(x, bootstraps = 1000, alpha = .05){
       }else{
 
            reject.all.low <- unname( mapply( cover, 
-                                   quantile(tmp.boot.data, potential.pvals/2, , type = 1, na.rm = TRUE),
+                                   quantile(tmp.boot.data, potential.pvals/2,  type = 1, na.rm = TRUE),
                                    quantile(tmp.boot.data, 1 - potential.pvals/2, type = 1, na.rm = TRUE), 
                                    rep(marker.bounds[1], bootstraps))  )
 
            reject.all.high <- unname( mapply( cover, 
-                                   quantile(tmp.boot.data, potential.pvals/2, , type = 1, na.rm = TRUE),
+                                   quantile(tmp.boot.data, potential.pvals/2,  type = 1, na.rm = TRUE),
                                    quantile(tmp.boot.data, 1 - potential.pvals/2, type = 1, na.rm = TRUE), 
                                    rep(marker.bounds[2], bootstraps))  )
 
@@ -111,7 +121,7 @@ function(x, bootstraps = 1000, alpha = .05){
                  #more.ints        = more.ints)
   }else{
 
-  summary.measures <- data.frame(get.summary.measures(data, rho))
+  summary.measures <- data.frame(get.summary.measures(data, event.name, treatment.name,  rho))
 
   #marker threshold st delta(mthresh) = 0
   if(any(data$marker.neg==0) & any(data$marker.neg==1) &is.null(x$model.fit$disc.marker.neg)& link != "risks_provided"){

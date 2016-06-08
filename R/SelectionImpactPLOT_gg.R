@@ -5,8 +5,9 @@ function(x, ci, ci.bounds, get.F, fixed.values,conf.bands,  rho, xlab, ylab, xli
   risk.t1 <- x$derived.data$fittedrisk.t1
   trt.effect <- x$derived.data$trt.effect
 
-  event <- x$derived.data$event
-  trt <- x$derived.data$trt
+  event.name = as.character(x$formula[[2]])
+  event <- x$derived.data[[event.name]]
+  trt <- x$derived.data[[x$treatment.name]]
   n = length(trt)
 
   F.D <- get.F(trt.effect, event, trt, rho = rho)*100
@@ -17,7 +18,10 @@ function(x, ci, ci.bounds, get.F, fixed.values,conf.bands,  rho, xlab, ylab, xli
   mydata = mydata[with(mydata, order(F.D)),]
 
   ## need the mean risk given t=0 and t=1. We need to account for subsampling in this. 
-  allMeasures <- x$functions$get.summary.measures( x$derived.data, rho, x$model.fit$thresh)
+  allMeasures <- x$functions$get.summary.measures( x$derived.data, event.name = event.name, 
+                                                   treatment.name = x$treatment.name, 
+                                                   rho = rho,
+                                                   d = x$model.fit$thresh)
   
   
   avglines <- cbind(allMeasures$ER.trt0.mod, sort(F.D), 4)

@@ -1,16 +1,17 @@
 one.boot.eval <-
-function(data, rho, study.design, obe.boot.sample, obe.get.summary.measures, link, d, disc.marker.neg = NULL, provided_risk = NULL){
+function(data, formula, treatment.name, rho, study.design, obe.boot.sample, obe.get.summary.measures, link, d, disc.marker.neg = NULL, provided_risk = NULL){
 
-  
-
-  sample <- obe.boot.sample( data$event, data$trt, rho)
+  event.name <- as.character(formula[[2]])
+  event <- data[[event.name]]
+    
+  sample <- obe.boot.sample( event = event, trt = data$trt, rho = rho)
   rho.b <- sample[1:7]
   ind   <- sample[-c(1:7)]
 
-
-  x.b <- trtsel.boot( event = data$event[ind], 
-                      trt = data$trt[ind], 
-                      marker = data$marker[ind], 
+ 
+  x.b <- trtsel.boot( formula = formula,
+                      treatment.name = treatment.name, 
+                      data = data, 
                       d = d, 
                       study.design = study.design, 
                       rho = rho.b, 
@@ -28,7 +29,10 @@ function(data, rho, study.design, obe.boot.sample, obe.get.summary.measures, lin
   coefs <- x.b$model$coefficients[,1]
   #sm = 'summary measures'
 
-  sm.b <- obe.get.summary.measures(x.b$derived.data, rho.b)
+  sm.b <- obe.get.summary.measures(x.b$derived.data, 
+                                   event.name = event.name,
+                                   treatment.name = treatment.name, 
+                                   rho.b)
   
  
   

@@ -1,0 +1,45 @@
+---
+title: "Proposed Updates for new version of package TreatmentSelection"
+author: "Marshall Brown"
+date: "April 12, 2016"
+output: html_document
+---
+
+We wish to make the following changes to the R package 
+
+1. accomodate survival outcomes (new package)
+
+- writing a new package is best for this approach 
+
+survtrtsel for creating trtsel objects
+plot.trtsel for plotting risk curves and more
+eval.trtsel for evaluating marker performance
+calibrate.trtsel for assessing model calibration
+compare.trtsel to compare two trtsel objects. 
+
+Strategy: 
+--> move to class S3 methods for TreatmentSelection 
+
+plot, evaluate, calibrate and compare.
+
+then use these methods for survTreatmentSelection 
+
+
+
+2. input formulas instead of markers 
+
+put here the chain of ridiculous dependencies that this creates. 
+
+trtsel (of course )
+plot.trtsel 
+eval.trtsel
+
+3. simple rule evaluator function (input outcome status, treatment, and rule indicator) 
+
+- what is the purpose of this? 
+- how is it to be used? 
+- no model fitting? 
+
+
+4. add example of case-control design usage to the tutorial 
+

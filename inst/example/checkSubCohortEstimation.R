@@ -29,7 +29,7 @@ a1 <- a[2]
 a2 <- a[3]
 a3 <- a[4]
 
-Sims = 100
+Sims = 10
 VD <- data.frame("cohort" = rep(NA, Sims), 
                  "casecontrol" = rep(NA, Sims), 
                  "strat" = rep(NA, Sims))
@@ -43,9 +43,11 @@ for(s in 1:Sims){
   
  
 cohort.dat <- data.frame("event" = D, "trt" = trt, "Y" = Y)
-mytrtsel <- trtsel( event = "event", trt = "trt", marker = "Y",data = cohort.dat,study.design = "randomized cohort")
+mytrtsel <- trtsel( event = "event", trt = "trt", marker = "Y",
+                    data = cohort.dat,study.design = "randomized cohort", 
+                    default.trt = "trt none")
 
-out.cohort <- eval.trtsel(mytrtsel, bootstraps = bootstraps)
+out.cohort <- evaluate.trtsel(mytrtsel, bootstraps = 10)
 
 
 
@@ -63,10 +65,11 @@ out.cohort <- eval.trtsel(mytrtsel, bootstraps = bootstraps)
   
   tmptrtsel <- trtsel( event = "D", trt = "T", marker = "Y", data = tmpData,
                        study.design = "nested case-control",
-                       cohort.attributes = c(n, mean(trt), mean(D), 1))
+                       cohort.attributes = c(n, mean(trt), mean(D), 1), 
+                       default.trt = "trt none")
   
   
-  out.cc2 <- eval.trtsel(tmptrtsel, bootstraps = bootstraps)
+  out.cc2 <- evaluate(tmptrtsel, bootstraps = 10)
  
 
   ### 1:2 stratified case-control

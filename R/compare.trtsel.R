@@ -1,7 +1,162 @@
+compare <- function(x, ...) UseMethod("compare")
+
+
+
+#' 
+#' compare the performance of two treatment selection markers
+#' 
+#' Evaluates and compares the performance of two treatment selection markers
+#' measured in the same data.  Summary measures of the performance of each
+#' marker are estimated and confidence intervals are provided.  Differences in
+#' measures of performance between markers are estimated along with confidence
+#' intervals, and the results of tests comparing marker performance measures
+#' are returned.  "Treatment effect curves" for each marker are overlaid on the
+#' same plot.  An object of class 'trtsel' must first be created for each
+#' marker using the function 'trtsel' by supplying a data.frame containing
+#' marker, treatment, and event status information; treatment and event data
+#' must be identical for the two markers.
+#' 
+#' 
+#' @param trtsel1 An object of class "trtsel" created by using function
+#' "trtsel". This is created using data for the first marker.  Note: event and
+#' treatment vectors provided to create this trtsel object must be identical to
+#' those used to create the trtsel2 object.
+#' @param trtsel2 An object of class "trtsel" created by using function
+#' "trtsel". This is created using data for the second marker.
+#' @param bootstraps Number of bootstrap replicates for creating confidence
+#' intervals and bands. Default value is 500. Set bootstraps=0 if no confidence
+#' intervals or bands are desired.
+#' @param alpha (1-alpha)*100\% confidence intervals are calculated. Default
+#' value is alpha = 0.05 which yields 95\% CI's.
+#' @param plot Indication of whether a plot showing treatment effect curves for
+#' the two markers should be created.  TRUE (default) or FALSE.
+#' @param ci If plot = TRUE, indication of whether horizontal or vertical
+#' confidence intervals be plotted.  Character string of either "horizontal"
+#' (default) or "vertical." Only applies if plot = TRUE.
+#' @param fixed.values A numeric vector indicating fixed values on the x- or
+#' y-axes at which bootstrap confidence intervals are provided. If
+#' "fixed.values" are provided, point-wise confidence intervals will be printed
+#' (i.e. conf.bands will be taken as FALSE).  This option applies to the plot
+#' only.
+#' @param offset If confidence intervals are to be plotted for specified
+#' fixed.values, offset is the amount of distance to offset confidence
+#' intervals so that they do not overlap on the plot. The default value is
+#' 0.01. Only applies if plot = TRUE.
+#' 
+#' @param conf.bands Indication of whether pointwise confidence intervals are
+#' shown for the curve(s).  TRUE (default) or FALSE. If "fixed.values" are
+#' input, this option is ignored and no confidence bands are produced. Only
+#' applies if plot = TRUE.
+#' @param conf.bandsN If conf.bands = TRUE, the number of points along the x-
+#' or y-axis at which to calculate the pointwise confidence intervals. The
+#' default is 100. Only applies if plot = TRUE.
+#' @param model.names A vector of length 2 indicating the names for the two
+#' markers in trtsel1, and trtsel2, respectively, for the plot legend. The default value is c("Model 1",
+#' "Model 2").
+#' @param xlab A label for the x-axis. Default values depend on plot.type. Only
+#' applies if plot = TRUE.
+#' @param ylab A label for the y-axis. Default values depend on plot.type. Only
+#' applies if plot = TRUE.
+#' @param xlim The limits for the x-axisof the plot, in the form c(x1,x2). Only
+#' applies if plot = TRUE.
+#' @param ylim The limits for the y-axis of the plot, in the form c(y1,y2).
+#' Only applies if plot = TRUE.
+#' @param main The main title for the plot. Only applies if plot = TRUE.
+#' @param annotate.plot Only applies to comparison of two discrete markers.
+#' Should the plot be annotated with the marker group percentages? default is
+#' TRUE.
+#' @return A list with components (see Janes et al. (2013) for a description of
+#' the summary measures and estimators):
+#' 
+#' \item{estimates.marker1}{ Point estimates of the summary measures: p.neg,
+#' p.pos, B.neg, B.pos, Theta, Var.Delta, TG and event rates for marker 1. }
+#' \item{estimates.marker2}{ Point estimates for the same summary measures for
+#' marker 2.} \item{estimates.diff}{ Estimated difference in summary measures
+#' (marker 1 - marker 2).} \item{ci.marker1}{ 2x9 data.frame with confidence
+#' intervals for marker 1 performance measures.} \item{ci.marker2}{ 2x9
+#' data.frame with confidence intervals for marker 2 performance measures.}
+#' \item{ci.diff}{ 2x9 data.frame with confidence intervals for differences in
+#' performance measures.} \item{p.values}{1x9 data.frame with p-values for each
+#' difference corresponding to a test of H0: marker 1 performance = marker 2
+#' performance.} \item{bootstraps}{ bootstraps value provided.}
+#' 
+#' In addition, if plot = TRUE: \item{plot}{ ggplot object containing the
+#' generated plot.} \item{plot.ci.marker1}{ A data.frame containing the bounds
+#' of the bootstrap-based confidence intervals for marker1, along with the
+#' fixed.values they are centered around, where applicable. }
+#' \item{plot.ci.marker2}{ a data.frame containing the bounds of the
+#' bootstrap-based confidence intervals for marker 2, along with the
+#' fixed.values they are centered around, where applicable. }
+#' @note Plot output is only produced when comparing a continuous (discrete)
+#' marker to a continuous (discrete) marker because confidence bands are
+#' calculated differently for continuous vs. discrete markers. See the note
+#' under ?plot.trtsel, for a description of the differences between how the
+#' bootstrap confidence bands are calculated.
+#' @seealso \code{\link{trtsel}} for creating trtsel objects,
+#' \code{\link{plot.trtsel}} for plotting risk curves and more,
+#' \code{\link{eval.trtsel}} for evaluating marker performance, and
+#' \code{\link{calibrate.trtsel}} for assessing model calibration..
+#' @references
+#' 
+#' Janes, Holly; Brown, Marshall D; Pepe, Margaret; Huang, Ying; "An Approach
+#' to Evaluating and Comparing Biomarkers for Patient Treatment Selection" The
+#' International Journal of Biostatistics. Volume 0, Issue 0, ISSN (Online)
+#' 1557-4679, ISSN (Print) 2194-573X, DOI: 10.1515/ijb-2012-0052, April 2014
+#' @examples
+#' 
+#' 
+#' data(tsdata)
+#' 
+#' ###########################
+#' ## Create trtsel objects 
+#' ###########################
+#' 
+#' trtsel.Y1 <- trtsel( event = "event",
+#'                      trt = "trt",
+#'                      marker = "Y1",
+#'                      data = tsdata,
+#'                      study.design = "randomized cohort")
+#' trtsel.Y1
+#' 
+#' trtsel.Y2 <- trtsel( event = "event",
+#'                      trt = "trt",
+#'                      marker = "Y2",
+#'                      data = tsdata,
+#'                      study.design = "randomized cohort")
+#' trtsel.Y2
+#' 
+#' #discrete markers
+#' trtsel.Y1_disc <- trtsel( event ="event", trt = "trt", marker = "Y1_disc", 
+#'                           data =  tsdata,
+#'                           study.design = "randomized cohort")
+#'                           
+#' trtsel.Y2_disc <- trtsel( event ="event", trt = "trt", marker = "Y2_disc",
+#'                           data = tsdata,
+#'                           study.design = "randomized cohort")
+#'                           
+#' 
+#' ###############################
+#' ## Compare marker performance
+#' ###############################
+#' 
+#' 
+#' # Plot treatment effect curves with pointwise confidence intervals
+#' ## use more bootstraps in practice
+#' compare.trtsel(trtsel1 = trtsel.Y1, trtsel2 = trtsel.Y2,
+#'                                 bootstraps = 10, plot = TRUE,      
+#'                                 ci = "horizontal",  conf.bands = TRUE) 
+#'                                 
+#' #compare discrete markers, plots are different                  
+#' compare.trtsel(trtsel1 = trtsel.Y1_disc, trtsel2 = trtsel.Y2_disc, ci = "vertical" , 
+#'                bootstraps = 10, plot = TRUE, offset = .1)                
+#'                                 
+#' 
+#' 
+#' @export compare.trtsel
 compare.trtsel <-
 function(trtsel1, trtsel2, bootstraps = 500, alpha = .05, plot = TRUE, 
                            ci   = "horizontal", fixed.values =  NULL, offset = .01,
-                            conf.bands = TRUE, conf.bandsN =100, marker.names = c("Marker 1", "Marker 2"), 
+                            conf.bands = TRUE, conf.bandsN =100, model.names = c("Model 1", "Model 2"), 
                            xlab = NULL, 
                            ylab = NULL, 
                            xlim = NULL, 
@@ -28,19 +183,30 @@ function(trtsel1, trtsel2, bootstraps = 500, alpha = .05, plot = TRUE,
   data1 <- trtsel1$derived.data 
   data2 <- trtsel2$derived.data
   
-  if(names(data1)[6]!=names(data2)[6]) stop("default.trt is different between markers. Summary measure comparison would not be valid.")
+  if(trtsel1$default.trt != trtsel2$default.trt) stop("default.trt is different between markers. Summary measure comparison would not be valid.")
   
   #cant compare a biomarker- provided trtsel object with one that was generated by fitted risks being input
-  if(ncol(data1) != ncol(data2)) stop("cannot compare a trtsel object that was created by providing fitted risk to another trtsel object that was not. Bootstrapping methods are not comparable.") 
+  #if(ncol(data1) != ncol(data2)) stop("cannot compare a trtsel object that was created by providing fitted risk to another trtsel object that was not. Bootstrapping methods are not comparable.") 
   
   if(nrow(data1) != nrow(data2)) stop("trtsel objects must have the same number of observations for comparison")
-  if(!all.equal(data1[,1:2], data2[,1:2])) stop("trt and event data must be identical to compare markers!")
+  
+  event.name1 = as.character(trtsel1$formula[[2]])
+  event.name2 = as.character(trtsel2$formula[[2]])
+
+  if(!all.equal(data1[,c(event.name1, trtsel1$treatment.name)], 
+                data2[,c(event.name2, trtsel2$treatment.name)], check.attributes = FALSE, use.names = FALSE)) stop("trt and event data must be identical to compare markers!")
   boot.sample <- trtsel1$functions$boot.sample
   get.summary.measures <- trtsel1$functions$get.summary.measures
   
   if(bootstraps > 1){
   #get bootstrap data
-  boot.data <- replicate(bootstraps, one.boot.compare(data1 = data1, data2 = data2, rho = rho, study.design = study.design, obe.boot.sample = boot.sample, obe.get.summary.measures = get.summary.measures, link = link, d = trtsel1$model.fit$thresh, disc.marker.neg = trtsel1$model.fit$disc.marker.neg))
+  boot.data <- replicate(bootstraps, one.boot.compare(data1 = data1, data2 = data2,
+                                                      formulas = list(trtsel1$formula, trtsel2$formula), 
+                                                      event.names = c(event.name1, event.name2), 
+                                                      treatment.names = c(trtsel1$treatment.name, trtsel2$treatment.name), 
+                                                      rho = rho, study.design = study.design, obe.boot.sample = boot.sample, 
+                                                      obe.get.summary.measures = get.summary.measures, link = link, 
+                                                      d = trtsel1$model.fit$thresh, disc.marker.neg = trtsel1$model.fit$disc.marker.neg))
   
   boot.data1 <- boot.data[c(1:4, 9:18),]
   boot.data2 <- boot.data[c(5:8, 25:34),]
@@ -49,8 +215,8 @@ function(trtsel1, trtsel2, bootstraps = 500, alpha = .05, plot = TRUE,
 
   ## Estimate summary measures
   
-  sm.m1 <- get.summary.measures(data1, rho)
-  sm.m2 <- get.summary.measures(data2, rho)
+  sm.m1 <- get.summary.measures(data1, event.name1, trtsel1$treatment.name,  rho)
+  sm.m2 <- get.summary.measures(data2, event.name2, trtsel2$treatment.name, rho)
   sm.diff <- as.data.frame(t(unlist(sm.m1) - unlist(sm.m2) ))
   
   ci.m1   <- apply(boot.data1[-c(1:4),], 1, quantile, probs = c(alpha/2, 1-alpha/2), na.rm = TRUE)
@@ -149,7 +315,7 @@ result <- list(estimates.marker1   = data.frame(sm.m1),
    fixed.values2 <- fixed.values
   } 
   
-  curves <-  myplotcompare.trtsel( x = result, bootstraps =bootstraps, alpha  = alpha, ci = ci, marker.names = marker.names,
+  curves <-  myplotcompare.trtsel( x = result, bootstraps =bootstraps, alpha  = alpha, ci = ci, marker.names = model.names,
                            fixeddeltas.y1 =  fixed.values1, fixeddeltas.y2 = fixed.values2, 
                            xlab = xlab, 
                            ylab = ylab, 
@@ -162,7 +328,7 @@ result <- list(estimates.marker1   = data.frame(sm.m1),
   result$plot.ci.marker2 <- curves$trtsel2$conf.intervals
   }else if(plot & !is.null(trtsel1$model.fit$disc.marker.neg)){
     
-    curves <-  myplotcompare.trtsel_disc( x = result, bootstraps =bootstraps, alpha  = alpha, ci = ci, marker.names = marker.names, 
+    curves <-  myplotcompare.trtsel_disc( x = result, bootstraps =bootstraps, alpha  = alpha, ci = ci, marker.names = model.names, 
                                      xlab = xlab, 
                                      ylab = ylab, 
                                      xlim = xlim, 
@@ -181,6 +347,7 @@ result <- list(estimates.marker1   = data.frame(sm.m1),
   result$trtsel2 <- NULL
   class(result) <- "compare.trtsel"
   result$alpha = alpha
+  result$model.names = model.names 
 
   return(result) 
 

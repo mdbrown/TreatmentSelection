@@ -21,7 +21,7 @@ If you would like the current version of the package directly from github, use t
 
 ```{r, eval=FALSE}
 if (!require("devtools")) install.packages("devtools")
-devtools::install_github("TreatmentSelection", "mdbrown")
+devtools::install_github("mdbrown/TreatmentSelection")
 ```
 
 First, load the example data set for this package called `tsdata`. Four markers are included in the data example, a ''weak'' and a ''strong'' marker ($Y1$ and $Y2$ respectively), along with a weak/strong discrete markers. 

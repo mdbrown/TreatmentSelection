@@ -3,7 +3,7 @@ function(data, formula, treatment.name, rho, study.design, obe.boot.sample, obe.
 
   event.name <- as.character(formula[[2]])
   event <- data[[event.name]]
-    
+  #  browser()
   sample <- obe.boot.sample( event = event, trt = data$trt, rho = rho)
   rho.b <- sample[1:7]
   ind   <- sample[-c(1:7)]
@@ -11,7 +11,7 @@ function(data, formula, treatment.name, rho, study.design, obe.boot.sample, obe.
  
   x.b <- trtsel.boot( formula = formula,
                       treatment.name = treatment.name, 
-                      data = data, 
+                      data = data[ind,], 
                       d = d, 
                       study.design = study.design, 
                       rho = rho.b, 
@@ -35,7 +35,7 @@ function(data, formula, treatment.name, rho, study.design, obe.boot.sample, obe.
                                    rho.b)
   
  
-  
+
 #  pdhat  <- sm.b$p.neg
 #  neg    <- x.b$derived.data[ind,6] #marker neg or pos
 #  marker.b <- data$marker[ind]

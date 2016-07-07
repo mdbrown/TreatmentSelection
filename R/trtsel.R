@@ -296,7 +296,7 @@ function(formula, treatment.name, data,
                     rho = rho, 
                     link = link)
 
-  model.fit <- list( "coef" = coef, "cohort.attributes" = rho, 
+  model.fit <- list( "coefficients" = coef, "cohort.attributes" = rho, 
                      "study.design" = study.design, 
                      "marker.bounds" = marker.bounds, 
                      "link" = link, "thresh" = d)

@@ -176,7 +176,7 @@ Currently, model calibration is only available for continuous markers.
 ```{r}
 calibrate(trtsel.Y1, 
                  groups = 10, 
-                 plot = "calibration", 
+                 plot = "treatment effect", 
                  trt.names = c("chemo.", "no chemo."))
 
 

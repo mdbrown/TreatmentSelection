@@ -95,7 +95,7 @@ calibrate <- function(x, ...){ UseMethod("calibrate")}
 #' cali.Y2
 #' 
 #' 
-#' 
+#' @importFrom binom binom.confint
 #' @export calibrate.trtsel
 calibrate.trtsel <-
 function( x, groups = 10, plot.type = "calibration", trt.names = c("Treatment", "No Treatment"), main = NULL, ylim = NULL, xlim = NULL, ylab = NULL, xlab=NULL){
@@ -233,6 +233,7 @@ breaks.delta <- sort(fitteddelta)[ sum.I( seq(0, 1, 1/groups), "<",F.delta(fitte
 
  obs.risk.t1.tmp <- aggregate( D.t1, by = list(cut.delta[trt==1]), FUN = "mean")$x  
  obs.risk.t0.tmp <- aggregate( D.t0, by = list(cut.delta[trt==0]), FUN = "mean")$x
+
 
  #make sure there are at least one observation from each treatment arm in each group
 
@@ -425,11 +426,19 @@ if( is.element(plot.type, "risk.t0")) {
 
   #points(1:groups/groups - 1/(2*groups), obs.risk.t0)
    
-   data = data.frame(F.risk = F.risk.t0(sort(fittedrisk.c.t0))*100, risk = sort(fittedrisk.c.t0))
-   p <- ggplot(data, aes(x = F.risk, y = risk)) + geom_step( size = 1, direction="vh")
    
+   
+   data = data.frame(F.risk = F.risk.t0(sort(fittedrisk.c.t0))*100, risk = sort(fittedrisk.c.t0))
+   p <- ggplot() + geom_step( data = data, size = 1, direction="vh",  aes(x = F.risk, y = risk))
+   
+
    obsdata <- data.frame(x = (1:groups/groups - 1/(2*groups))*100, y= obs.risk.t0)
-   p <- p + geom_point(data = obsdata, aes(x = x, y = y), size = 4)
+
+   obsdata$upper <-  binom.confint(obsdata$y*ng.t0, ng.t0, method = "wilson")$upper
+   obsdata$lower <- binom.confint(obsdata$y*ng.t0, ng.t0, method = "wilson")$lower
+   
+   p <- p +geom_errorbar(data = obsdata, aes(ymin = lower, ymax = upper, x = x), width = 2)+
+     geom_point(data = obsdata, aes(x = x, y = y), size = 4) 
    p <- p + ylab(ylab) + xlab(xlab) + ggtitle(main) + theme( text = element_text(size=16)) 
    if(!is.null(xlim)) p <- p + xlim(xlim)
    if(!is.null(ylim)) p <- p + ylim(ylim)
@@ -461,9 +470,17 @@ if(is.null(xlab)) xlab <- "% population below risk"
 #  points(1:groups/groups - 1/(2*groups), obs.risk.t1)
 
 data = data.frame(F.risk = F.risk.t1(sort(fittedrisk.c.t1))*100, risk = sort(fittedrisk.c.t1))
-p <- ggplot(data, aes(x = F.risk, y = risk)) + geom_step( size = 1, direction="vh")
+p <- ggplot() + geom_step( data = data, size = 1, direction="vh", aes(x = F.risk, y = risk))
+
+
 
 obsdata <- data.frame(x = (1:groups/groups - 1/(2*groups))*100, y= obs.risk.t1)
+obsdata$upper <-  binom.confint(obsdata$y*ng.t1, ng.t1, method = "wilson")$upper
+obsdata$lower <- binom.confint(obsdata$y*ng.t1, ng.t1, method = "wilson")$lower
+
+p <- p +geom_errorbar(data = obsdata, aes(ymin = lower, ymax = upper, x = x), width = 2)+
+  geom_point(data = obsdata, aes(x = x, y = y), size = 4) 
+
 p <- p + geom_point(data = obsdata, aes(x = x, y = y), size = 4)
 p <- p + ylab(ylab) + xlab(xlab) + ggtitle(main) + theme( text = element_text(size=16)) 
 if(!is.null(xlim)) p <- p + xlim(xlim)
@@ -508,7 +525,10 @@ if( is.element("treatment effect", plot.type)) {
 data = data.frame(F.risk = F.delta(sort(fitteddelta))*100, risk = sort(fitteddelta))
 p <- ggplot(data, aes(x = F.risk, y = risk)) + geom_step( size = 1, direction="vh")
 
+
 obsdata <- data.frame(x = (1:groups/groups - 1/(2*groups))*100, y= obs.delta)
+
+
 p <- p + geom_hline(yintercept  = 0, linetype = 2, colour = "grey50", size = .8) +
      geom_point(data = obsdata, aes(x = x, y = y), size = 4)
 p <- p + ylab(ylab) + xlab(xlab) + ggtitle(main) + theme( text = element_text(size=16)) 

@@ -8,7 +8,12 @@
 #' @param trt binary trt status 1 for "treated" and 0 for "un-treated."
 #' @param trt.rule 
 #' @param trt.effect estimated treatment effects. 
-#' @param default.trt the default treatment rule, either "trt all" or "trt none". 
+#' @param default.trt The default treatment assignment to compare with
+#' marker-based treatment. Can either be set at "trt all" (default) or "trt
+#' none". Use "trt all" if everyone is treated and the aim is to discover those
+#' who would benefit from no treatment, but use "trt none" if the common
+#' practice is to treat no-one and the goal is to discover those who would
+#' benefit from treatment.
 #' @param prediction.time a landmark prediction time used only when the 'time' variable is set. 
 #' 
 #' @export

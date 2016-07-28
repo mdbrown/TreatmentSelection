@@ -2,21 +2,18 @@
 #' 
 #' Creates an object of class "trtsel" given a data.frame containing marker,
 #' treatment, and adverse event status information.  The functions "plot",
-#' "evaltrtsel", and "calibrate" can then be used to plot risk and treatment
+#' "evaluate", and "calibrate" can then be used to plot risk and treatment
 #' effect curves, estimate summary measures, and check model calibration. The
 #' function "compare" can also be used to compare two treatment selection
 #' markers.
 #' 
 #' 
-#' @param event Name of indicator vector for adverse event found in data.frame
-#' "data". Coded 1 for occurrence of event and 0 otherwise.
-#' 
-#' @param trt Name of treatment status in data.frame "data". Coded 1 for
+#' @param formula a 'formula' object including outcome ~ markers and marker by treatment interactions for
+#'  the treatment selection model to be evaluated. The outcome can be either binary or a
+#'   'Surv' object for time-to-event outcomes. Binary variable should equal 1 for cases and 0 for controls.
+#' @param treatment.name  Name of the treatment variable in data.frame "data". The treatment variable must be coded 1 for
 #' "treated" and 0 for "un-treated."
-#' @param marker Name of the marker to be evaluated in data.frame "data".
-#' Continuous or Binary markers are allowed. Binary markers should be coded as
-#' a 0,1 numeric vector.
-#' @param data data.frame object holding event, trt and marker data.
+#' @param data data.frame object used to fit and evaluate the model. 
 #' @param fittedrisk.t0 Instead of providing a marker, fitted risks for T=0 and
 #' T=1 may be provided. This should be the column name of the fitted risk for
 #' T=0 that can be found in 'data'. If fitted risks are provided, a model will
@@ -67,6 +64,8 @@
 #' who would benefit from no treatment, but use "trt none" if the common
 #' practice is to treat no-one and the goal is to discover those who would
 #' benefit from treatment.
+#' @param prediction.time a landmark prediction time used only when the outcome is a time-to-event Surv object 
+#' 
 #' @return
 #' 
 #' An object of class "trtsel," which is a list containing:
@@ -337,7 +336,7 @@ function(formula, treatment.name, data,
     fitted_risk_t1 <- get.risk.t(coef[,1], formula, treatment.name, data, linkinvfun, t = 1)
     }
   
-  if(all.equal(fitted_risk_t0, fitted_risk_t1)) warning("fitted risks are the same under each treatment arm so treatment effects are all zero, \n did you forget to include interactions in your risk model?")
+  if(isTRUE(all.equal(fitted_risk_t0, fitted_risk_t1))) warning("fitted risks are the same under each treatment arm so treatment effects are all zero, \n did you forget to include interactions in your risk model?")
   
   model.fit <- list( "coefficients" = coef, "cohort.attributes" = rho, 
                      "study.design" = study.design, 

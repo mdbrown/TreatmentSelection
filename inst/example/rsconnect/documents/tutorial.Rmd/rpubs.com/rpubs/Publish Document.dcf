@@ -1,7 +1,7 @@
 name: Publish Document
 account: rpubs
 server: rpubs.com
-bundleId:
-        https://api.rpubs.com/api/v1/document/170562/926bcdaaeb5c43d5ab27602995d9acda
+appId: https://api.rpubs.com/api/v1/document/170562/926bcdaaeb5c43d5ab27602995d9acda
+bundleId: https://api.rpubs.com/api/v1/document/170562/926bcdaaeb5c43d5ab27602995d9acda
 url: http://rpubs.com/mdbrown/170562
-when: 1460495079.82683
+when: 1469746382.5024

@@ -13,11 +13,11 @@ function(data1, data2, formulas,  event.names, treatment.names,  rho, study.desi
     event2 <- mysurv[,2]
     
   }else{
-    event.name1 = as.character(trtsel1$formula[[2]])
-    event.name2 = as.character(trtsel2$formula[[2]])
+    event.name1 = as.character(formulas[[1]][[2]])
+    event.name2 = as.character(formulas[[2]][[2]])
     
-    event1 == data[[event.name1]]
-    event2 == data[[event.name2]]
+    event1 <- data1[[event.name1]]
+    event2 <- data2[[event.name2]]
   }
   
   

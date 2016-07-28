@@ -57,7 +57,7 @@ trteffectPLOT_gg <-
       #add x/y labels and main
       p <- p + xlab(xlab) + ylab(ylab) + ylim(ylim[1], ylim[2])+ ggtitle(main) 
       
-      p <- p + theme( text = element_text(size=18)) #, 
+     # p <- p + theme( text = element_text(size=18)) #, 
       
       p <- p + scale_x_continuous(limits = xlim)
       
@@ -83,7 +83,7 @@ trteffectPLOT_gg <-
     
     
     
-    p <- p+geom_step(data =  mydata[(1:(n)),], aes(x = F.D, y = trt.effect), size = 1, direction = "vh")
+    p <- p+geom_step(data =  mydata[(1:(n)),], aes(x = F.D, y = trt.effect), direction = "vh")
     p <- p+geom_line(data =  mydata[-c(1:(n)),], aes(x = F.D, y = trt.effect, linetype = factor(lty)), size = 0.5)
     
     
@@ -152,12 +152,12 @@ trteffectPLOT_gg_disc <-
       
       
       p <- ggplot(mydata, aes(x = factor(marker), y =trt.effect, ymin = lower, ymax = upper ))
-      p <- p + geom_errorbar(size = 1, width = .1) + geom_point(size = 4)
+      p <- p + geom_errorbar( width = .1) + geom_point()
       
       
     }else{
       p <- ggplot(mydata, aes(x = factor(marker), y =trt.effect ))
-      p <- p + geom_point(size = 4)
+      p <- p + geom_point()
       
     }
     
@@ -185,7 +185,7 @@ trteffectPLOT_gg_disc <-
                             values = c(3, 4), 
                             labels = c("Mean", "Zero"))
     
-    p <- p + theme( text = element_text(size=14)) #, 
+    #p <- p + theme( text = element_text(size=14)) #, 
     p <- p + scale_x_discrete(labels = c(paste(mval[1], "\n(", round(mean(marker==mval[1])*100, 1),"%)", sep = ""), 
                                          paste(mval[2], "\n(", round(mean(marker==mval[2])*100, 1),"%)", sep = "")))
     
@@ -268,7 +268,7 @@ trteffectPLOTcompare_gg <-
     # p <- p + stat_hline(yintercept  = mean(trt.effect), aes(linetype = factor(3), size = factor(3)), show.guide = FALSE)+
     #   stat_hline(yintercept = 0, aes( linetype = factor(4), size = factor(4)), show.guide = FALSE)
     
-    p <- p + theme( text = element_text(size=14)) #, 
+   # p <- p + theme( text = element_text(size=14)) #, 
     
     
     p <- p + scale_x_continuous(limits = xlim)
@@ -314,16 +314,16 @@ trteffectPLOTcompare_gg_disc <-
     
     trt.effect1 <- x1$derived.data$trt.effect
     marker1 <- x1$derived.data$marker
-    if(x$model.fit$link == "time-to-event"){
-      event = rep(0, nrow(x$derived.data))
-      event.name = x$formula[[2]]
+    if(x1$model.fit$link == "time-to-event"){
+      event = rep(0, nrow(x1$derived.data))
+      event.name = x1$formula[[2]]
       #setting event.name to treatment.name: this doesn't matter since we use model 
       #based estimates of event rates to get the marginal treatment effect for the plots. 
     }else{
-      event <- x$derived.data[[as.character(x$formula[[2]])]]
-      event.name = as.character(x$formula[[2]])
+      event <- x1$derived.data[[as.character(x1$formula[[2]])]]
+      event.name = as.character(x1$formula[[2]])
     }
-    trt <- x1$derived.data[[x1$trt.name]]
+    trt <- x1$derived.data[[x1$treatment.name]]
     n = length(trt.effect1)
     mval1 = sort(unique(marker1))
     
@@ -348,7 +348,7 @@ trteffectPLOTcompare_gg_disc <-
     if(is.null(main)) main <- "Treatment effect distribution"
     p <- ggplot(mydata)     
 
-    allMeasures <- x$functions$get.summary.measures( data = x1$derived.data, 
+    allMeasures <- x1$functions$get.summary.measures( data = x1$derived.data, 
                                                      event.name = event.name, 
                                                      treatment.name = x1$treatment.name, 
                                                      rho =x1$model.fit$cohort.attributes, 
@@ -369,7 +369,7 @@ trteffectPLOTcompare_gg_disc <-
       
       
       p <- ggplot(data = mydata, aes(x = markerValue, y =trt.effect, shape = factor(markerName), linetype = factor(markerName), ymin = lower, ymax = upper ))
-      p <- p + geom_errorbar( width = .05, size = .9) + geom_point(size = 4)
+      p <- p + geom_errorbar( width = .05, size = .9) + geom_point()
       
       #change the names for the legend
       p <- p + 
@@ -383,7 +383,7 @@ trteffectPLOTcompare_gg_disc <-
     }else{
       
       p <- ggplot(data = mydata, aes(x = markerValue, y =trt.effect, shape = factor(markerName)))
-      p <- p +geom_point(size = 4)
+      p <- p +geom_point()
       
       p <- p + 
         geom_hline(data = hlines.dat, aes(yintercept = trt.effect,  
@@ -402,7 +402,7 @@ trteffectPLOTcompare_gg_disc <-
     
     #change the names for the legend
     
-    p <- p + theme( text = element_text(size=14)) #, 
+   # p <- p + theme( text = element_text(size=14)) #, 
     
     
     mkrprop = round(c( mean(mydata$markerVal[1]==marker1), 

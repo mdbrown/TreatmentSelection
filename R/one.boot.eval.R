@@ -32,9 +32,8 @@ function(data, formula, treatment.name, rho, study.design, obe.boot.sample, obe.
                       prediction.time = prediction.time)
  
   if(is.null(data[["marker.neg"]])){
-    x.b$derived.data$marker.neg <- 1- x.b$derived.data$marker.neg
-    names(x.b$derived.data)[6] <- "marker.pos"
-    
+    x.b$derived.data$marker.neg <- 1- x.b$derived.data$marker.pos
+
   }
   #a3.b <- x.b$model$coefficients[4]
   #a1.b <- x.b$model$coefficients[2]

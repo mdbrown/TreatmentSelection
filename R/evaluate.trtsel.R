@@ -17,7 +17,7 @@ function(x, bootstraps = 1000, alpha = .05){
   marker.bounds <- x$model.fit$marker.bounds
   
   #we only test the 
-  test.Null.val <- test.Null(x, alpha = alpha)
+  test.Null.val <- NA #test.Null(x, alpha = alpha)
   event.name = as.character(x$formula[[2]])
   treatment.name = x$treatment.name 
   
@@ -82,7 +82,7 @@ function(x, bootstraps = 1000, alpha = .05){
   
   if(is.null(summary.measures$Marker.Thresh)) summary.measures$Marker.Thresh <- NA
 
-  result <- list(test.Null          = test.Null.val, 
+  result <- list(#test.Null          = test.Null.val, 
                  estimates = summary.measures, 
                  conf.intervals = conf.intervals)
   if(!is.null(x$model.fit$disc.marker.neg)) result$discrete.marker = TRUE

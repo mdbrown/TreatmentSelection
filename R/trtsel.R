@@ -186,7 +186,7 @@ function(formula, treatment.name, data,
   if(!is.numeric(trt) | !all(is.element(unique(trt), c(0,1)))) stop( "trt must be a numeric vector with elements 1 or 0") 
   
   ## if there is only one marker in the model, we keep it around, otherwise set marker to null 
-  
+  if(!is.element(treatment.name, all.vars(formula))) stop("variable with name treatment.name was not found in the model formula.")
   marker.names = all.vars(formula)[!is.element( all.vars(formula), c(event.name, treatment.name)) ]
   if(length(marker.names)==1){ 
     
@@ -377,7 +377,7 @@ function(formula, treatment.name, data,
       
     }else{
       marker.pos <- 1-marker.neg # indicator of being marker negative
-      derived.data$marker.pos <- marker.pos = marker.pos
+      derived.data$marker.pos <- marker.pos 
     }
     
   #need to add sampling weights to time-to-event outcome 

@@ -65,7 +65,7 @@ CDFdeltaPLOT_gg <-
     
     #change the names for the legend
     
-    p <- p + theme( text = element_text(size=14)) #, 
+   # p <- p + theme( text = element_text(size=14)) #, 
     
     
     p <- p + scale_x_continuous( limits = xlim)
@@ -171,7 +171,7 @@ CDFdeltaPLOT_gg_disc <-
       
       #p + scale_linetype_discrete(breaks = c("3", "4"), labels = c("a", "b"))
       #add the legend, increase text size
-      p <- p + theme( text = element_text(size=14))
+     # p <- p + theme( text = element_text(size=14))
       
       p <- p + scale_y_continuous( limits = xlim) 
       
@@ -183,7 +183,7 @@ CDFdeltaPLOT_gg_disc <-
       
       #change the names for the legend
       
-      p <- p + theme( text = element_text(size=18)) #, 
+     # p <- p + theme( text = element_text(size=18)) #, 
       
       
       p <- p + scale_x_continuous( limits = xlim)

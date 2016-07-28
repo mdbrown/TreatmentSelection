@@ -112,7 +112,7 @@ function( x, groups = 10, plot.type = "calibration", trt.names = c("Treatment", 
     event <- mysurv[,2]
     stime <- mysurv[,1]
   }else{
-    event.name <- as.character(formula[[2]])
+    event.name <- as.character(x$formula[[2]])
     event <- x$derived.data[[event.name]]
   }
   
@@ -377,9 +377,9 @@ if(is.element(plot.type, "calibration")){
  p <- ggplot(data = data, aes(x= observedRisk, y = expectedRisk, shape = factor(trt)))
  p <- p + coord_trans(x = "log", y = "log") +
    scale_shape_discrete("", labels = trt.names) + 
-   ylab(ylab) + xlab(xlab) + ggtitle(main) + theme( text = element_text(size=16)) +
-   geom_line(aes(x = observedRisk, y = observedRisk), colour = "grey50", linetype = 2, size = .8 ) + 
-     geom_point(size = 4, color = point.color)
+   ylab(ylab) + xlab(xlab) + ggtitle(main) +# theme( text = element_text(size=16)) +
+   geom_line(aes(x = observedRisk, y = observedRisk), colour = "grey50", linetype = 2 ) + 
+     geom_point( color = point.color)
    
     if(!is.null(xlim)){
     #  xaxis <- round(seq(from = xlim[1], to=xlim[2], length.out=5), 2)
@@ -420,7 +420,7 @@ if( is.element(plot.type, "risk.t0")) {
    
    
    data = data.frame(F.risk = F.risk.t0(sort(fittedrisk.c.t0))*100, risk = sort(fittedrisk.c.t0))
-   p <- ggplot() + geom_step( data = data, size = 1, direction="vh", color = line.color,  aes(x = F.risk, y = risk))
+   p <- ggplot() + geom_step( data = data, direction="vh", color = line.color,  aes(x = F.risk, y = risk))
    
 
    obsdata <- data.frame(x = (1:groups/groups - 1/(2*groups))*100, y= obs.risk.t0)
@@ -434,8 +434,8 @@ if( is.element(plot.type, "risk.t0")) {
    }
    
    p <- p +geom_errorbar(data = obsdata, color  = point.color,  aes(ymin = lower, ymax = upper, x = x), width = 2)+
-     geom_point(data = obsdata, aes(x = x, y = y), color = point.color,  size = 4) 
-   p <- p + ylab(ylab) + xlab(xlab) + ggtitle(main) + theme( text = element_text(size=16)) 
+     geom_point(data = obsdata, aes(x = x, y = y), color = point.color) 
+   p <- p + ylab(ylab) + xlab(xlab) + ggtitle(main) + #theme( text = element_text(size=16)) 
    if(!is.null(xlim)) p <- p + xlim(xlim)
    if(!is.null(ylim)) p <- p + ylim(ylim)
    print(p)
@@ -454,7 +454,7 @@ if(is.null(xlab)) xlab <- "% population below risk"
    if(is.null(main)) main <- "Risk curve for treated individuals"
 
 data = data.frame(F.risk = F.risk.t1(sort(fittedrisk.c.t1))*100, risk = sort(fittedrisk.c.t1))
-p <- ggplot() + geom_step( data = data, size = 1, direction="vh", color = line.color, aes(x = F.risk, y = risk))
+p <- ggplot() + geom_step( data = data,  direction="vh", color = line.color, aes(x = F.risk, y = risk))
 
 
 
@@ -470,9 +470,9 @@ if( x$model.fit$link == "time-to-event"){
 }
 
 p <- p +geom_errorbar(data = obsdata,  color  = point.color, aes(ymin = lower, ymax = upper, x = x), width = 2)+
-  geom_point(data = obsdata, aes(x = x, y = y),  color  = point.color, size = 4) 
+  geom_point(data = obsdata, aes(x = x, y = y),  color  = point.color)#, size = 4) 
 
-p <- p + ylab(ylab) + xlab(xlab) + ggtitle(main) + theme( text = element_text(size=16)) 
+p <- p + ylab(ylab) + xlab(xlab) + ggtitle(main) + #theme( text = element_text(size=16)) 
 if(!is.null(xlim)) p <- p + xlim(xlim)
 if(!is.null(ylim)) p <- p + ylim(ylim)
 print(p)
@@ -490,7 +490,7 @@ if( is.element("treatment effect", plot.type)) {
 
 
 data = data.frame(F.risk = F.delta(sort(fitteddelta))*100, risk = sort(fitteddelta))
-p <-p <- ggplot() + geom_step( data = data, size = 1, direction="vh", color = line.color, aes(x = F.risk, y = risk))
+p <-p <- ggplot() + geom_step( data = data,  direction="vh", color = line.color, aes(x = F.risk, y = risk))
 
 
 
@@ -509,9 +509,9 @@ obsdata$upper <- obsdata$y + qnorm(.975)*sqrt(obsdata$var)
 obsdata$lower <- obsdata$y + qnorm(.025)*sqrt(obsdata$var)
 
 p <- p +geom_errorbar(data = obsdata,  color  = point.color, aes(ymin = lower, ymax = upper, x = x), width = 2)+
-  geom_point(data = obsdata, aes(x = x, y = y),  color  = point.color, size = 4) 
+  geom_point(data = obsdata, aes(x = x, y = y),  color  = point.color)#, size = 4) 
 
-p <- p + ylab(ylab) + xlab(xlab) + ggtitle(main) + theme( text = element_text(size=16)) 
+p <- p + ylab(ylab) + xlab(xlab) + ggtitle(main) #+ theme( text = element_text(size=16)) 
 if(!is.null(xlim)) p <- p + xlim(xlim)
 if(!is.null(ylim)) p <- p + ylim(ylim)
 print(p)

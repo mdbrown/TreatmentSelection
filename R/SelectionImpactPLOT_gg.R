@@ -59,7 +59,7 @@ function(x, ci, ci.bounds, get.F, fixed.values,conf.bands,  rho, xlab, ylab, xli
     #add x/y labels and main
     p <- p + xlab(xlab) + ylab(ylab) + ylim(ylim[1], ylim[2])+ ggtitle(main) 
     
-    p <- p + theme( text = element_text(size=18)) #, 
+   # p <- p + theme( text = element_text(size=18)) #, 
     
     p <- p + scale_x_continuous(limits = xlim)
     
@@ -85,7 +85,7 @@ function(x, ci, ci.bounds, get.F, fixed.values,conf.bands,  rho, xlab, ylab, xli
   
   
   
-  p <- p+geom_step(data =  mydata[(1:(n)),], aes(x = F.D, y = theta.curve), size = 1, direction = "vh")
+  p <- p+geom_step(data =  mydata[(1:(n)),], aes(x = F.D, y = theta.curve),  direction = "vh")
   p <- p+geom_line(data =  mydata[-c(1:(n)),], aes(x = F.D, y = theta.curve, linetype = factor(lty)), size = 0.5)
   
   

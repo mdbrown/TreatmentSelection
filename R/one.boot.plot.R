@@ -179,8 +179,8 @@ one.boot.plot.compare <-
       
     }else{
 
-      event1 == data1[[event.names[[1]]]]
-      event2 == data2[[event.names[[2]]]]
+      event1 <- data1[[event.names[[1]]]]
+      event2 <- data2[[event.names[[2]]]]
     }
     myboot.sample <- obp.boot.sample( event1, data1[[treatment.names[1]]], rho)
     
@@ -214,8 +214,8 @@ one.boot.plot.compare <-
     }else{
       coef <- unname(get.coef(formulas[[1]], treatment.names[1], data1[ind,],  study.design, rho.b, link)[,1])
       linkinvfun <- binomial(link = link)$linkinv
-      obsrisk.t0.b  <-  get.risk.t0(coef, formulas[[1]], treatment.names[1], data1[ind,], linkinvfun)
-      obsrisk.t1.b  <-  get.risk.t1(coef, formulas[[1]], treatment.names[1], data1[ind,], linkinvfun)
+      obsrisk.t0.b  <-  get.risk.t(coef, formulas[[1]], treatment.names[1], data1[ind,], linkinvfun, t = 0)
+      obsrisk.t1.b  <-  get.risk.t(coef, formulas[[1]], treatment.names[1], data1[ind,], linkinvfun, t = 1)
       #obsrisk.t0.b  <- c(ifelse(coef[3]>0, 0,1),        get.risk.t0(coef,  marker.b, linkinvfun))
       #obsrisk.t1.b  <- c(ifelse(sum(coef[3:4])>0, 0,1), get.risk.t1(coef,  marker.b, linkinvfun))
       
@@ -261,8 +261,8 @@ one.boot.plot.compare <-
     }else{
       coef <- unname(get.coef(formulas[[2]], treatment.names[2], data2[ind,],study.design, rho.b, link)[,1])
       linkinvfun <- binomial(link = link)$linkinv
-      obsrisk.t0.b  <-  get.risk.t0(coef, formulas[[2]], treatment.names[2], data2[ind,], linkinvfun)
-      obsrisk.t1.b  <-  get.risk.t1(coef, formulas[[2]], treatment.names[2], data2[ind,], linkinvfun)
+      obsrisk.t0.b  <-  get.risk.t(coef, formulas[[2]], treatment.names[2], data2[ind,], linkinvfun, t = 0)
+      obsrisk.t1.b  <-  get.risk.t(coef, formulas[[2]], treatment.names[2], data2[ind,], linkinvfun, t = 1)
       #obsrisk.t0.b  <- c(ifelse(coef[3]>0, 0,1),        get.risk.t0(coef,  marker2.b, linkinvfun))
       #obsrisk.t1.b  <- c(ifelse(sum(coef[3:4])>0, 0,1), get.risk.t1(coef,  marker2.b, linkinvfun))
       

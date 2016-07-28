@@ -204,9 +204,9 @@ function(trtsel1, trtsel2, bootstraps = 500, alpha = .05, plot = TRUE,
   }else{
     event.name1 = as.character(trtsel1$formula[[2]])
     event.name2 = as.character(trtsel2$formula[[2]])
-    
-    event1 == data[[event.name1]]
-    event2 == data[[event.name2]]
+
+    event1 <-  trtsel1$derived.data[[event.name1]]
+    event2 <-  trtsel2$derived.data[[event.name2]]
   }
   
 

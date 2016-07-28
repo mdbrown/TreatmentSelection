@@ -9,15 +9,10 @@ output:
 
 ## Install the package 
 
-This tutorial uses the Treatment Selection package to analyze the example data provided in the package.
+This tutorial uses the Treatment Selection package (v 2.0.0) to analyze the example data provided in the package.
 
-First, you need to download and install the package:
 
-```{r, eval=FALSE, message = FALSE, warning = FALSE}
-install.packages("TreatmentSelection")
-```
-
-If you would like the current version of the package directly from github, use the `devtools` package:
+The current version of the package is on github. Use the `devtools` package to install the package:
 
 ```{r, eval=FALSE}
 if (!require("devtools")) install.packages("devtools")
@@ -46,7 +41,7 @@ Once we have the package and our data loaded into R, we need to create a treatme
 
 ```{r}
 
-trtsel.Y1 <- trtsel(event ~ (Y1)*trt, 
+trtsel.Y1 <- trtsel(event ~ Y1*trt, 
                     treatment.name = "trt", 
                     data = tsdata, 
                     study.design = "randomized cohort",
@@ -189,7 +184,7 @@ To compare markers, the trt and event labels must be identical for the two marke
 
 
 ```{r}
-# trtsel object for the stronger marker 2
+# trtsel object for markers 1 and 2
 trtsel.Y2 <- trtsel(event~trt*(Y2 + Y1), 
                     treatment.name = "trt", 
                     data = tsdata, 
@@ -212,9 +207,7 @@ mycompare
 ## Compare two discrete markers Y1_disc = as.numeric(Y1>mean(Y1))
 trtsel.Y1_disc <- trtsel(event~Y1_disc*trt, 
                          treatment.name = "trt", 
-                         data = tsdata, 
-                         study.design = "randomized cohort", 
-                         link = "logit")
+                         data = tsdata)
 
 
 compare.trtsel(trtsel1 = trtsel.Y1_disc, 

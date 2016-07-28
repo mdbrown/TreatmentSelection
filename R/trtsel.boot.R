@@ -68,7 +68,7 @@ function(formula, treatment.name, data,
   derived.data$marker <- marker
   if(is.null(data$marker.neg)){
     marker.pos <- 1-marker.neg # indicator of being marker negative
-    derived.data$marker.pos <- marker.pos = marker.pos
+    derived.data$marker.pos <- marker.pos 
   
   }else{
     derived.data$marker.neg <- marker.neg

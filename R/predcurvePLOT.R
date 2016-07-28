@@ -73,22 +73,22 @@ predcurvePLOT_gg <-
     
     
     
-    p <- p+geom_step(data = mydata, aes(x = Fy, y = risk, linetype = factor(trt)), direction = "vh", size = 1)
+    p <- p+geom_step(data = mydata, aes(x = Fy, y = risk, linetype = factor(trt)), direction = "vh")#, size = 1)
     
     #add x/y labels and main
     p <- p + xlab(xlab) + ylab(ylab) + ylim(ylim[1], ylim[2]) + ggtitle(main) 
     #change the names for the legend
     p <- p + scale_linetype_manual(values = c(2, 1), labels = trt.names)+
-      theme(legend.title = element_blank(),  text = element_text(size=14), 
+      theme(legend.title = element_blank(), #,  text = element_text(size=14), 
             legend.key.size = ggplot2::unit(1.5, "lines")) #, 
     #legend.text = element_text(size = 16))
     p <- p + scale_x_continuous(breaks = breaks, limits = xlim)
     if(show.marker.axis){
       p <- p + theme(plot.margin = ggplot2::unit(c(1,1,4,1), "lines"))
       
-      p <- p + annotation_custom(grob = xaxisGrob( at = breaks, label = round(quantile(marker, prob = breaks/100), 1), gp = gpar( fontsize=11.5)), #col = gray(.55),
+      p <- p + annotation_custom(grob = xaxisGrob( at = breaks, label = round(quantile(marker, prob = breaks/100), 1)), #, gp = gpar( fontsize=11.5)), #col = gray(.55),
                                  xmin = 0, xmax = 1, ymin = ylim[1]-diff(ylim)*.25, ymax = ylim[1]-diff(ylim)*.25)
-      p <- p + annotation_custom(grob = textGrob( label = "marker value", gp = gpar( fontsize=14)), 
+      p <- p + annotation_custom(grob = textGrob( label = "marker value"), #, #gp = gpar( fontsize=14)), 
                                  xmin = mean(xlim), xmax = mean(xlim), ymin = ylim[1]-diff(ylim)*.4, ymax = ylim[1]-diff(ylim)*.4)
       
       
@@ -138,13 +138,13 @@ predcurvePLOT_gg_disc <-
       
       
       p <- ggplot(mydata, aes(x = factor(marker), y = risk, ymin = lower, ymax = upper, group = factor(trt), shape = factor(trt), linetype = factor(trt) ))
-      p <- p + geom_errorbar(size = 1, width = .1) + geom_point(size = 4)
+      p <- p + geom_errorbar(width = .1) + geom_point()
       
       
     }else{
       
       p <- ggplot(mydata, aes(x = factor(marker), y = risk, group = factor(trt), shape = factor(trt), linetype = factor(trt) ))
-      p <- p + geom_point(size = 4)
+      p <- p + geom_point()
       
       
     }
@@ -160,7 +160,7 @@ predcurvePLOT_gg_disc <-
     #change the names for the legend
     p <- p + scale_shape_discrete(breaks=factor(c(1,0)), labels = trt.names) +
       scale_linetype_discrete(breaks=factor(c(1,0)), labels = trt.names)+
-      theme(legend.title = element_blank(),  text = element_text(size=14))
+      theme(legend.title = element_blank())#,  text = element_text(size=14))
     #legend.text = element_text(size = 16))
     p <- p + scale_x_discrete(labels = c(paste(mval[1], "\n(", round(mean(marker==mval[1])*100, 1),"%)", sep = ""), 
                                          paste(mval[2], "\n(", round(mean(marker==mval[2])*100, 1),"%)", sep = "")))

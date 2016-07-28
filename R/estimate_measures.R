@@ -4,9 +4,9 @@
 #' 
 #' 
 #' @param event  vector for adverse event. Can be binary (1 is bad, 0 is good) or continuous (large numbers are worse). If failure time variable 'time' is set, event is used as the adverse event status indicator. 
-#' @param time the failure time for survival outcomes.
 #' @param trt binary trt status 1 for "treated" and 0 for "un-treated."
-#' @param trt.rule 
+#' @param trt.rule a binary treatment rule used to recommend treatment where 1 means recommend treatment and 0 means recommend no treatment.
+#' @param time the failure time for survival outcomes.
 #' @param trt.effect estimated treatment effects. 
 #' @param default.trt The default treatment assignment to compare with
 #' marker-based treatment. Can either be set at "trt all" (default) or "trt
@@ -17,7 +17,7 @@
 #' @param prediction.time a landmark prediction time used only when the 'time' variable is set. 
 #' 
 #' @export
-trtsel_measures <- function(event, time = NULL, trt, trt.rule, trt.effect , default.trt = c("trt all", "trt none"), 
+trtsel_measures <- function(event, trt, trt.rule, trt.effect, time, default.trt = c("trt all", "trt none"), 
                             prediction.time = NULL){
   
   stopifnot(is.numeric(trt))
@@ -27,8 +27,9 @@ trtsel_measures <- function(event, time = NULL, trt, trt.rule, trt.effect , defa
   
   default.trt = match.arg(default.trt)
   
-  neg <- trt.rule
+  neg <- 1-trt.rule
   pos <- 1 - neg
+  
   
   if(missing(trt.effect)){ 
     warning("Estimates of trt.effect are not provided. Only empirical estimates will be calculated.")
@@ -40,7 +41,7 @@ trtsel_measures <- function(event, time = NULL, trt, trt.rule, trt.effect , defa
   
 
   #binary marker 
-  if(is.null(time)){ 
+  if(missing(time)){ 
   #proportion marker negative
   p.marker.neg <- mean(neg)
   p.marker.pos <- mean(pos)
@@ -106,15 +107,16 @@ trtsel_measures <- function(event, time = NULL, trt, trt.rule, trt.effect , defa
     ##time-to-event marker 
     if(!all(is.element(unique(event), c(0,1)))) stop( "when survival time is provided, event must be a numeric vector with elements 1 or 0") 
     
+    stime = time 
     if(is.null(prediction.time)) stop("prediction.time must be set for time-to-event outcomes.")
     stopifnot(is.numeric(prediction.time))
     
     t0 <- prediction.time 
     #event = data[[event.name]]
-    wi <- get.censoring.weights(ti = prediction.time, status = event, stime = stime)
+    wi <- get.censoring.weights(ti = prediction.time, status = event, stime = time)
     
     status = event
-    stime = time
+    
   
     #proportion marker negative
     p.marker.neg <- mean(neg)
@@ -138,13 +140,13 @@ trtsel_measures <- function(event, time = NULL, trt, trt.rule, trt.effect , defa
     
     #model based estimate
     B.neg.mod <- ifelse(sum(neg) > 0, -mean(trt.effect[neg==1]), 0)
-    ER.neg.mod <- ifelse(sum(neg) >0, mean(data$fittedrisk.t0[neg==1]), 0)
+   # ER.neg.mod <- ifelse(sum(neg) >0, mean(data$fittedrisk.t0[neg==1]), 0)
     
     
     #Average Benefit (B) of treatment among marker positives...
     
     
-    
+   
     #empirical estimate
     num <- (wi*I(stime < t0)*pos); 
     den <- (wi*pos)
@@ -159,7 +161,7 @@ trtsel_measures <- function(event, time = NULL, trt, trt.rule, trt.effect , defa
     
     #model based estimate
     B.pos.mod <- ifelse(sum(pos)>0, mean(trt.effect[pos==1]), 0)
-    ER.pos.mod <- ifelse(sum(pos) >0, mean(data$fittedrisk.t1[pos==1]), 0)
+   # ER.pos.mod <- ifelse(sum(pos) >0, mean(data$fittedrisk.t1[pos==1]), 0)
     
     
     #Theta
@@ -194,13 +196,13 @@ trtsel_measures <- function(event, time = NULL, trt, trt.rule, trt.effect , defa
     }
     
     ER.trt0.emp = p0.hat
-    ER.trt0.mod = mean(data$fittedrisk.t0)
+    #ER.trt0.mod = mean(data$fittedrisk.t0)
     ER.trt1.emp = p1.hat
-    ER.trt1.mod = mean(data$fittedrisk.t1)
+    #ER.trt1.mod = mean(data$fittedrisk.t1)
     
     
     ER.mkrbased.emp = ER.pos.emp*p.marker.pos + ER.neg.emp*p.marker.neg 
-    ER.mkrbased.mod = ER.pos.mod*p.marker.pos + ER.neg.mod*p.marker.neg
+   # ER.mkrbased.mod = ER.pos.mod*p.marker.pos + ER.neg.mod*p.marker.neg
     
     
   }
@@ -260,7 +262,7 @@ print.trtsel_summary_measures <-
     cat(paste("   ", round(x$p.pos,      3),  sep = ""))
     cat("\n\n")
     
-    cat("  Average benefit of no treatment among marker-negatives (B.neg)\n")
+    cat("  Average benefit of no treatment among those recommended no treatment (B.neg)\n")
     cat("    Empirical:   ")
     cat(paste(" ", round(x$B.neg.emp,  3),  sep = ""))
     cat("\n")
@@ -269,7 +271,7 @@ print.trtsel_summary_measures <-
     cat("\n\n")
     
     
-    cat("  Average benefit of treatment among marker-positives (B.pos)\n")
+    cat("  Average benefit of treatment among those recommended treatment (B.pos)\n")
     cat("    Empirical:   ")
     cat(paste(" ", round(x$B.pos.emp,  3),  sep = ""))
     cat("\n")

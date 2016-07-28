@@ -46,7 +46,7 @@ Once we have the package and our data loaded into R, we need to create a treatme
 
 ```{r}
 
-trtsel.Y1 <- trtsel(event ~ (Y1+Y2)*trt, 
+trtsel.Y1 <- trtsel(event ~ (Y1)*trt, 
                     treatment.name = "trt", 
                     data = tsdata, 
                     study.design = "randomized cohort",
@@ -264,8 +264,6 @@ plot.trtsel(myfitted.trtsel, bootstraps = 50, plot.type = "risk",
 
 ```{r}
 
-estimate_measures(event = tsdata$event, trt = tsdata$trt, marker.neg = 1-tsdata$Y1_disc)
-
 
 mod <- glm(event~trt*Y1_disc,  data = tsdata, family = binomial())
 
@@ -275,7 +273,7 @@ tsdata.1 <- tsdata;
 tsdata.1$trt = 1
 delta.hat <- predict(mod, newdata= tsdata.0, type = "response") - predict(mod, newdata= tsdata.1, type = "response")
 
-estimate_measures(event = tsdata$event, trt = tsdata$trt, marker.neg = 1- tsdata$Y1_disc, trt.effect = delta.hat )
+trtsel_measures(event = tsdata$event, trt = tsdata$trt, trt.rule = 1- tsdata$Y1_disc, trt.effect = delta.hat )
 
 ```
 

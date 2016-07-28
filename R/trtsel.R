@@ -98,18 +98,21 @@
 #' ## Create trtsel objects 
 #' ###########################
 #' 
-#' trtsel.Y1 <- trtsel( event = "event",
-#'                      trt = "trt",
-#'                      marker = "Y1",
-#'                      data = tsdata,
-#'                      study.design = "randomized cohort")
+# trtsel.Y1 <- trtsel(event ~ Y1*trt, 
+#                    treatment.name = "trt", 
+#                    data = tsdata, 
+#                    study.design = "randomized cohort",
+#                    link = "logit", 
+#                    default.trt = "trt all")
+#
 #' trtsel.Y1
 #' 
-#' trtsel.Y2 <- trtsel( event = "event",
-#'                      trt = "trt",
-#'                      marker = "Y2",
-#'                      data = tsdata,
-#'                      study.design = "randomized cohort")
+# trtsel.Y2 <- trtsel(event ~ Y2*trt, 
+#                    treatment.name = "trt", 
+#                    data = tsdata, 
+#                    study.design = "randomized cohort",
+#                    link = "logit", 
+#                    default.trt = "trt all")
 #' trtsel.Y2
 #' 
 #' 
@@ -122,12 +125,12 @@
 #' 
 #' #all bootstrapping done using this object will be conditional on the model fit. 
 #' 
-#' myfitted.trtsel <- trtsel( event ="event", trt = "trt",  
-#'                          data = tsdata,
-#'                          fittedrisk.t0 = "fitted.t0",
-#'                          fittedrisk.t1 = "fitted.t1",
-#'                          study.design = "randomized cohort", 
-#'                          default.trt = "trt all")
+#' myfitted.trtsel <- trtsel( event~trt, treatment.name = "trt", 
+#'                            data = tsdata,
+#'                            fittedrisk.t0 = "fitted.t0",
+#'                            fittedrisk.t1 = "fitted.t1",
+#'                            study.design = "randomized cohort", 
+#'                            default.trt = "trt all")
 #' 
 #' 
 #' 

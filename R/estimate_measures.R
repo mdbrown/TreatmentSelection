@@ -35,7 +35,7 @@ trtsel_measures <- function(event, time = NULL, trt, trt.rule, trt.effect , defa
   
 
   #binary marker 
-  if(is.null(stime)){ 
+  if(is.null(time)){ 
   #proportion marker negative
   p.marker.neg <- mean(neg)
   p.marker.pos <- mean(pos)

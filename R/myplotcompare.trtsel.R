@@ -25,25 +25,32 @@ function(x, bootstraps = 500, alpha = .05,
 
   fittedrisk.t0.y1 <- ts1$derived.data$fittedrisk.t0
   fittedrisk.t1.y1 <- ts1$derived.data$fittedrisk.t1
-  marker1 <- ts1$derived.data$marker
+ 
   delta.y1 <- ts1$derived.data$trt.effect
   link <- ts1$model.fit$link
   fittedrisk.t0.y2 <- ts2$derived.data$fittedrisk.t0
   fittedrisk.t1.y2 <- ts2$derived.data$fittedrisk.t1
-  marker2 <- ts2$derived.data$marker
+
   delta.y2 <-  ts2$derived.data$trt.effect
 
-  n<-length(marker1)
 
   rho  <- ts1$model.fit$cohort.attributes
   study.design <- ts1$model.fit$study.design
   trt <- ts1$derived.data[[ts1$treatment.name]]
-  event <- ts1$derived.data[[as.character(ts1$formula[[2]])]]
+  
 
+  if( link  == "time-to-event"){
+    event.name1 = ts1$formula[[2]]
+    event.name2 = ts2$formula[[2]]
+    
+    
+  }else{
+    event.name1 = as.character(ts1$formula[[2]])
+    event.name2 = as.character(ts2$formula[[2]])
   
-  event.name1 = as.character(ts1$formula[[2]])
-  event.name2 = as.character(ts2$formula[[2]])
+  }
   
+
   boot.sample <- ts1$functions$boot.sample
   get.F <- ts1$functions$get.F
 
@@ -85,7 +92,8 @@ function(x, bootstraps = 500, alpha = .05,
                                                              ci = ci, 
                                                               fixeddeltas.y1 = fixeddeltas.y1, fixeddeltas.y2 = fixeddeltas.y2,
                                                               rho = rho, study.design = study.design,  obp.boot.sample = boot.sample, obp.get.F = get.F, fix.ind, out.ind, link = link, 
-                                                             provided_risk = provided_risk))
+                                                             provided_risk = provided_risk, 
+                                                             prediction.times = c(x$trtsel1$prediction.time, x$trtsel2$prediction.time)))
     
 
     if(length(fixeddeltas.y1)==1){
@@ -176,12 +184,15 @@ myplotcompare.trtsel_disc <-
            ylim = NULL, 
            main = NULL, offset = offset, conf.bands,  annotate.plot)
   {
+    
+    
+    
     quantile <- NULL #appease check
     ts1 <- x$trtsel1
     ts2 <- x$trtsel2
     fittedrisk.t0.y1 <- ts1$derived.data$fittedrisk.t0
     fittedrisk.t1.y1 <- ts1$derived.data$fittedrisk.t1
-    marker1 <- ts1$derived.data$marker
+    marker1 = ts1$derived.data$marker
     delta.y1 <- ts1$derived.data$trt.effect
     link <- ts1$model.fit$link
     fittedrisk.t0.y2 <- ts2$derived.data$fittedrisk.t0
@@ -189,13 +200,18 @@ myplotcompare.trtsel_disc <-
     marker2 <- ts2$derived.data$marker
     delta.y2 <-  ts2$derived.data$trt.effect
     
-    n<-length(marker1)
-    
+
     rho  <- ts1$model.fit$cohort.attributes
     study.design <- ts1$model.fit$study.design
     trt <- ts1$derived.data$trt
-    event <- ts1$derived.data$event
     
+    if( ts1$model.fit$link == "time-to-event"){
+      warning("plotting comparisons of two discrete markers with a time-to-event outcome is not implemented yet.")
+      return(NULL)
+    }else{
+      event  <- ts1$derived.data[[as.character(ts1$formula[[2]])]]
+    
+
     boot.sample <- ts1$functions$boot.sample
     
     
@@ -203,7 +219,7 @@ myplotcompare.trtsel_disc <-
     
     
     one.boot.plot_disc <-
-      function(event, trt, marker1, marker2, rho = rho,  obp.boot.sample){
+      function(event, trt, marker1, marker2, w1, w2,  rho = rho,  obp.boot.sample){
         
         myboot.sample <- obp.boot.sample( event, trt, rho)
         
@@ -261,6 +277,7 @@ myplotcompare.trtsel_disc <-
                    "ci.bounds" = ts1.curves[[2]])
     
     
+    }
     
     invisible(result)
     #par(old.par)

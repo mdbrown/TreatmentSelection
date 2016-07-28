@@ -15,8 +15,25 @@ function(marker, event, trt, rho, return.fun = FALSE){
 
 }
 
+
+get.F.cohort.survival <-
+  function(marker, event, trt,  rho, return.fun = FALSE){
+    
+    if(!return.fun){
+
+      ecdf(marker)(marker)
+      
+    }else {
+      
+      ecdf(marker)
+      
+    }
+    
+  }
+
+
 get.F.case.control <-
-  function(marker, event, trt, rho, return.fun = FALSE){
+  function(marker, event, trt, wi, rho, return.fun = FALSE){
     
     #n <- length(marker)
     
@@ -42,7 +59,7 @@ get.F.case.control <-
 
 
 get.F.stratified.case.control <-
-  function(marker, event, trt, rho, return.fun = FALSE){
+  function(marker, event, trt, wi, rho, return.fun = FALSE){
     
     #n <- length(marker)     
     

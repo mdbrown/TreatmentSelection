@@ -1,10 +1,21 @@
 one.boot.eval <-
-function(data, formula, treatment.name, rho, study.design, obe.boot.sample, obe.get.summary.measures, link, d, disc.marker.neg = NULL, provided_risk = NULL){
+function(data, formula, treatment.name, rho, study.design, obe.boot.sample, obe.get.summary.measures, link, d, disc.marker.neg = NULL, provided_risk = NULL, prediction.time = NULL){
 
-  event.name <- as.character(formula[[2]])
-  event <- data[[event.name]]
+
+  if( link == "time-to-event"){
+    event.name = formula[[2]]
+    mysurv <- with(data, eval(event.name))
+    event <- mysurv[,2]
+   
+    data$prediction.time <- prediction.time
+  }else{
+    event.name <- as.character(formula[[2]])
+    event <- data[[event.name]]
+  }
+  
+  
   #  browser()
-  sample <- obe.boot.sample( event = event, trt = data$trt, rho = rho)
+  sample <- obe.boot.sample( event = event, trt = data[[treatment.name]], rho = rho)
   rho.b <- sample[1:7]
   ind   <- sample[-c(1:7)]
 
@@ -17,7 +28,8 @@ function(data, formula, treatment.name, rho, study.design, obe.boot.sample, obe.
                       rho = rho.b, 
                       link = link, 
                       disc.marker.neg = disc.marker.neg, 
-                      provided_risk = provided_risk[ind,])
+                      provided_risk = provided_risk[ind,], 
+                      prediction.time = prediction.time)
  
   if(is.null(data[["marker.neg"]])){
     x.b$derived.data$marker.neg <- 1- x.b$derived.data$marker.neg
@@ -26,9 +38,16 @@ function(data, formula, treatment.name, rho, study.design, obe.boot.sample, obe.
   }
   #a3.b <- x.b$model$coefficients[4]
   #a1.b <- x.b$model$coefficients[2]
-  coefs <- x.b$model$coefficients[,1]
+  if( nrow(x.b$model$coefficients) < 4){
+    coefs <- x.b$model$coefficients[,1]
+    coefs = c(coefs, c(0,0,0,0))
+    coefs = coefs[1:4]
+  }else{
+  coefs <- x.b$model$coefficients[1:4,1]
+  }
   #sm = 'summary measures'
-
+  
+  x.b$derived.data$prediction.time <- prediction.time
   sm.b <- obe.get.summary.measures(x.b$derived.data, 
                                    event.name = event.name,
                                    treatment.name = treatment.name, 

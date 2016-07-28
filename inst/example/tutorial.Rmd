@@ -45,9 +45,8 @@ Once we have the package and our data loaded into R, we need to create a treatme
 
 
 ```{r}
-tsdata$outcome <- tsdata$event
 
-trtsel.Y1 <- trtsel(outcome ~ Y1*trt, 
+trtsel.Y1 <- trtsel(event ~ (Y1+Y2)*trt, 
                     treatment.name = "trt", 
                     data = tsdata, 
                     study.design = "randomized cohort",
@@ -65,7 +64,7 @@ Now create a `trtsel` object using a discrete marker.
 ```{r}
 # Y2_disc = as.numeric(Y2>0)
 
-trtsel.Y2_disc <- trtsel(outcome ~ trt*(Y2_disc), 
+trtsel.Y2_disc <- trtsel(event ~ trt*(Y2_disc), 
                          treatment.name = "trt",
                          data = tsdata, 
                          study.design = "randomized cohort", 
@@ -171,7 +170,6 @@ evaluate(trtsel.Y2_disc, bootstraps = 50)
 ## Assess model calibration 
 
 Currently, model calibration is only available for continuous markers. 
-
 
 ```{r}
 calibrate(trtsel.Y1, 

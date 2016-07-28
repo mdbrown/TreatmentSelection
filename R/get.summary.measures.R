@@ -96,6 +96,136 @@ get.summary.measures.cohort <-
     
   }
 
+####################
+
+get.summary.measures.cohort.survival <-
+  function(data, event.name, treatment.name, rho, d=0){  
+   
+    
+     t0 <- data$prediction.time[1]
+    #event = data[[event.name]]
+    trt = data[[treatment.name]]
+    trt.effect <- data$trt.effect
+    wi <- data$censoring.weights 
+    
+  
+    tmp <- with(data, eval(event.name))
+    stime = tmp[,1]
+    status = tmp[,2] 
+    
+    
+    if(is.null(data[["marker.pos"]])){
+      neg <- data$marker.neg
+      pos <- 1 - neg
+    }else{
+      pos <- data$marker.pos
+      neg <- 1 - pos
+    }
+    #proportion marker negative
+    p.marker.neg <- mean(neg)
+    p.marker.pos <- mean(pos)
+    #Average Benefit (B) of no treatment among marker negatives...
+    
+    #empirical estimate
+    num <- (wi*I(stime < t0)*I(neg)); 
+    den <- (wi*I(neg))
+
+   
+    if(sum(den[trt==0])==0 | sum(den[trt==1]) ==0) {
+      B.neg.emp <- 0
+      ER.neg.emp <- 0 
+      #print("Bneg.emp is set to zero")
+    }else{
+      B.neg.emp <- sum(num[trt==1])/sum(den[trt==1]) - sum(num[trt==0])/sum(den[trt==0])
+      ER.neg.emp <- sum(num[trt==0])/sum(den[trt==0])
+    }
+
+    
+    #model based estimate
+    B.neg.mod <- ifelse(sum(neg) > 0, -mean(trt.effect[neg==1]), 0)
+    ER.neg.mod <- ifelse(sum(neg) >0, mean(data$fittedrisk.t0[neg==1]), 0)
+    
+    
+    #Average Benefit (B) of treatment among marker positives...
+    
+
+    
+    #empirical estimate
+    num <- (wi*I(stime < t0)*pos); 
+    den <- (wi*pos)
+    if(sum(den[trt==0])==0 | sum(den[trt==1]) ==0) {
+      B.pos.emp <- 0
+      ER.pos.emp <- 0 
+      # print("Bpos.emp is set to zero")
+    }else{
+      B.pos.emp <- sum(num[trt==0])/sum(den[trt==0]) - sum(num[trt==1])/sum(den[trt==1])
+      ER.pos.emp <-  sum(num[trt==1])/sum(den[trt==1])
+    }
+
+    #model based estimate
+    B.pos.mod <- ifelse(sum(pos)>0, mean(trt.effect[pos==1]), 0)
+    ER.pos.mod <- ifelse(sum(pos) >0, mean(data$fittedrisk.t1[pos==1]), 0)
+    
+    
+    #Theta
+    
+    if(is.null(data[["marker.pos"]])){
+      Theta.emp <- B.neg.emp*p.marker.neg
+      Theta.mod <- B.neg.mod*p.marker.neg
+      
+    }else{
+      Theta.emp <- B.pos.emp*p.marker.pos
+      Theta.mod <- B.pos.mod*p.marker.pos
+    }
+    
+    
+    #mod
+    p0.hat <- sum(wi*I(stime < t0)*(1-trt))/sum(wi*(1-trt));#mean(risk.no.trt) #mean(event[trt==0])
+    p1.hat <- sum(wi*I(stime < t0)*trt)/sum(wi*trt); #mean(risk.trt)
+    
+    Var.Delta <- mean((trt.effect - (p0.hat - p1.hat))^2)
+    event = 0 
+    delta.F <- get.F.cohort( trt.effect, event, trt, rho = NULL)
+    
+    ooo <- order(trt.effect)
+    
+    s.delta.F <- delta.F[ooo]
+    
+    TG <- sum( diff(c(0, s.delta.F))*abs( sort(trt.effect) - (p0.hat - p1.hat))) 
+
+    ER.trt0.emp = p0.hat
+    ER.trt0.mod = mean(data$fittedrisk.t0)
+    ER.trt1.emp = p1.hat
+    ER.trt1.mod = mean(data$fittedrisk.t1)
+    
+
+      ER.mkrbased.emp = ER.pos.emp*p.marker.pos + ER.neg.emp*p.marker.neg 
+      ER.mkrbased.mod = ER.pos.mod*p.marker.pos + ER.neg.mod*p.marker.neg
+
+    
+    list(     p.neg = p.marker.neg,
+              p.pos = p.marker.pos,
+              B.neg.emp = B.neg.emp,
+              B.neg.mod = B.neg.mod, 
+              B.pos.emp = B.pos.emp, 
+              B.pos.mod = B.pos.mod, 
+              Theta.emp = Theta.emp, 
+              Theta.mod = Theta.mod, 
+              Var.Delta = Var.Delta, 
+              TG        = TG, 
+              ER.trt0.emp = ER.trt0.emp, 
+              ER.trt0.mod = ER.trt0.mod, 
+              ER.trt1.emp = ER.trt1.emp, 
+              ER.trt1.mod = ER.trt1.mod, 
+              ER.mkrbased.emp = ER.mkrbased.emp,
+              ER.mkrbased.mod = ER.mkrbased.mod
+    ) 
+    
+    
+    
+  }
+
+
 
 ####################
 

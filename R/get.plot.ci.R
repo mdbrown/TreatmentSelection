@@ -89,6 +89,7 @@ function( x, plot.type,
   myconf.ints <- matrix(ncol  = n, nrow = 2*length(fix.ind)) 
 
   if(length(fix.ind) > 1){
+  
   for( i in 1:length(fix.ind)){
      j = i*2
      #n is the number of fixed values, we have to handle n = 1 differently than n > 1
@@ -100,6 +101,7 @@ function( x, plot.type,
      }
   }
   }else{
+    
      #n is the number of fixed values, we have to handle n = 1 differently than n > 1
      if(n > 1){
         myconf.ints[1:2,] <- apply( boot.data, 1, quantile,probs = c(alpha/2, 1-alpha/2), na.rm = TRUE) 

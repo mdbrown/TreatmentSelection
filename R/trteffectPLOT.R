@@ -1,78 +1,3 @@
-trteffectPLOT <-
-function(x, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, xlab, ylab, xlim, ylim, main, markerTWO=FALSE, lty = 1, mar,  ...){ 
-  
-  trt.effect <- x$derived.data$trt.effect
-  marker <- x$derived.data$marker
-  event <- x$derived.data$event
-  trt <- x$derived.data$trt
-  n = length(trt.effect)
-  
-
-
-  
-
- if(!markerTWO){
- old.mar <- par()$mar
-
-  if(is.null(mar)) mar = c(5.1, 4.1, 4.1, 9)
-  par(mar=mar)  #mar=c(6.5, 4.5, 4.1, 2.1), oma=c(1.5,1,1.5,1),
-
-    #browser()
-    cen <- mean(c(min(trt.effect, na.rm=TRUE), max(trt.effect, na.rm=TRUE)))
-    ran <- max(trt.effect, na.rm=TRUE) - min(trt.effect, na.rm=TRUE)
-
-    if(substr(ci, 1,1) =="v"){ cen <- mean(c(min(c(trt.effect, ci.bounds), na.rm=TRUE), max(c(trt.effect, ci.bounds), na.rm=TRUE))); ran <- max(c(trt.effect, ci.bounds), na.rm=TRUE) - min(c(trt.effect, ci.bounds), na.rm=TRUE)}
-    
-
-    ran <- ran*1.1
-    mylim <- c(cen-ran/2, cen+ran/2)
-
-   if(is.null(xlab)) xlab <- "% population below treatment effect"
-   if(is.null(ylab)) ylab <- "treatment effect"
-   if(is.null(xlim)) xlim <- c(0,100)
-   if(is.null(ylim)) ylim <- mylim
-   if(is.null(main)) main <- "Treatment effect distribution"
-
-    plot(NULL, 
-          ylab = ylab,
-          xlab = xlab,
-          xlim = xlim, 
-          ylim = ylim,
-          type = "n", 
-          main = main, ...)
-     legend(x=xlim[2]+diff(xlim)/15, y = quantile(ylim, prob = .75), legend = c("Average", "Zero"), lty = c(3,4), col = c("black", "black"), bty="n", cex = 1, xpd = TRUE, title= "Treatment Effect")
-     lines(c(0, 100), c(0,0), lty = 4, col="black")
-     lines(c(0, 100), rep(mean(event[trt==0])-mean(event[trt==1]), 2), lty = 3)
-    
-  par(mar = old.mar)
-  }
-
-  
-  F.D <- get.F(trt.effect, event, trt, rho = rho)*100
-
- 
-  if(!is.null(ci.bounds)){
- 
-  ci.bounds <- matrix(ci.bounds, ncol=length(fixed.values), nrow = 2)
-
-  if(substr(ci, 1,1)=="v"){
-    index.fix  <- (fixed.values<= max(F.D) & fixed.values >= min(F.D)) 
-  }else{
-    index.fix  <- (fixed.values<= max(trt.effect) & fixed.values >= min(trt.effect)) 
-  }
-  
-  
-  shade(ci.bounds[,index.fix], fixed.values[index.fix], type = substr(ci, 1, 1), bands = conf.bands, lty)
-  }
-  
-  stepF.D <- c(rep(F.D[order(F.D)], c(rep(2, n-1), 1)))         
- 
-  myx <- stepF.D  
-  myy <- trt.effect[rep(order(F.D),c(1,rep(2, n-1)))]
-  lines(myx, myy,type = "l", lwd=2, lty = lty)  
-  
-  return(cbind("x" =myx, "y" =myy))
-}
 
 
 trteffectPLOT_gg <-
@@ -81,7 +6,13 @@ trteffectPLOT_gg <-
   
     trt.effect <- x$derived.data$trt.effect
     
-    event <- x$derived.data[[as.character(as.character(x$formula[[2]]))]]
+    if(x$model.fit$link == "time-to-event"){
+      event = rep(0, nrow(x$derived.data))
+      event.name = x$formula[[2]]
+    }else{
+      event <- x$derived.data[[as.character(x$formula[[2]])]]
+      event.name = as.character(x$formula[[2]])
+    }
     trt <- x$derived.data[[x$treatment.name]]
     n = length(trt.effect)
     
@@ -90,14 +21,13 @@ trteffectPLOT_gg <-
     mydata = data.frame(trt.effect, F.D, lty )
     mydata = mydata[with(mydata, order(F.D)),]
     
-    
-    
+
     ## need to adjust these for scc and cc sample designs. 
     allMeasures <- x$functions$get.summary.measures(data = x$derived.data,  
-                                                    event.name = as.character(x$formula[[2]]), 
+                                                    event.name = event.name , 
                                                     treatment.name = x$treatment.name, 
                                                     rho = rho, x$model.fit$thresh)
-    
+   
     
     avglines <- cbind(0, sort(F.D), 4)
     avglines <- rbind(avglines,
@@ -171,7 +101,16 @@ trteffectPLOT_gg_disc <-
     
     trt.effect <- x$derived.data$trt.effect
     marker <- x$derived.data$marker
-    event <- x$derived.data[[as.character(x$formula[[2]])]]
+    if(x$model.fit$link == "time-to-event"){
+      event = rep(0, nrow(x$derived.data))
+      event.name = x$formula[[2]]
+      #setting event.name to treatment.name: this doesn't matter since we use model 
+      #based estimates of event rates to get the marginal treatment effect for the plots. 
+    }else{
+      event <- x$derived.data[[as.character(x$formula[[2]])]]
+      event.name = as.character(x$formula[[2]])
+    }
+   
     trt <- x$derived.data[[x$treatment.name]]
     n = length(trt.effect)
     mval = sort(unique(marker))
@@ -224,7 +163,7 @@ trteffectPLOT_gg_disc <-
     
     #so that the mean trt effect is scaled properly for subcohort designs
     allMeasures <- x$functions$get.summary.measures( data = x$derived.data, 
-                                                     event.name = as.character(x$formula[[2]]), 
+                                                     event.name = event.name, 
                                                      treatment.name = x$treatment.name, 
                                                      rho =x$model.fit$cohort.attributes, 
                                                      d= x$model.fit$thresh)
@@ -266,13 +205,30 @@ trteffectPLOTcompare_gg <-
     trt.effect <- x1$derived.data$trt.effect
     
     
-    event <- x1$derived.data[[as.character(x1$formula[[2]])]]
+    if(x1$model.fit$link == "time-to-event"){
+      event = rep(0, nrow(x1$derived.data))
+      event.name = x1$formula[[2]]
+      #setting event.name to treatment.name: this doesn't matter since we use model 
+      #based estimates of event rates to get the marginal treatment effect for the plots. 
+    }else{
+      event <- x1$derived.data[[as.character(x1$formula[[2]])]]
+      event.name = as.character(x1$formula[[2]])
+    }
     trt <- x1$derived.data[[x1$treatment.name]]
     
     trt.effect2 <- x2$derived.data$trt.effect
     
-    event2 <- x1$derived.data[[as.character(x2$formula[[2]])]]
-    trt2 <- x1$derived.data[[x2$treatment.name]]
+    if(x1$model.fit$link == "time-to-event"){
+      event2 = rep(0, nrow(x1$derived.data))
+      event.name = x1$formula[[2]]
+      x1$derived.data$prediction.time = x1$prediction.time
+      #setting event.name to treatment.name: this doesn't matter since we use model 
+      #based estimates of event rates to get the marginal treatment effect for the plots. 
+    }else{
+      event <- x2$derived.data[[as.character(x2$formula[[2]])]]
+      event.name = as.character(x2$formula[[2]])
+    }
+    trt2 <- x2$derived.data[[x2$treatment.name]]
     
     n = length(trt.effect)
     
@@ -289,8 +245,8 @@ trteffectPLOTcompare_gg <-
     
     
     ## need to adjust these for scc and cc sampling designs
-    allMeasures <- x1$functions$get.summary.measures( x1$derived.data, as.character(x1$formula[[2]]), x1$treatment.name,  rho, x1$model.fit$thresh)
-    
+    allMeasures <- x1$functions$get.summary.measures( x1$derived.data, event.name, x1$treatment.name,  rho, x1$model.fit$thresh)
+
     avglines <- cbind(0, sort(F.D), 4, .5)
     avglines <- rbind(avglines, 
                       cbind(allMeasures$ER.trt0.emp-allMeasures$ER.trt1.emp, 
@@ -316,13 +272,6 @@ trteffectPLOTcompare_gg <-
     
     
     p <- p + scale_x_continuous(limits = xlim)
-    
-    
-    
-    
-    
-    
-    
     
     
     if(!is.null(ci.bounds)){
@@ -365,8 +314,16 @@ trteffectPLOTcompare_gg_disc <-
     
     trt.effect1 <- x1$derived.data$trt.effect
     marker1 <- x1$derived.data$marker
-    event <- x1$derived.data$event
-    trt <- x1$derived.data$trt
+    if(x$model.fit$link == "time-to-event"){
+      event = rep(0, nrow(x$derived.data))
+      event.name = x$formula[[2]]
+      #setting event.name to treatment.name: this doesn't matter since we use model 
+      #based estimates of event rates to get the marginal treatment effect for the plots. 
+    }else{
+      event <- x$derived.data[[as.character(x$formula[[2]])]]
+      event.name = as.character(x$formula[[2]])
+    }
+    trt <- x1$derived.data[[x1$trt.name]]
     n = length(trt.effect1)
     mval1 = sort(unique(marker1))
     
@@ -391,8 +348,15 @@ trteffectPLOTcompare_gg_disc <-
     if(is.null(main)) main <- "Treatment effect distribution"
     p <- ggplot(mydata)     
 
+    allMeasures <- x$functions$get.summary.measures( data = x1$derived.data, 
+                                                     event.name = event.name, 
+                                                     treatment.name = x1$treatment.name, 
+                                                     rho =x1$model.fit$cohort.attributes, 
+                                                     d= x1$model.fit$thresh)
     
-    hlines.dat <- data.frame("trt.effect" = c(as.numeric(mean(event[trt==0]) - mean(event[trt==1])), 0), 
+    
+    #add x/y labels and main
+    hlines.dat <- data.frame("trt.effect" = c(allMeasures$ER.trt0.mod - allMeasures$ER.trt1.mod, 0), 
                              "markerName" = c("Mean", "Zero"))
     
     if(!is.null(ci.bounds)){

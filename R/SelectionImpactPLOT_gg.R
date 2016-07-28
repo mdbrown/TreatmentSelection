@@ -5,8 +5,16 @@ function(x, ci, ci.bounds, get.F, fixed.values,conf.bands,  rho, xlab, ylab, xli
   risk.t1 <- x$derived.data$fittedrisk.t1
   trt.effect <- x$derived.data$trt.effect
 
-  event.name = as.character(x$formula[[2]])
-  event <- x$derived.data[[event.name]]
+  if(x$model.fit$link == "time-to-event"){
+    event = rep(0, nrow(x$derived.data))
+    event.name = x$treatment.name 
+    #setting event.name to treatment.name: this doesn't matter since we use model 
+    #based estimates of event rates to get the marginal treatment effect for the plots. 
+  }else{
+    event <- x$derived.data[[as.character(x$formula[[2]])]]
+    event.name = as.character(x$formula[[2]])
+  }
+  
   trt <- x$derived.data[[x$treatment.name]]
   n = length(trt)
 

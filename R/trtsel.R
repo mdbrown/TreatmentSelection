@@ -56,8 +56,6 @@
 #' in cohort, \cr Pr(trt==1 & event==0) in cohort, \cr fraction of cases with
 #' trt == 0 sampled from cohort, \cr fraction of cases with trt == 1 sampled
 #' from cohort )\cr \cr
-#' @param marker.bounds For bounded markers, a vector of lower and upper
-#' bounds.
 #' @param link Link function used to fit the risk model. Options are
 #' "logit"(default), "probit", "cauchit", "log" and "cloglog." Link functions
 #' other than "logit" are available only when study.design = "randomized
@@ -133,23 +131,27 @@
 #' 
 #' 
 #' 
-#' 
+#' @import survival 
 #' @export trtsel
 trtsel <-
 function(formula, treatment.name, data, 
          fittedrisk.t0 = NULL, fittedrisk.t1 = NULL, thresh=0, 
+         prediction.time = NULL, 
          study.design = c("randomized cohort", "nested case-control", "stratified nested case-control"), 
          cohort.attributes = NULL, 
-         marker.bounds = NULL, link = c("logit", "probit", "cauchit", "log", "cloglog"), 
+         link = c("logit", "probit", "cauchit", "log", "cloglog"), 
          default.trt = c("trt all", "trt none") ){
   
   call <- match.call() 
-  
+  marker.bounds = NULL #depricated, we don't allow for bounded markers now 
+  #check data frame 
   if(!is.data.frame(data)){stop('data must be a data.frame')}
   
+  #checkc to see if all variables are present in data
   tmpnames <- c(treatment.name, fittedrisk.t0, fittedrisk.t1, all.vars(formula))
   if(!all(is.element(tmpnames, names(data)))) stop(paste("'", tmpnames[which(!is.element(tmpnames, names(data)))], "' cannot be found in data.frame provided", sep = ""))
-    
+  
+  #only keep complete cases 
   mycomplete <- complete.cases(data[,tmpnames]); 
   
   #check for missing data and throw it out, print a warning
@@ -161,12 +163,22 @@ function(formula, treatment.name, data,
   ## Error Checking
   
   event.name <- as.character(formula[[2]])
-
+  #define outcome 
+  if(event.name[[1]] == "Surv"){
+    outcome = "time-to-event" 
+    link = "time-to-event"
+    if(is.null(prediction.time)) stop("'prediction.time' must be set for a time-to-event outcome.")
+    #make sure prediction time is reasonable value? 
+    #...
+  }else{
+    outcome = "binary"
+    if(!is.numeric(data[[event.name]]) | !all(is.element(unique(data[[event.name]]), c(0,1)))) stop( "Binary outcome must be a numeric vector with elements 1 or 0")
+    link = match.arg(link)
+    if(!is.element(link, c("logit", "probit", "cauchit", "log", "cloglog"))) stop("link must be one of ''logit'', ''probit'', ''cauchit'', ''log'', ''cloglog''")
+  }
   #check event
-  if(!is.numeric(data[[event.name]]) | !all(is.element(unique(data[[event.name]]), c(0,1)))) stop( "event must be a numeric vector with elements 1 or 0")
- 
-  link = match.arg(link)
-  if(!is.element(link, c("logit", "probit", "cauchit", "log", "cloglog"))) stop("link must be one of ''logit'', ''probit'', ''cauchit'', ''log'', ''cloglog''")
+  
+
 
   trt <- data[[treatment.name]]
   if(!is.numeric(trt) | !all(is.element(unique(trt), c(0,1)))) stop( "trt must be a numeric vector with elements 1 or 0") 
@@ -175,7 +187,9 @@ function(formula, treatment.name, data,
   
   marker.names = all.vars(formula)[!is.element( all.vars(formula), c(event.name, treatment.name)) ]
   if(length(marker.names)==1){ 
-    marker = data[[marker.names]] 
+    
+    marker = data[[marker.names]]
+    if(!is.numeric(marker)) stop("For a model with a single marker, the marker must be numeric.")
   }else{
     marker = NULL
   }
@@ -193,15 +207,23 @@ function(formula, treatment.name, data,
   if( substr(study.design,1,4)  == "rand" ) { 
    
     boot.sample <- boot.sample.cohort 
-    get.F <- get.F.cohort
-    get.summary.measures <- get.summary.measures.cohort
+
+    if(outcome == "binary"){
+      get.summary.measures <- get.summary.measures.cohort
+      get.F <- get.F.cohort
+      }
+    
+    if(outcome == "time-to-event"){
+      get.summary.measures <- get.summary.measures.cohort.survival
+      get.F <- get.F.cohort.survival
+    }
 
     if(length(cohort.attributes) >0) warning("study.design = ''randomized cohort'', but cohort.attributes assigned: cohort.attributes will be ignored"); cohort.attributes=NULL;
      #just passing null value here 
     
 
   }else if( substr(study.design, 1, 4) =="nest") { 
-    
+    if(outcome == "time-to-event") stop("study.design must be ''randomized cohort'' for time-to-event outcomes.")
     if(link!="logit") warning("when study.design is ''nested case-control'' only link=''logit'' is allowed, setting link = ''logit''"); link = "logit"
     boot.sample <- boot.sample.case.control 
     get.F <- get.F.case.control
@@ -225,6 +247,7 @@ function(formula, treatment.name, data,
 
   }
   else if( substr(study.design, 1, 5) =="strat") { 
+    if(outcome == "time-to-event") stop("study.design must be ''randomized cohort'' for time-to-event outcomes.")
     if(link!="logit") warning("when study.design is ''stratified nested case-control'' only link=''logit'' is allowed, setting link = ''logit''"); link = "logit"
     boot.sample <- boot.sample.stratified.case.control
     get.F <- get.F.stratified.case.control  
@@ -256,15 +279,6 @@ function(formula, treatment.name, data,
 
   rho = cohort.attributes
 
-  #make sure Pr(event = 1 | trt = 1) > Pr(event = 1 | trt = 0), if not, use T.star = 1-trt and give a warning
-
-
-  # if( mean(event[trt==1]) > mean(event[trt==0]) & allow.switch ) {
-  #  warning( "   Function assumes Pr(event = 1 | trt = 1) < Pr(event = 1 | trt = 0)\n   Redefining trt <- (1-trt)\n")
-  #  trt <- 1-trt 
-  # }
-
-  event = data[[event.name]]
 
 
   if(!is.null(fittedrisk.t0)) {
@@ -285,36 +299,51 @@ function(formula, treatment.name, data,
    
   }  
 
-  
   # model.fit
   #returns null if risks are provided
-  
-  coef <- get.coef( formula = formula, 
-                    treatment.name= treatment.name,
-                    data = data,
-                    study.design = study.design, 
-                    rho = rho, 
-                    link = link)
 
-  model.fit <- list( "coefficients" = coef, "cohort.attributes" = rho, 
-                     "study.design" = study.design, 
-                     "marker.bounds" = marker.bounds, 
-                     "link" = link, "thresh" = d)
-  
+
+
+
   
   # derived.data
 
-  #now that we allow for different link functions for "randomized cohorts", we need to get the fitted risks directly from the model
+  #now that we allow for different link functions for "randomized cohorts", we need to get the fitted risks using the coefs we calculated
 
   if(link == "risks_provided"){
     linkinvfun <- NULL
-  }else{
-    linkinvfun <- binomial(link = link)$linkinv
-    fitted_risk_t0 <- get.risk.t0(coef[,1], formula, treatment.name, data, linkinvfun)
-    fitted_risk_t1 <- get.risk.t1(coef[,1], formula, treatment.name, data, linkinvfun)
+  }else if(link == "time-to-event"){
+   
+    coxfit <- do.call(coxph, list(formula,data))
     
-  }
-
+    fitted_risk_t0 <- get.risk.t_coxph(coxfit, treatment.name, data, prediction.time, t = 0)
+    fitted_risk_t1 <- get.risk.t_coxph(coxfit, treatment.name, data, prediction.time, t = 1)
+    #we still need to incorporate the nelson aalen baseline haz to get absolute risk at t = 'prediction.time'
+    coef <- summary(coxfit)$coefficients
+    }else{
+      #binary outcome
+      coef <- get.coef( formula = formula, 
+                        treatment.name = treatment.name,
+                        data = data,
+                        study.design = study.design, 
+                        rho = rho, 
+                        link = link)
+      
+    linkinvfun <- binomial(link = link)$linkinv
+    fitted_risk_t0 <- get.risk.t(coef[,1], formula, treatment.name, data, linkinvfun, t = 0)
+    fitted_risk_t1 <- get.risk.t(coef[,1], formula, treatment.name, data, linkinvfun, t = 1)
+    }
+  
+  if(all.equal(fitted_risk_t0, fitted_risk_t1)) warning("fitted risks are the same under each treatment arm so treatment effects are all zero, \n did you forget to include interactions in your risk model?")
+  
+  model.fit <- list( "coefficients" = coef, "cohort.attributes" = rho, 
+                     "study.design" = study.design, 
+                     "link" = link, "outcome" = outcome, 
+                     "thresh" = d, 
+                     "marker.names"  = marker.names)
+  
+  
+  
   trt.effect <- fitted_risk_t0 - fitted_risk_t1
   if(length(unique(marker))==2){ 
     #find which value of the marker is marker negative
@@ -340,8 +369,8 @@ function(formula, treatment.name, data,
               fittedrisk.t1 = fitted_risk_t1,
               trt.effect = trt.effect)
   
-  derived.data$marker <- marker
-    if(default.trt =="trt all"){
+  derived.data$marker = marker 
+  if(default.trt =="trt all"){
       derived.data$marker.neg <- marker.neg
       
     }else{
@@ -349,10 +378,18 @@ function(formula, treatment.name, data,
       derived.data$marker.pos <- marker.pos = marker.pos
     }
     
+  #need to add sampling weights to time-to-event outcome 
+  if(outcome == "time-to-event"){
+  
+    tmp <- with(data, eval(formula[[2]]))
+    wi = get.censoring.weights(ti = prediction.time, stime = tmp[,1], status = tmp[,2] )
+    derived.data$censoring.weights  <- wi
+  }
    
   out <- list(derived.data=derived.data, 
               formula = formula, 
               treatment.name = treatment.name, 
+              prediction.time = prediction.time, 
               model.fit = model.fit, 
               functions  = functions,
               default.trt = default.trt, 
@@ -362,6 +399,4 @@ function(formula, treatment.name, data,
   out
 
 }
-
-
 

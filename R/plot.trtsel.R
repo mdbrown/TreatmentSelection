@@ -207,8 +207,6 @@ function(x, bootstraps = 500,
 
 #extract the needed data from x, which is our TrtSel object
 
-  trt <- x$derived.data[[x$treatment.name]]
-  event <- x$derived.data[[as.character(x$formula[[2]])]]
 
   rho  <- x$model.fit$cohort.attributes
   if(length(rho) == 4) rho = c(rho, -9999, -9999, -9999) #accomodate the nested case-control design

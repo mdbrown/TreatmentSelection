@@ -71,36 +71,6 @@ print.eval.trtsel <-
     #if we fail to reject the null hypothesis, display a warning
     alpha <- x$test.Null$alpha
     
-    if(is.na(x$test.Null$reject)){
-      #fitted risks provided...no testing done
-      
-    }else{
-      
-      
-      test.Null.warning(x$test.Null$reject, x$test.Null$a1a3.pval)
-      
-      
-      cat("\n\n")
-      cat("  Hypothesis test:\n")
-      cat(" ------------------\n")
-      cat("  H0: No marker-by-treatment interaction")
-      cat("\n") 
-      cat("                                      ")
-      cat(" P value = "); cat(round(x$test.Null$p.value, 5));
-      cat("\n")
-      cat("                                      ")
-      cat(" Z statistic = "); cat(round(x$test.Null$z.statistic, 3)); cat("\n")
-      
-      if(!is.null(x$test.Null$a1a3.pval)){
-        
-        cat("  H0: Treatment effect positivity threshold is outside marker bounds")
-        cat("\n") 
-        cat("                                      ")
-        cat(" P value = "); cat(x$test.Null$a1a3.pval);
-        cat("\n")
-        
-      }
-    }
     cat("\n")
     
     cat(paste("  Summary Measure Estimates (with ", round(100*(1-alpha)), "% confidence intervals) \n", sep=""))

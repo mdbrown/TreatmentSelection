@@ -33,12 +33,27 @@ function( trtsel, alpha){
  #   }
 
  #  }
+  #we only do this test if we have a single marker: 
 
+ if(length(trtsel$model.fit$marker.names)==1){
+  if(trtsel$model.fit$outcome != "time-to-event"){
+    if(is.null(trtsel$model.fit$coefficients)) p.val <- NA
+    else p.val <- trtsel$model.fit$coefficients[4,4]
+    reject <- p.val <= alpha
+    z.value <- trtsel$model.fit$coefficients[4,3] 
+    
+  }else{
   if(is.null(trtsel$model.fit$coefficients)) p.val <- NA
-  else p.val <- trtsel$model.fit$coefficients[4,4]
+  else p.val <- trtsel$model.fit$coefficients[3,5]
   reject <- p.val <= alpha
-  z.value <- trtsel$model.fit$coefficients[4,3] 
-
+  z.value <- trtsel$model.fit$coefficients[3,4] 
+  }
+   
+ }else{
+   p.val <- NA
+   reject <- NA
+   z.value <- NA
+ }
   list( reject = reject, p.value = p.val, z.statistic = z.value, alpha = alpha)
 
 }

@@ -169,7 +169,8 @@ function(trtsel1, trtsel2, bootstraps = 500, alpha = .05, plot = TRUE,
   if(!is.trtsel(trtsel1)) stop("trtsel1 must be an object of class 'trtsel' created by using the function 'trtsel' see ?trtsel for more help")
   if(!is.trtsel(trtsel2)) stop("trtsel2 must be an object of class 'trtsel' created by using the function 'trtsel' see ?trtsel for more help")
   
- 
+  if(trtsel1$model.fit$outcome != trtsel2$model.fit$outcome) stop("This function can not compare trtsel objects with different outcome types: binary outcome to one with a time-to-event outcome.")
+  
   
   if(alpha<0 | alpha > 1) stop("Error: alpha should be between 0 and 1")
   if(bootstraps ==0 ) cat("bootstrap confidence intervals will not be calculated\n")
@@ -190,11 +191,30 @@ function(trtsel1, trtsel2, bootstraps = 500, alpha = .05, plot = TRUE,
   
   if(nrow(data1) != nrow(data2)) stop("trtsel objects must have the same number of observations for comparison")
   
-  event.name1 = as.character(trtsel1$formula[[2]])
-  event.name2 = as.character(trtsel2$formula[[2]])
+  
+  if( trtsel1$model.fit$outcome  == "time-to-event"){
+    event.name1 = trtsel1$formula[[2]]
+    event.name2 = trtsel1$formula[[2]]
+    
+    mysurv <- with(trtsel1$derived.data, eval(event.name1))
+    event1 <- mysurv[,2]
+    mysurv <- with(trtsel2$derived.data, eval(event.name2))
+    event2 <- mysurv[,2]
+    
+  }else{
+    event.name1 = as.character(trtsel1$formula[[2]])
+    event.name2 = as.character(trtsel2$formula[[2]])
+    
+    event1 == data[[event.name1]]
+    event2 == data[[event.name2]]
+  }
+  
 
-  if(!all.equal(data1[,c(event.name1, trtsel1$treatment.name)], 
-                data2[,c(event.name2, trtsel2$treatment.name)], check.attributes = FALSE, use.names = FALSE)) stop("trt and event data must be identical to compare markers!")
+  if(!all.equal(data1[[trtsel1$treatment.name]], 
+                data2[[trtsel2$treatment.name]], check.attributes = FALSE, use.names = FALSE)) stop("trt labels must be identical to compare markers!")
+
+  if(!all.equal(event1, event2, check.attributes = FALSE, use.names = FALSE)) stop("event labels must be identical to compare markers!")
+  
   boot.sample <- trtsel1$functions$boot.sample
   get.summary.measures <- trtsel1$functions$get.summary.measures
   
@@ -206,7 +226,10 @@ function(trtsel1, trtsel2, bootstraps = 500, alpha = .05, plot = TRUE,
                                                       treatment.names = c(trtsel1$treatment.name, trtsel2$treatment.name), 
                                                       rho = rho, study.design = study.design, obe.boot.sample = boot.sample, 
                                                       obe.get.summary.measures = get.summary.measures, link = link, 
-                                                      d = trtsel1$model.fit$thresh, disc.marker.neg = trtsel1$model.fit$disc.marker.neg))
+                                                      d = trtsel1$model.fit$thresh, 
+                                                      disc.marker.neg1 = trtsel1$model.fit$disc.marker.neg, 
+                                                      disc.marker.neg2 = trtsel2$model.fit$disc.marker.neg, 
+                                                      prediction.times = c(trtsel1$prediction.time, trtsel2$prediction.time)))
   
   boot.data1 <- boot.data[c(1:4, 9:18),]
   boot.data2 <- boot.data[c(5:8, 25:34),]
@@ -214,6 +237,8 @@ function(trtsel1, trtsel2, bootstraps = 500, alpha = .05, plot = TRUE,
   boot.data = boot.data1 - boot.data2
 
   ## Estimate summary measures
+  if(link == "time-to-event") data1$prediction.time = trtsel1$prediction.time
+  if(link == "time-to-event") data2$prediction.time = trtsel2$prediction.time
   
   sm.m1 <- get.summary.measures(data1, event.name1, trtsel1$treatment.name,  rho)
   sm.m2 <- get.summary.measures(data2, event.name2, trtsel2$treatment.name, rho)
@@ -348,7 +373,7 @@ result <- list(estimates.marker1   = data.frame(sm.m1),
   class(result) <- "compare.trtsel"
   result$alpha = alpha
   result$model.names = model.names 
-
+  result$formulas = list(trtsel1$formula, trtsel2$formula)
   return(result) 
 
 }

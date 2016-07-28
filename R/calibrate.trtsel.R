@@ -98,13 +98,25 @@ calibrate <- function(x, ...){ UseMethod("calibrate")}
 #' @importFrom binom binom.confint
 #' @export calibrate.trtsel
 calibrate.trtsel <-
-function( x, groups = 10, plot.type = "calibration", trt.names = c("Treatment", "No Treatment"), main = NULL, ylim = NULL, xlim = NULL, ylab = NULL, xlab=NULL){
+function( x, groups = 10, plot.type = "calibration", trt.names = c("Treatment", "No Treatment"), line.color = "black", point.color = "grey10", main = NULL, ylim = NULL, xlim = NULL, ylab = NULL, xlab=NULL){
 
   if(!is.trtsel(x)) stop("x must be an object of class 'trtsel' created by using the function 'trtsel' see ?trtsel for more help")
   if(!is.null(x$model.fit$disc.marker.neg)) stop("Calibration not supported for a discrete marker")
+  if(!is.null(x$model.fit$disc.marker.neg)) stop("Calibration not supported for a discrete marker")
 
   event.name = as.character(x$formula[[2]])
-  event <- x$derived.data[[event.name]]
+  
+  if( x$model.fit$link == "time-to-event"){
+    event.name = x$formula[[2]]
+    mysurv <- with(x$derived.data, eval(event.name))
+    event <- mysurv[,2]
+    stime <- mysurv[,1]
+  }else{
+    event.name <- as.character(formula[[2]])
+    event <- x$derived.data[[event.name]]
+  }
+  
+  
   trt <- x$derived.data[[x$treatment.name]]
   n <- length(trt)
   if(!is.numeric(groups)) stop("groups must be an integer")
@@ -124,12 +136,14 @@ function( x, groups = 10, plot.type = "calibration", trt.names = c("Treatment", 
   fittedrisk.c.t1 <- x$derived.data$fittedrisk.t1[trt==1]
 
 
+
   D.t0 <- event[trt==0]
+  D.t1 <- event[trt==1]
+
+  
   trt.t0 <- trt[trt==0]
   n.t0 <- sum(trt==0)
 
-
-  D.t1 <- event[trt==1]
   trt.t1 <- trt[trt==1]
   n.t1 <- sum(trt==1)
 
@@ -203,36 +217,55 @@ breaks.delta <- sort(fitteddelta)[ sum.I( seq(0, 1, 1/groups), "<",F.delta(fitte
 
  #check to make sure breaks are unique, if not, we need to reduce the number of groups that we are using
 
- if(!(length(unique(breaks.t0))==(groups+1) & length(unique(breaks.t1)) == (groups+1) & length(unique(breaks.delta))==(groups+1))){ 
+ if(!(length(unique(round(breaks.t0, 5)))==(groups+1) & length(unique(round(breaks.t1, 5))) == (groups+1) & length(unique(round(breaks.delta, 5)))==(groups+1))){ 
    
    stop("Error: Too many groups, cut points are not unique. Please reduce number of groups")
    
+ }
+
+#groups 
+cut.t0      <- cut( fittedrisk.c.t0, breaks = breaks.t0, include.lowest = TRUE)
+cut.t1      <- cut( fittedrisk.c.t1, breaks = breaks.t1, include.lowest = TRUE)
+cut.delta   <- cut( fitteddelta, breaks = breaks.delta, include.lowest = TRUE)
+
+#observed risk 
+if( x$model.fit$link == "time-to-event"){
+  
+  sfit.t0 <- summary(survfit(Surv(stime[trt==0], event[trt==0]==1)~cut.t0, se.fit = TRUE ), extend = TRUE, times = x$prediction.time)
+  sfit.t1 <- summary(survfit(Surv(stime[trt==1], event[trt==1]==1)~cut.t1, se.fit = TRUE ), extend = TRUE, times = x$prediction.time)
+  obs.risk.t0 <- 1- sfit.t0$surv
+  obs.risk.t1 <- 1- sfit.t1$surv
+
+  sfit.t0.delta <- summary(survfit(Surv(stime[trt==0], event[trt==0]==1)~cut.delta[trt==0], se.fit = TRUE ), times = x$prediction.time)
+  sfit.t1.delta <- summary(survfit(Surv(stime[trt==1], event[trt==1]==1)~cut.delta[trt==1], se.fit = TRUE ), times = x$prediction.time)
+  obs.risk.t0.tmp <- 1- sfit.t0.delta$surv
+  obs.risk.t1.tmp <- 1- sfit.t1.delta$surv
+  
+
+  
+}else{
+  obs.risk.t0 <- aggregate( D.t0, by = list(cut.t0), FUN = "mean")$x
+  obs.risk.t1 <- aggregate( D.t1, by = list(cut.t1), FUN = "mean")$x
+  obs.risk.t1.tmp <- aggregate( D.t1, by = list(cut.delta[trt==1]), FUN = "mean")$x  
+  obs.risk.t0.tmp <- aggregate( D.t0, by = list(cut.delta[trt==0]), FUN = "mean")$x
+  
 }
 
-
- #trt = 0
- cut.t0      <- cut( fittedrisk.c.t0, breaks = breaks.t0, include.lowest = TRUE)
- obs.risk.t0 <- aggregate( D.t0, by = list(cut.t0), FUN = "mean")$x
+ #expected risk 
  exp.risk.t0 <- aggregate( fittedrisk.c.t0, by = list(cut.t0), FUN = "mean")$x
  ng.t0       <- as.numeric(unlist(table(cut.t0)))
 
  if(any(ng.t0<5)) warning(paste("For Treatment = 0,", sum(ng.t0<5), "groups have less than 5 observations."))
-  
 
  #trt = 1
- cut.t1      <- cut( fittedrisk.c.t1, breaks = breaks.t1, include.lowest = TRUE)
- obs.risk.t1 <- aggregate( D.t1, by = list(cut.t1), FUN = "mean")$x
  exp.risk.t1 <- aggregate( fittedrisk.c.t1, by = list(cut.t1), FUN = "mean")$x
  ng.t1       <- as.numeric(unlist(table(cut.t1))) 
 
  if(any(ng.t1<5)) warning(paste("For Treatment = 1,", sum(ng.t1<5), "groups have less than 5 observations."))
  
  #Delta
- cut.delta   <- cut( fitteddelta, breaks = breaks.delta, include.lowest = TRUE)
- exp.delta   <- aggregate( fitteddelta, by = list(cut.delta), FUN = "mean")$x
+exp.delta   <- aggregate( fitteddelta, by = list(cut.delta), FUN = "mean")$x
 
- obs.risk.t1.tmp <- aggregate( D.t1, by = list(cut.delta[trt==1]), FUN = "mean")$x  
- obs.risk.t0.tmp <- aggregate( D.t0, by = list(cut.delta[trt==0]), FUN = "mean")$x
 
 
  #make sure there are at least one observation from each treatment arm in each group
@@ -243,7 +276,9 @@ breaks.delta <- sort(fitteddelta)[ sum.I( seq(0, 1, 1/groups), "<",F.delta(fitte
  
  ng.delta        <- as.numeric(unlist(table(cut.delta))) 
 
- if(any(ng.delta<5)) warning(paste("For observed treatment effects,", sum(ng.t1<5), "groups have less than 5 observations."))
+ if(any(ng.delta<5)) warning(paste("For observed treatment effects,", sum(ng.delta<5), "groups have less than 5 observations."))
+
+ 
  
  if(substr(study.design, 1, 4) == "nest"){
     obs.risk.t0 = expit(logit(obs.risk.t0) + logit(rho[3]) - logit(mean(event)))
@@ -253,6 +288,8 @@ breaks.delta <- sort(fitteddelta)[ sum.I( seq(0, 1, 1/groups), "<",F.delta(fitte
     
  }else if(substr(study.design, 1, 5) =="strat"){
 
+   
+   
 
     Pr.D1.givT0 <- rho[3]/(rho[2]+rho[3])
     Pr.D1.givT1 <- rho[5]/(rho[4]+rho[5])
@@ -273,7 +310,7 @@ if(study.design=="randomized cohort"){
 }else{
   if(x$model.fit$link == "risks_provided") stop("cannot calculate Hosmer Lemeshow statistic when fitted risks are provided and study design is not cohort")
   marker <- x$derived.data$marker
-  risk.naive.all <- fitted(glm(event ~ marker + trt + marker*trt, family = binomial(link = x$model.fit$link)))
+  risk.naive.all <- fitted(glm(x$formula, family = binomial(link = x$model.fit$link)))
   
   risk.naive.t0.all <- risk.naive.all[trt==0]
   risk.naive.t1.all <- risk.naive.all[trt==1]
@@ -299,11 +336,7 @@ pval.t1    <- 1 - pchisq( hl.t1, Df)
 
 ##plot
 if(is.element(plot.type, c("calibration", "risk.t0", "risk.t1", "treatment effect"))){
-#save default plot settings 
-
-#old.par <- par(no.readonly=TRUE)
-#old.mar <- par()$mar
-
+#set boundaries 
 min.risk <- min(c(fittedrisk.c.t0, fittedrisk.c.t1))
 max.risk <- max(c(fittedrisk.c.t0, fittedrisk.c.t1))
     cen <- mean(c(min.risk, max.risk))
@@ -319,10 +352,6 @@ max.risk <- max(c(fittedrisk.c.t0, fittedrisk.c.t1))
 if(is.element(plot.type, "calibration")){
   
 
- #mylim[1] <- ifelse(mylim[1]<0, 0.01, mylim[1])
- #mylim[2] <- ifelse(mylim[2]>1, 1, mylim[2])
- #par(mar=c(5.1, 4.1, 4.1, 9))  #mar=c(6.5, 4.5, 4.1, 2.1), oma=c(1.5,1,1.5,1),
-
    if(!is.null(xlim)){ 
       if(any(xlim <0)) stop("Parameters of xlim must be > 0 due to log scaling") 
    } 
@@ -333,37 +362,15 @@ if(is.element(plot.type, "calibration")){
    if(is.null(xlab)) xlab <- "observed risk"
    if(is.null(ylab)) ylab <- "average predicted risk"
   
-   #if(is.null(xlim)) xlim <- mylim #else xlim <- log(xlim)
-   #if(is.null(ylim)) ylim <- mylim #else ylim <- log(ylim)
-
-   #if(xlim[1]==-Inf) xlim[1] = log(0.01)
-   #if(ylim[1]==-Inf) ylim[1] = log(0.01)
 
    if(is.null(main)) main <- "Calibration plot"
 
- # plot(NULL, xlab = xlab,
-#          ylab = ylab ,
-#          ylim = ylim, 
-#          xlim = xlim,
-#          type = "n",
-#          main= main, xaxt="n", yaxt = "n", ...)
-
-# abline(a=0, b=1, col="grey")
-
- #  axis(1,at=xaxis, round(exp(xaxis),2))
-
-#  axis(2,at=yaxis, round(exp(yaxis),2))
- #tmp.scale <- ran/5 
- #legend(x=max(xlim)+tmp.scale, y = quantile(ylim, prob = .75), legend = trt.names, pch = c(17, 16), bty="n", cex = 1, xpd = TRUE)
- #points(log(obs.risk.t0), log(exp.risk.t0), pch = 16)
- #points(log(obs.risk.t1), log(exp.risk.t1), pch = 17)
- 
 
 
  
- data <- data.frame("observedRisk" = c(obs.risk.t0, obs.risk.t0),
+ data <- data.frame("observedRisk" = c(obs.risk.t0, obs.risk.t1),
                     "expectedRisk" = c(exp.risk.t0, exp.risk.t1), 
-                    "trt" = rep(c(0,1), rep(length(obs.risk.t0), 2)) )
+                    "trt" = rep(c(0,1), c(length(obs.risk.t0), length(obs.risk.t1))) )
    data <- subset(data, observedRisk >0)
    data <- subset(data, expectedRisk >0)
  
@@ -372,7 +379,7 @@ if(is.element(plot.type, "calibration")){
    scale_shape_discrete("", labels = trt.names) + 
    ylab(ylab) + xlab(xlab) + ggtitle(main) + theme( text = element_text(size=16)) +
    geom_line(aes(x = observedRisk, y = observedRisk), colour = "grey50", linetype = 2, size = .8 ) + 
-     geom_point(size = 4)
+     geom_point(size = 4, color = point.color)
    
     if(!is.null(xlim)){
     #  xaxis <- round(seq(from = xlim[1], to=xlim[2], length.out=5), 2)
@@ -405,40 +412,29 @@ if(is.element(plot.type, "calibration")){
 if( is.element(plot.type, "risk.t0")) { 
 # trt = 0
 
-  #nf <- layout(matrix(c(1,2,3,3), nrow = 2), widths = c(3, 4 ))
-  #layout.show(nf)
    if(is.null(xlab)) xlab <- "% population below risk"
    if(is.null(ylab)) ylab <- "risk"
    if(is.null(xlim)) xlim <- c(0,100)
   # if(is.null(ylim)) ylim <- mylim
    if(is.null(main)) main <- "Risk curve for non treated individuals"
-
-  #plot(NULL, xlab = xlab,
-  #        ylab = ylab ,
-  #        ylim = ylim, 
-  #      xlim = xlim,
-  #        type = "n",
-  #       main= main, ...)
-  
-  #x.points.t0 <- rep(F.risk.t0(sort(fittedrisk.c.t0)), c(rep(2, n.t0-1),1))
-
-  #lines(x.points.t0, fittedrisk.c.t0[rep(order(fittedrisk.c.t0),c(1, rep(2, n.t0-1)))],type = "l", lwd=2)  
-
-  #points(1:groups/groups - 1/(2*groups), obs.risk.t0)
-   
    
    
    data = data.frame(F.risk = F.risk.t0(sort(fittedrisk.c.t0))*100, risk = sort(fittedrisk.c.t0))
-   p <- ggplot() + geom_step( data = data, size = 1, direction="vh",  aes(x = F.risk, y = risk))
+   p <- ggplot() + geom_step( data = data, size = 1, direction="vh", color = line.color,  aes(x = F.risk, y = risk))
    
 
    obsdata <- data.frame(x = (1:groups/groups - 1/(2*groups))*100, y= obs.risk.t0)
-
-   obsdata$upper <-  binom.confint(obsdata$y*ng.t0, ng.t0, method = "wilson")$upper
-   obsdata$lower <- binom.confint(obsdata$y*ng.t0, ng.t0, method = "wilson")$lower
    
-   p <- p +geom_errorbar(data = obsdata, aes(ymin = lower, ymax = upper, x = x), width = 2)+
-     geom_point(data = obsdata, aes(x = x, y = y), size = 4) 
+   if( x$model.fit$link == "time-to-event"){
+     obsdata$upper <- 1- sfit.t0$lower
+     obsdata$lower <- 1- sfit.t0$upper
+   }else{
+     obsdata$upper <-  binom.confint(obsdata$y*ng.t0, ng.t0, method = "wilson")$upper
+     obsdata$lower <- binom.confint(obsdata$y*ng.t0, ng.t0, method = "wilson")$lower
+   }
+   
+   p <- p +geom_errorbar(data = obsdata, color  = point.color,  aes(ymin = lower, ymax = upper, x = x), width = 2)+
+     geom_point(data = obsdata, aes(x = x, y = y), color = point.color,  size = 4) 
    p <- p + ylab(ylab) + xlab(xlab) + ggtitle(main) + theme( text = element_text(size=16)) 
    if(!is.null(xlim)) p <- p + xlim(xlim)
    if(!is.null(ylim)) p <- p + ylim(ylim)
@@ -457,31 +453,25 @@ if(is.null(xlab)) xlab <- "% population below risk"
   #if(is.null(ylim)) ylim <- mylim
    if(is.null(main)) main <- "Risk curve for treated individuals"
 
-  #plot(NULL, xlab = xlab,
-  #        ylab = ylab ,
-  #        ylim = ylim, 
-  #        xlim = xlim,
-  #        type = "n",
-  #        main= main, ...)
-
-  #x.points.t1 <- rep(F.risk.t1(sort(fittedrisk.c.t1)), c(rep(2, n.t1-1),1))
-
- # lines(x.points.t1, fittedrisk.c.t1[rep(order(fittedrisk.c.t1),c(1, rep(2, n.t1-1)))],type = "l", lwd=2)  
-#  points(1:groups/groups - 1/(2*groups), obs.risk.t1)
-
 data = data.frame(F.risk = F.risk.t1(sort(fittedrisk.c.t1))*100, risk = sort(fittedrisk.c.t1))
-p <- ggplot() + geom_step( data = data, size = 1, direction="vh", aes(x = F.risk, y = risk))
+p <- ggplot() + geom_step( data = data, size = 1, direction="vh", color = line.color, aes(x = F.risk, y = risk))
+
 
 
 
 obsdata <- data.frame(x = (1:groups/groups - 1/(2*groups))*100, y= obs.risk.t1)
-obsdata$upper <-  binom.confint(obsdata$y*ng.t1, ng.t1, method = "wilson")$upper
-obsdata$lower <- binom.confint(obsdata$y*ng.t1, ng.t1, method = "wilson")$lower
 
-p <- p +geom_errorbar(data = obsdata, aes(ymin = lower, ymax = upper, x = x), width = 2)+
-  geom_point(data = obsdata, aes(x = x, y = y), size = 4) 
+if( x$model.fit$link == "time-to-event"){
+  obsdata$upper <- 1- sfit.t1$lower
+  obsdata$lower <- 1- sfit.t1$upper
+}else{
+  obsdata$upper <-  binom.confint(obsdata$y*ng.t1, ng.t1, method = "wilson")$upper
+  obsdata$lower <- binom.confint(obsdata$y*ng.t1, ng.t1, method = "wilson")$lower
+}
 
-p <- p + geom_point(data = obsdata, aes(x = x, y = y), size = 4)
+p <- p +geom_errorbar(data = obsdata,  color  = point.color, aes(ymin = lower, ymax = upper, x = x), width = 2)+
+  geom_point(data = obsdata, aes(x = x, y = y),  color  = point.color, size = 4) 
+
 p <- p + ylab(ylab) + xlab(xlab) + ggtitle(main) + theme( text = element_text(size=16)) 
 if(!is.null(xlim)) p <- p + xlim(xlim)
 if(!is.null(ylim)) p <- p + ylim(ylim)
@@ -492,50 +482,43 @@ print(p)
 
 if( is.element("treatment effect", plot.type)) { 
 
-#min.risk <- min(c(fitteddelta, obs.delta))
-#max.risk <- max(c(fitteddelta, obs.delta))
-#    cen <- mean(c(min.risk, max.risk))
-#    ran <- max.risk - min.risk
-#    ran <- ran*1.1
-#    mylim <- c(cen-ran/2, cen+ran/2)
-   
-# Delta  
-
    if(is.null(xlab)) xlab <- "% population below treatment effect"
    if(is.null(ylab)) ylab <- "treatment effect"
    if(is.null(xlim)) xlim <- c(0,100)
   # if(is.null(ylim)) ylim <- mylim
    if(is.null(main)) main <- "Treatment effect distribution"
 
-   # plot(NULL, 
-   #       ylab = ylab,
-  #        xlab = xlab,
-  #        xlim = xlim, 
-  #        ylim = ylim,
-  #        type = "n", 
-  #        main = main)
-
-#  x.points.delta <- rep(F.delta(sort(fitteddelta)), c(rep(2, n-1),1))
-
-#  lines(x.points.delta, fitteddelta[rep(order(fitteddelta),c(1, rep(2, n-1)))],type = "l", lwd=2)  
-#  points(1:groups/groups - 1/(2*groups), obs.delta)
-
-#  abline(h = 0, lty = 2, col = "grey")
 
 data = data.frame(F.risk = F.delta(sort(fitteddelta))*100, risk = sort(fitteddelta))
-p <- ggplot(data, aes(x = F.risk, y = risk)) + geom_step( size = 1, direction="vh")
+p <-p <- ggplot() + geom_step( data = data, size = 1, direction="vh", color = line.color, aes(x = F.risk, y = risk))
+
 
 
 obsdata <- data.frame(x = (1:groups/groups - 1/(2*groups))*100, y= obs.delta)
 
+if( x$model.fit$link == "time-to-event"){
 
-p <- p + geom_hline(yintercept  = 0, linetype = 2, colour = "grey50", size = .8) +
-     geom_point(data = obsdata, aes(x = x, y = y), size = 4)
+  obsdata$var <- sfit.t0.delta$std.err^2 + sfit.t1.delta$std.err^2
+
+}else{
+  obsdata$var <- obs.risk.t1*(1-obs.risk.t1)/ng.t1 + obs.risk.t0*(1-obs.risk.t0)/ng.t0
+}
+
+
+obsdata$upper <- obsdata$y + qnorm(.975)*sqrt(obsdata$var)
+obsdata$lower <- obsdata$y + qnorm(.025)*sqrt(obsdata$var)
+
+p <- p +geom_errorbar(data = obsdata,  color  = point.color, aes(ymin = lower, ymax = upper, x = x), width = 2)+
+  geom_point(data = obsdata, aes(x = x, y = y),  color  = point.color, size = 4) 
+
 p <- p + ylab(ylab) + xlab(xlab) + ggtitle(main) + theme( text = element_text(size=16)) 
 if(!is.null(xlim)) p <- p + xlim(xlim)
 if(!is.null(ylim)) p <- p + ylim(ylim)
-   
 print(p)
+
+
+
+
 
 
 } 

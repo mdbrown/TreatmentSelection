@@ -2,11 +2,16 @@ get.coef <-
 function(formula, treatment.name, data, study.design, rho, link, ...){ 
   
 
-  event = data[[as.character(formula[[2]])]]
+  
   if(link == "risks_provided"){
     return(NULL)
+  }else if(link == "time-to-event"){
+    mycoxph <- coxph(formula, data = data)
+    coefficients <- summary(mycoxph)$coefficients
+    
   }else{
-
+  #binary outcome
+    event = data[[as.character(formula[[2]])]]
   myglm<- glm(formula, data = data, family=binomial(link = link))
   #myglm <- glm.fit(cbind(1, trt, marker, trt*marker), event, family=binomial(link = link))
   mycoef <- myglm$coefficients

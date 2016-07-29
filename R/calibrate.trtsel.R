@@ -49,7 +49,7 @@ calibrate <- function(x, ...){ UseMethod("calibrate")}
 #' plot output was created, the ggplot plotting object.}
 #' @seealso \code{\link{trtsel}} for creating trtsel objects,
 #' \code{\link{plot.trtsel}} for plotting risk curves and more,
-#' \code{\link{eval.trtsel}} for evaluating marker performance, and
+#' \code{\link{evaluate.trtsel}} for evaluating marker performance, and
 #' \code{\link{compare.trtsel}} to compare two trtsel object.
 #' @references
 #' 

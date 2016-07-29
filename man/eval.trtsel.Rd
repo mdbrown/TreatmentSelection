@@ -1,5 +1,5 @@
-\name{eval.trtsel}
-\alias{eval.trtsel}
+\name{evaluate.trtsel}
+\alias{evaluate.trtsel}
 
 \title{
 evaluate the performance of a marker used for treatment selection
@@ -10,7 +10,7 @@ evaluate the performance of a marker used for treatment selection
 
 }
 \usage{
-eval.trtsel(x, bootstraps = 1000, alpha = 0.05)
+evaluate.trtsel(x, bootstraps = 1000, alpha = 0.05)
 }
 
 \arguments{
@@ -20,7 +20,9 @@ eval.trtsel(x, bootstraps = 1000, alpha = 0.05)
   \item{bootstraps}{
  Number of bootstrap replicates for creating confidence intervals for each performance measure. The default value is 1000. Set bootstraps = 0 if no confidence intervals are desired.   
 }
-
+  \item{bias.corrected}{logical indicator of whether to bias-correct measures for over-optimism using bootstrap-bias correction. When the same data is used to fit and evaluate the model, performance measures are over-optimistic. Setting this equal to TRUE uses a bootstrap method to bias-correct performance measures.  
+  
+  }
   \item{alpha}{
   (1-alpha)*100\% confidence intervals are calculated. Default value is alpha = 0.05 which yields 95\% CI's.  The same alpha is used for the two-sided type-I error for the test of H0: No decrease in event rate under marker-based treatment.}
 }
@@ -61,34 +63,20 @@ data(tsdata)
 ## Create trtsel objects 
 ###########################
 
-trtsel.Y1 <- trtsel( event = "event",
-                     trt = "trt",
-                     marker = "Y1",
-                     data = tsdata,
-                     study.design = "randomized cohort")
+trtsel.Y1 <- trtsel(event ~ Y1*trt, 
+                    treatment.name = "trt", 
+                    data = tsdata, 
+                    study.design = "RCT",
+                   link = "logit", 
+                    default.trt = "trt all")
 trtsel.Y1
-
-trtsel.Y2 <- trtsel( event = "event",
-                     trt = "trt",
-                     marker = "Y2",
-                     data = tsdata,
-                     study.design = "randomized cohort")
-trtsel.Y2
-
 
 #################################
 ## Evaluate marker performance
 #################################
 
 # Marker Y1
-estimates.Y1 <- eval.trtsel(trtsel.Y1, bootstraps = 50)
+estimates.Y1 <- evaluate(trtsel.Y1, bootstraps = 50)
 estimates.Y1
-
-# Without confidence intervals
-eval.trtsel(trtsel.Y1, bootstraps = 0)
-
-# Using alpha = 0.01
-estimates.Y2 <- eval.trtsel(trtsel.Y2, bootstraps = 50, alpha = .01)
-estimates.Y2
 
 }

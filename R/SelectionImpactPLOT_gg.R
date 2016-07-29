@@ -49,8 +49,8 @@ function(x, ci, ci.bounds, get.F, fixed.values,conf.bands,  rho, xlab, ylab, xli
     ran <- ran*1.1
     mylim <- c(cen-ran/2, cen+ran/2)
     
-    if(is.null(xlab)) xlab <- "d = % population below treatment effect"
-    if(is.null(ylab)) ylab <- "Event rate given trt rule: T = 1 if F(v) > d"
+    if(is.null(xlab)) xlab <- "% population recommended treatment"
+    if(is.null(ylab)) ylab <- "Rate of outcome under treatment policy"
     if(is.null(xlim)) xlim <- c(0,100)
     if(is.null(ylim)) ylim <- mylim
     if(is.null(main)) main <- "Selection impact curve"

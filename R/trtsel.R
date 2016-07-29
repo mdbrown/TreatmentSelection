@@ -25,9 +25,8 @@
 #' rule: Do not treat if the marker-specific treatment effect is less than
 #' "thresh". This is a numeric constant with a default value of 0.
 #' @param study.design Character string indicating the study design used to
-#' collect the data. The three options are "randomized cohort" (default),
-#' "nested case-control", or "stratified nested case-control".  A "randomized
-#' cohort" design is simply a randomized trial comparing T = 0 to T = 1 with
+#' collect the data. The three options are "RCT" (default),
+#' "nested case-control", or "stratified nested case-control".  A "RCT" design is simply a randomized trial comparing T = 0 to T = 1 with
 #' the marker measured at baseline.  A nested case-control or stratified nested
 #' case-control study samples cases and controls for marker measurement,
 #' perhaps stratified on treatment assignment, from a randomized trial
@@ -100,7 +99,7 @@
 # trtsel.Y1 <- trtsel(event ~ Y1*trt, 
 #                    treatment.name = "trt", 
 #                    data = tsdata, 
-#                    study.design = "randomized cohort",
+#                    study.design = "RCT",
 #                    link = "logit", 
 #                    default.trt = "trt all")
 #
@@ -109,8 +108,6 @@
 # trtsel.Y2 <- trtsel(event ~ Y2*trt, 
 #                    treatment.name = "trt", 
 #                    data = tsdata, 
-#                    study.design = "randomized cohort",
-#                    link = "logit", 
 #                    default.trt = "trt all")
 #' trtsel.Y2
 #' 
@@ -128,7 +125,6 @@
 #'                            data = tsdata,
 #'                            fittedrisk.t0 = "fitted.t0",
 #'                            fittedrisk.t1 = "fitted.t1",
-#'                            study.design = "randomized cohort", 
 #'                            default.trt = "trt all")
 #' 
 #' 
@@ -139,7 +135,7 @@ trtsel <-
 function(formula, treatment.name, data, 
          fittedrisk.t0 = NULL, fittedrisk.t1 = NULL, thresh=0, 
          prediction.time = NULL, 
-         study.design = c("randomized cohort", "nested case-control", "stratified nested case-control"), 
+         study.design = c("RCT", "nested case-control", "stratified nested case-control"), 
          cohort.attributes = NULL, 
          link = c("logit", "probit", "cauchit", "log", "cloglog"), 
          default.trt = c("trt all", "trt none") ){
@@ -204,7 +200,7 @@ function(formula, treatment.name, data,
 
   d <- thresh
   study.design = match.arg(study.design) 
-  
+  if(study.design == "RCT") study.design <- "randomized cohort"
 #find out which bootstrapping functions to use based on type
   if( substr(study.design,1,4)  == "rand" ) { 
    
@@ -274,7 +270,7 @@ function(formula, treatment.name, data,
     if( any(cohort.attributes[-1]<0) | any(cohort.attributes[-1] > 1)) stop("Probabilities in cohort.attributes are not in (0,1), please check cohort.attributes. \n Is Pr(trt==0 & event==0) + Pr(trt==0 & event==1) + Pr(trt==1 & event==0) > 1?")
 
   }
-  else { stop("study.design not specified correctly, must be one of ''randomized cohort'', ''nested case-control'', or ''stratified nested case-control''") }
+  else { stop("study.design not specified correctly, must be one of ''RCT'', ''nested case-control'', or ''stratified nested case-control''") }
 
   
   functions <- list("boot.sample" = boot.sample, "get.F" = get.F, "get.summary.measures" = get.summary.measures)

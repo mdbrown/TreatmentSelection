@@ -1,6 +1,6 @@
 get.summary.measures.cohort <-
   function(data, event.name, treatment.name, rho, d=0){  
-  
+    
     event = data[[event.name]]
     trt = data[[treatment.name]]
     trt.effect <- data$trt.effect
@@ -74,8 +74,8 @@ get.summary.measures.cohort <-
     }
     
     
-    list(     p.neg = p.marker.neg,
-              p.pos = p.marker.pos,
+    list(     p.rec.notrt = p.marker.neg,
+              p.rec.trt = p.marker.pos,
               B.neg.emp = B.neg.emp,
               B.neg.mod = B.neg.mod, 
               B.pos.emp = B.pos.emp, 
@@ -203,8 +203,8 @@ get.summary.measures.cohort.survival <-
       ER.mkrbased.mod = ER.pos.mod*p.marker.pos + ER.neg.mod*p.marker.neg
 
     
-    list(     p.neg = p.marker.neg,
-              p.pos = p.marker.pos,
+    list(     p.rec.notrt = p.marker.neg,
+              p.rec.trt = p.marker.pos,
               B.neg.emp = B.neg.emp,
               B.neg.mod = B.neg.mod, 
               B.pos.emp = B.pos.emp, 
@@ -405,8 +405,8 @@ get.summary.measures.stratified.case.control <-
       mean(trt.effect[event==0 & trt==0]^2)*Pr.D0.trt0 -(ER.trt0.emp - ER.trt1.emp)^2
     
     
-    list(     p.neg = p.marker.neg,
-              p.pos = p.marker.pos,
+    list(     p.rec.notrt = p.marker.neg,
+              p.rec.trt = p.marker.pos,
               B.neg.emp = B.neg.emp,
               B.neg.mod = B.neg.mod, 
               B.pos.emp = B.pos.emp, 
@@ -546,8 +546,8 @@ get.summary.measures.case.control <-
     Var.Delta = mean((trt.effect[event==1])^2)*rho[3] + mean((trt.effect[event==0])^2)*(1-rho[3]) - (ER.trt0.emp - ER.trt1.emp)^2
     
     
-    list(     p.neg = p.marker.neg,
-              p.pos = p.marker.pos,
+    list(     p.rec.notrt = p.marker.neg,
+              p.rec.trt = p.marker.pos,
               B.neg.emp = B.neg.emp,
               B.neg.mod = B.neg.mod, 
               B.pos.emp = B.pos.emp, 

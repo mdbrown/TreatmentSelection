@@ -1,29 +1,29 @@
 evaluate <- function(x, ...) UseMethod("evaluate")
 
 evaluate.trtsel <-
-function(x, bias.correction = TRUE, bootstraps = 1000, alpha = .05){
+function(x, bias.correct = TRUE, bootstraps = 1000, alpha = .05){
 
   if(!is.trtsel(x)) stop("x must be an object of class 'trtsel' created by using the function 'trtsel' see ?trtsel for more help")
  
   if(alpha<0 | alpha > 1) stop("Error: alpha should be between 0 and 1")
   if(bootstraps ==0 ) print("bootstrap confidence intervals will not be calculated")
   if(bootstraps == 1) warning("Number of bootstraps must be greater than 1, bootstrap confidence intervals will not be computed") 
-  stopifnot(is.logical(bias.correction))
-  if(missing(bias.correction)){
+  stopifnot(is.logical(bias.correct))
+  if(missing(bias.correct)){
     if(x$model.fit$link == "risks_provided"){
-      bias.correction = FALSE
+      bias.correct = FALSE
     }else if (bootstraps > 1){
-      bias.correction  =TRUE
+      bias.correct  =TRUE
       message("Bootstrap bias-correction will be implemented to correct for over-optimism bias in estimation.")
     }else{
-      bias.correction = FALSE
+      bias.correct = FALSE
     }
     
   }
   
-  if(bias.correction & x$model.fit$link == "risks_provided") {
+  if(bias.correct & x$model.fit$link == "risks_provided") {
     message("risks are already provided from a fitted model, bias-correction is not available. \n Reported measures will not be bias-corrected.")
-    bias.correction = FALSE
+    bias.correct = FALSE
   } 
   data<-x$derived.data
   study.design<-x$model.fit$study.design
@@ -59,14 +59,14 @@ function(x, bias.correction = TRUE, bootstraps = 1000, alpha = .05){
                                                    disc.marker.neg = x$model.fit$disc.marker.neg, 
                                                    provided_risk = provided_risk, 
                                                    prediction.time = x$prediction.time,
-                                                   bbc = bias.correction))
+                                                   bbc = bias.correct))
   
  #appease check
   quantile <- NULL
   conf.intervals <- apply(boot.data[-c(1:4),], 1, quantile, probs = c(alpha/2, 1-alpha/2), type = 1, na.rm = TRUE) 
   row.names(conf.intervals) <- c("lower", "upper")
   
-  if(bias.correction){
+  if(bias.correct){
     bias  <- apply(boot.data[c(5:36), ], 1, mean, na.rm  = TRUE)
     bias <- bias[1:16] - bias[17:32]
   
@@ -112,7 +112,7 @@ function(x, bias.correction = TRUE, bootstraps = 1000, alpha = .05){
   result <- list(#test.Null          = test.Null.val, 
                  estimates = summary.measures, 
                  conf.intervals = conf.intervals,
-                 bias.correction = bias.correction)
+                 bias.correct = bias.correct)
   if(!is.null(x$model.fit$disc.marker.neg)) result$discrete.marker = TRUE
   
 

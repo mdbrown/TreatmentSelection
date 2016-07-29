@@ -10,7 +10,9 @@ evaluate the performance of a marker used for treatment selection
 
 }
 \usage{
-evaluate.trtsel(x, bootstraps = 1000, alpha = 0.05)
+evaluate.trtsel(x, 
+                bias.correct = TRUE, 
+                bootstraps = 1000, alpha = 0.05)
 }
 
 \arguments{
@@ -20,7 +22,7 @@ evaluate.trtsel(x, bootstraps = 1000, alpha = 0.05)
   \item{bootstraps}{
  Number of bootstrap replicates for creating confidence intervals for each performance measure. The default value is 1000. Set bootstraps = 0 if no confidence intervals are desired.   
 }
-  \item{bias.corrected}{logical indicator of whether to bias-correct measures for over-optimism using bootstrap-bias correction. When the same data is used to fit and evaluate the model, performance measures are over-optimistic. Setting this equal to TRUE uses a bootstrap method to bias-correct performance measures.  
+  \item{bias.correct}{logical indicator of whether to bias-correct measures for over-optimism using bootstrap-bias correction. When the same data is used to fit and evaluate the model, performance measures are over-optimistic. Setting this equal to TRUE uses a bootstrap method to bias-correct performance measures.  
   
   }
   \item{alpha}{

@@ -73,7 +73,7 @@ print.eval.trtsel <-
     
     cat("\n")
     
-    cat(paste("  Summary Measure Estimates (with ", round(100*(1-alpha)), "% confidence intervals) \n", sep=""))
+    cat(paste(" Summary Measure Estimates (with ", round(100*(1-alpha)), "% confidence intervals) \n", sep=""))
     cat(" -----------------------------------------------------------\n")
     
     if(is.null(x$conf.intervals)) {

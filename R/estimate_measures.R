@@ -247,7 +247,7 @@ print.trtsel_summary_measures <-
     cat(" -----------------------------------------------------------\n")
     
 
-    cat("  Decrease in event rate under marker-based treatment (Theta)\n")
+    cat("  Decrease in rate of outcomes under marker-based treatment (Theta)\n")
     cat("    Empirical:   ")
     cat(paste(" ", round(x$Theta.emp,  3), sep = ""))
     cat("\n")

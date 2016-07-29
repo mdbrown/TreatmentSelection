@@ -197,7 +197,7 @@ plot.trtsel(trtsel.Y1,
 The function `evaluate()` provides estimates of measures of marker performance.  A wide variety of performance measures are estimated-- some which depend on a specified treatment rule and some which do not.  For the former, the rule is inherited from the `trtsel` object.  Confidence intervals are calculated using the quantile bootstrap; in every bootstrap sample the risk model is re-fit and the model performance measures are re-estimated.
 
 ```{r}
-tmp <- evaluate(trtsel.Y1, bootstraps = 50)
+tmp <- evaluate(trtsel.Y1, bias.correction = TRUE, bootstraps = 50)
 tmp
 ```
 

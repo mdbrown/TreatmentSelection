@@ -123,9 +123,11 @@ Here we compare (average) predicted and observed risk values by decile ('group =
 
 ```{r}
 calibrate(trtsel.Y1, 
-                 groups = 10, 
-                 plot = "treatment effect", 
-                 trt.names = c("chemo.", "no chemo."))
+          groups = 10, 
+          plot = "treatment effect", 
+          trt.names = c("chemo.", "no chemo."), 
+          point.color = "light", 
+          line.color = "black")
 
 ```
 
@@ -326,6 +328,8 @@ plot(myfitted.trtsel, bootstraps = 50, plot.type = "risk",
 
 
 ## References
+
+Efron B, Tibshirani R. **An Introduction to the Bootstrap.**  New York:  Chapman& Hall, 1994.
 
 Song X, Pepe MS. Evaluating markers for selecting a patient's treatment.
 **Biometrics.** 2004;60(4):874-883.

@@ -184,6 +184,8 @@ function(formula, treatment.name, data,
   ## if there is only one marker in the model, we keep it around, otherwise set marker to null 
   if(!is.element(treatment.name, all.vars(formula))) stop("variable with name treatment.name was not found in the model formula.")
   marker.names = all.vars(formula)[!is.element( all.vars(formula), c(event.name, treatment.name)) ]
+  
+  if(any(is.element(marker.names, c("fittedrisk.t0", "fittedrisk.t1", "trt.effect", "marker.pos", "marker.neg", "marker")))) stop("one of your variable names is in the following set \n of protected names  {'fittedrisk.t0', 'fittedrisk.t1', 'trt.effect', \n  'marker.pos', 'marker.neg', 'marker'}\n  please change the names of your variables")
   if(length(marker.names)==1){ 
     
     marker = data[[marker.names]]

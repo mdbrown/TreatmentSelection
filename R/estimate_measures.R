@@ -208,8 +208,8 @@ trtsel_measures <- function(event, trt, trt.rule, trt.effect, time, default.trt 
   }
   
   
-  out <- list(     p.neg = p.marker.neg,
-            p.pos = p.marker.pos,
+  out <- list(     p.rec.notrt = p.marker.neg,
+            p.rec.trt = p.marker.pos,
             B.neg.emp = B.neg.emp,
             B.neg.mod = B.neg.mod, 
             B.pos.emp = B.pos.emp, 
@@ -255,11 +255,11 @@ print.trtsel_summary_measures <-
     cat(paste(" ", round(x$Theta.mod,  3), sep = ""))
     cat("\n\n")
     
-    cat("  Proportion marker negative: ")
-    cat(paste("   ", round(x$p.neg,      3),  sep = ""))
+    cat("  Proportion recommended no treatment: ")
+    cat(paste("   ", round(x$p.rec.notrt,      3),  sep = ""))
     cat("\n")
-    cat("  Proportion marker positive: ")
-    cat(paste("   ", round(x$p.pos,      3),  sep = ""))
+    cat("  Proportion recommended treatment: ")
+    cat(paste("   ", round(x$p.rec.trt,      3),  sep = ""))
     cat("\n\n")
     
     cat("  Average benefit of no treatment among those recommended no treatment (B.neg)\n")

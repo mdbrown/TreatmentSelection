@@ -501,7 +501,7 @@ if( x$model.fit$link == "time-to-event"){
   obsdata$var <- sfit.t0.delta$std.err^2 + sfit.t1.delta$std.err^2
 
 }else{
-  obsdata$var <- obs.risk.t1*(1-obs.risk.t1)/ng.t1 + obs.risk.t0*(1-obs.risk.t0)/ng.t0
+  obsdata$var <- obs.risk.t1.tmp*(1-obs.risk.t1.tmp)/ng.t1 + obs.risk.t0.tmp*(1-obs.risk.t0.tmp)/ng.t0
 }
 
 

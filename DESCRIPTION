@@ -4,8 +4,12 @@ Title: Evaluate Treatment Selection Biomarkers
 Version: 2.0.0
 Date: 2016-07-28
 Author: Marshall Brown and Holly Janes
-Maintainer:  Marshall Brown <mdbrown@fhcrc.org>
-Description:Evaluate the performance of markers used to guide treatment selection decisions. Package includes functions to plot risk curves, evaluate marker performance, assess model calibration, and compare markers.  
+Maintainer: Marshall Brown <mdbrown@fhcrc.org>
+Description: Evaluate the performance of markers used to guide treatment
+    selection decisions. Package includes functions to plot risk curves, evaluate
+    marker performance, assess model calibration, and compare markers.
 URL: http://mdbrown.github.io/TreatmentSelection/
 License: GPL-2
-Imports: ggplot2
+Imports:
+    ggplot2
+RoxygenNote: 5.0.1

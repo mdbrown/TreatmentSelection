@@ -64,35 +64,26 @@ calibrate <- function(x, ...){ UseMethod("calibrate")}
 #' ###########################
 #' ## Create trtsel objects 
 #' ###########################
-#' trtsel.Y1 <- trtsel( event = "event",
-#'                      trt = "trt",
-#'                      marker = "Y1",
-#'                      data = tsdata,
-#'                      study.design = "randomized cohort")
+#' trtsel.Y1 <- trtsel(event ~ Y1*trt, 
+#'                    treatment.name = "trt", 
+#'                    data = tsdata, 
+#'                    study.design = "RCT",
+#'                    link = "logit", 
+#'                    default.trt = "trt all")
+#'
 #' trtsel.Y1
 #' 
-#' trtsel.Y2 <- trtsel( event = "event",
-#'                      trt = "trt",
-#'                      marker = "Y2",
-#'                      data = tsdata,
-#'                      study.design = "randomized cohort")
-#' trtsel.Y2
-#' 
+
 #' ##############################
 #' ## Assess model calibration
 #' ##############################
 #' 
 #'  
-#' cali.Y1 <- calibrate.trtsel(trtsel.Y1, plot.type = "calibration")
+#' cali.Y1 <- calibrate(trtsel.Y1, plot.type = "calibration")
 #' cali.Y1
 #' 
 #' # A "treatment effect" plot 
 #' calibrate.trtsel(trtsel.Y1, plot.type = "treatment effect")
-#' 
-#' # Increase the number of groups to 15
-#' cali.Y2 <- calibrate.trtsel(trtsel.Y2, 
-#'                             groups = 15, plot.type = "risk.t0")
-#' cali.Y2
 #' 
 #' 
 #' @importFrom binom binom.confint

@@ -79,7 +79,7 @@
 #' "marker.neg" (indicator of trt.effect < thresh) columns.  }
 #' \item{functions}{ For internal package use only }
 #' @seealso \code{\link{plot.trtsel}} for plotting risk curves and more,
-#' \code{\link{eval.trtsel}} for evaluating marker performance,
+#' \code{\link{evaluate.trtsel}} for evaluating marker performance,
 #' \code{\link{calibrate.trtsel}} for assessing model calibration, and
 #' \code{\link{compare.trtsel}} to compare two trtsel object.
 #' @references Janes, Holly; Brown, Marshall D; Pepe, Margaret; Huang, Ying;
@@ -96,13 +96,13 @@
 #' ## Create trtsel objects 
 #' ###########################
 #' 
-# trtsel.Y1 <- trtsel(event ~ Y1*trt, 
-#                    treatment.name = "trt", 
-#                    data = tsdata, 
-#                    study.design = "RCT",
-#                    link = "logit", 
-#                    default.trt = "trt all")
-#
+#' trtsel.Y1 <- trtsel(event ~ Y1*trt, 
+#'                    treatment.name = "trt", 
+#'                    data = tsdata, 
+#'                    study.design = "RCT",
+#'                    link = "logit", 
+#'                    default.trt = "trt all")
+#'
 #' trtsel.Y1
 #' 
 # trtsel.Y2 <- trtsel(event ~ Y2*trt, 

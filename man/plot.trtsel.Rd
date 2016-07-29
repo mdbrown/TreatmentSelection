@@ -128,7 +128,7 @@ plot(trtsel.Y1, main = "Marker Y1",
      trt.names=c("trt","no trt"))
      
 # Now with confidence intervals around fixed.values 
- plot.trtsel(trtsel.Y1, main = "Marker Y1",
+ plot(trtsel.Y1, main = "Marker Y1",
                         plot.type = "risk", ci = "horizontal", 
                         fixed.values = c(.2, .5), 
                         offset = .01, bootstraps = 10,
@@ -136,7 +136,7 @@ plot(trtsel.Y1, main = "Marker Y1",
                         
 # Plot treatment effect curves
 #with confidence intervals around fixed.values
-plot.trtsel(trtsel.Y1, main = "Marker Y1", 
+plot(trtsel.Y1, main = "Marker Y1", 
                        plot.type = "treatment effect",
                        ci = "vertical", conf.bands = FALSE,
                        fixed.values = c(10, 20), bootstraps = 10)

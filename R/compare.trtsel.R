@@ -113,28 +113,20 @@ compare <- function(x, ...) UseMethod("compare")
 #' ## Create trtsel objects 
 #' ###########################
 #' 
-#' trtsel.Y1 <- trtsel( event = "event",
-#'                      trt = "trt",
-#'                      marker = "Y1",
-#'                      data = tsdata,
-#'                      study.design = "randomized cohort")
+#' trtsel.Y1 <- trtsel(event ~ Y1*trt, 
+#'                    treatment.name = "trt", 
+#'                    data = tsdata, 
+#'                    study.design = "RCT",
+#'                    link = "logit", 
+#'                    default.trt = "trt all")
+#'
 #' trtsel.Y1
 #' 
-#' trtsel.Y2 <- trtsel( event = "event",
-#'                      trt = "trt",
-#'                      marker = "Y2",
-#'                      data = tsdata,
-#'                      study.design = "randomized cohort")
+#' trtsel.Y2 <- trtsel(event ~ Y2*trt, 
+#'                    treatment.name = "trt", 
+#'                    data = tsdata, 
+#'                    default.trt = "trt all")
 #' trtsel.Y2
-#' 
-#' #discrete markers
-#' trtsel.Y1_disc <- trtsel( event ="event", trt = "trt", marker = "Y1_disc", 
-#'                           data =  tsdata,
-#'                           study.design = "randomized cohort")
-#'                           
-#' trtsel.Y2_disc <- trtsel( event ="event", trt = "trt", marker = "Y2_disc",
-#'                           data = tsdata,
-#'                           study.design = "randomized cohort")
 #'                           
 #' 
 #' ###############################
@@ -144,13 +136,9 @@ compare <- function(x, ...) UseMethod("compare")
 #' 
 #' # Plot treatment effect curves with pointwise confidence intervals
 #' ## use more bootstraps in practice
-#' compare.trtsel(trtsel1 = trtsel.Y1, trtsel2 = trtsel.Y2,
+#' compare(trtsel1 = trtsel.Y1, trtsel2 = trtsel.Y2,
 #'                                 bootstraps = 10, plot = TRUE,      
 #'                                 ci = "horizontal",  conf.bands = TRUE) 
-#'                                 
-#' #compare discrete markers, plots are different                  
-#' compare.trtsel(trtsel1 = trtsel.Y1_disc, trtsel2 = trtsel.Y2_disc, ci = "vertical" , 
-#'                bootstraps = 10, plot = TRUE, offset = .1)                
 #'                                 
 #' 
 #' @method compare trtsel

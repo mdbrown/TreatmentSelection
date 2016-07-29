@@ -376,7 +376,7 @@ trtsel.Y2_disc &lt;- trtsel(event ~ trt*(Y2_disc),
 <div id="evaluate-marker-performance" class="section level2">
 <h2>Evaluate marker performance</h2>
 <p>The function <code>evaluate()</code> provides estimates of measures of marker performance. A wide variety of performance measures are estimated– some which depend on a specified treatment rule and some which do not. For the former, the rule is inherited from the <code>trtsel</code> object. Confidence intervals are calculated using the quantile bootstrap; in every bootstrap sample the risk model is re-fit and the model performance measures are re-estimated.</p>
-<pre class="r"><code>tmp &lt;- evaluate(trtsel.Y1, bias.correction = TRUE, bootstraps = 50)
+<pre class="r"><code>tmp &lt;- evaluate(trtsel.Y1, bias.correct = TRUE, bootstraps = 50)
 tmp</code></pre>
 <pre><code>## 
 ##  Summary Measure Estimates (with % confidence intervals) 
@@ -413,7 +413,9 @@ tmp</code></pre>
 ##             (0.188,0.263)   (0.219,0.294)   (0.179,0.239) 
 ##  Model Based:   0.213           0.255          0.203    
 ##             (0.186,0.259)   (0.231,0.297)   (0.179,0.233)</code></pre>
-<p>Here is what performance evaluation looks like for a discret marker:</p>
+<p>The <code>evaluate</code> function used this way both fit and evaluates a risk model using the same data, which is known to bias performance measure estimates to be overly optimistic. To correct for this bias, the evaluate function by default sets <code>bias.correct=TRUE</code>. This implements bootstrap bias correction via the ``refined bootstrap&quot; method described in Efron and Tibshirani 1994.</p>
+<p>In short, we sample <span class="math inline">\(B\)</span> bootstrap datasets. For each, obtain a new treatment selection rule based on the re-fit model and calculate the difference in estimated performance of this rule using the bootstrap vs. original data. The average of these differences estimates the bias. We shift naive performance estimates and confidence intervals down by the estimated bias.</p>
+<p>Here is what performance evaluation looks like for a discrete marker:</p>
 <pre class="r"><code># discrete marker
 evaluate(trtsel.Y2_disc, bootstraps = 50)</code></pre>
 <pre><code>## Bootstrap bias-correction will be implemented to correct for over-optimism bias in estimation.</code></pre>

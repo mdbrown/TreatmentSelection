@@ -105,10 +105,10 @@
 #'
 #' trtsel.Y1
 #' 
-# trtsel.Y2 <- trtsel(event ~ Y2*trt, 
-#                    treatment.name = "trt", 
-#                    data = tsdata, 
-#                    default.trt = "trt all")
+#' trtsel.Y2 <- trtsel(event ~ Y2*trt, 
+#'                    treatment.name = "trt", 
+#'                    data = tsdata, 
+#'                    default.trt = "trt all")
 #' trtsel.Y2
 #' 
 #' 

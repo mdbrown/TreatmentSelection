@@ -1,3 +1,5 @@
+#' method to compare trtsel objects
+#' @export
 compare <- function(x, ...) UseMethod("compare")
 
 
@@ -151,8 +153,8 @@ compare <- function(x, ...) UseMethod("compare")
 #'                bootstraps = 10, plot = TRUE, offset = .1)                
 #'                                 
 #' 
-#' 
-#' @export compare.trtsel
+#' @method compare trtsel
+#' @export
 compare.trtsel <-
 function(trtsel1, trtsel2, bootstraps = 500, alpha = .05, plot = TRUE, 
                            ci   = "horizontal", fixed.values =  NULL, offset = .01,

@@ -32,50 +32,5 @@ Janes, Holly; Brown, Marshall D; Pepe, Margaret; Huang, Ying; "An Approach to Ev
 
 \examples{
 
-
-data(tsdata)
-
-tsdata[1:10, ]
-
-###########################
-## Create trtsel objects 
-###########################
-
-trtsel.Y1 <- trtsel( event = "event",
-                     trt = "trt",
-                     marker = "Y1",
-                     data = tsdata,
-                     study.design = "randomized cohort")
-trtsel.Y1
-
-
-#############################################
-## Plot fitted risks 
-#############################################
-
-# Plot risk curves
-tmp <- plot.trtsel(trtsel.Y1, main = "Marker Y1", 
-                       plot.type = "risk", bootstraps = 10, # set this higher in practice
-                       trt.names=c("chemo.","no chemo."))
-
-
-
-##############################
-## Assess model calibration
-##############################
-
- 
-cali.Y1 <- calibrate.trtsel(trtsel.Y1)
-cali.Y1
-
-
-#########################################
-## Evaluate performance of each marker 
-#########################################
-
-estimates.Y1 <- eval.trtsel(trtsel.Y1, bootstraps = 10)
-estimates.Y1
-
-
 }
 \keyword{datasets}

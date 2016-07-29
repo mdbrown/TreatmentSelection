@@ -2,7 +2,7 @@
 % Please edit documentation in R/estimate_measures.R
 \name{print.trtsel_summary_measures}
 \alias{print.trtsel_summary_measures}
-\title{print output from 'estimate_measures'}
+\title{print output from 'trtsel_measures'}
 \usage{
 \method{print}{trtsel_summary_measures}(x, ...)
 }

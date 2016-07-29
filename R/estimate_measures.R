@@ -229,13 +229,17 @@ trtsel_measures <- function(event, trt, trt.rule, trt.effect, time, default.trt 
 
 
 #' 
-#' print output from 'estimate_measures'
+#' print output from 'trtsel_measures'
 #' 
 #' S3 method for class ''trtsel''
 #' 
 #' 
 #' @param x object of class "trtsel_summary_measures", output from the estimate_measures function
 #' @param \dots ignored
+#' 
+#' @method print trtsel_summary_measures
+#' @export
+
 print.trtsel_summary_measures <-
   function(x, ...){
     

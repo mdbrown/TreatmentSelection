@@ -35,62 +35,6 @@ Janes, Holly; Brown, Marshall D; Pepe, Margaret; Huang, Ying; "An Approach to Ev
 
 
 \examples{
-data(tsdata_scc)
-data(tsdata) #need this to provide cohort.attribute information to function trtsel 
-
-tsdata_scc[1:10, ]
-
-###########################
-## Create trtsel objects 
-###########################
-
-#create cohort.attributes using the full cohort dataset tsdata
-# c(cohort sample size, 
-#Pr(trt==0 & event==0) in cohort, 
-#Pr(trt==0 & event==1) in cohort, 
-#Pr(trt==1 & event==0) in cohort, 
-#fraction of cases with trt == 0 sampled from cohort, 
-#fraction of cases with trt == 1 sampled from cohort )
-
-rho.scc <- c( nrow(tsdata), with(tsdata, mean(trt==0 & event==0)), 
-                            with(tsdata, mean(trt==0 & event==1)), 
-                            with(tsdata, mean(trt==1 & event==0)),
-                            1.0, 
-                            1.0)
-
-trtsel.Y1 <- trtsel( event = "event", trt = "trt", marker ="Y1", 
-                    data = tsdata_scc,
-                    cohort.attributes = rho.scc,
-                    study.design = "stratified nested case-control")
-
-############################################
-## Plot risk curves
-#############################################
-
-# Plot risk curves
-tmp <- plot.trtsel(trtsel.Y1, main = "Marker Y1", 
-                       plot.type = "risk", bootstraps = 10, # set higher in practice
-                       trt.names=c("chemo.","no chemo."))
-
-
-
-
-##############################
-## Assess model calibration
-##############################
-
- 
-cali.Y1 <- calibrate.trtsel(trtsel.Y1)
-cali.Y1
-
-
-#########################################
-## Evaluate performance of each marker 
-#########################################
-
-estimates.Y1 <- eval.trtsel(trtsel.Y1, bootstraps = 10)
-estimates.Y1
-
 
 }
 \keyword{datasets}

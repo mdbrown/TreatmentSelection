@@ -141,8 +141,6 @@ plot.trtsel(trtsel.Y1, main = "Marker Y1",
                        ci = "vertical", conf.bands = FALSE,
                        fixed.values = c(10, 20), bootstraps = 10)
 
-
-
 }
 \references{
 Janes, Holly; Brown, Marshall D; Pepe, Margaret; Huang, Ying; "An Approach

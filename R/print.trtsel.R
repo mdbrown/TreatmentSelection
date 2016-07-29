@@ -3,10 +3,11 @@
 #' 
 #' S3 method for class ''trtsel''
 #' 
-#' 
 #' @param x object of class "trtsel", which can be created using function
 #' "trtsel." See ?trtsel for more information.
 #' @param \dots ignored
+#' @method print trtsel
+#' @export 
 print.trtsel <-
 function(x, ...){
 
@@ -65,6 +66,9 @@ function(x, ...){
 #' 
 #' @param x object of class "eval.trtsel", output from the eval.trtsel function
 #' @param \dots ignored
+#' 
+#' @method print eval.trtsel
+#' @export
 print.eval.trtsel <-
   function(x, ...){
     
@@ -186,6 +190,8 @@ print.eval.trtsel <-
 #' @param x object of class "compare.trtsel", output from the compare.trtsel
 #' function
 #' @param \dots ignored
+#' @method print compare.trtsel
+#' @export 
 print.compare.trtsel <-
   function(x, ...){
     
@@ -401,6 +407,8 @@ print.compare.trtsel <-
 #' @param x object of class "calibrate.trtsel", output from the
 #' calibrate.trtsel function
 #' @param \dots ignored
+#' @print calibrate.trtsel
+#' @export
 print.calibrate.trtsel <-
   function( x, ... ) {
     cal <- x

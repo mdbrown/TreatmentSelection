@@ -121,9 +121,9 @@
 #'                        ci = "vertical", conf.bands = FALSE,
 #'                        fixed.values = c(10, 20), bootstraps = 10)
 #' 
-#' 
-#' 
-#' @export plot.trtsel
+#' @import ggplot2
+#' @method plot trtsel
+#' @export
 
 
 plot.trtsel <-

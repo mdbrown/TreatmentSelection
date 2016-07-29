@@ -1,6 +1,6 @@
+#' method for calibrating trtsel objects 
+#' @export
 calibrate <- function(x, ...){ UseMethod("calibrate")}
-
-
 
 #' assess model calibration of a trtsel object
 #' 
@@ -87,7 +87,8 @@ calibrate <- function(x, ...){ UseMethod("calibrate")}
 #' 
 #' 
 #' @importFrom binom binom.confint
-#' @export calibrate.trtsel
+#' @method calibrate trtsel 
+#' @export 
 calibrate.trtsel <-
 function( x, groups = 10, plot.type = "calibration", trt.names = c("Treatment", "No Treatment"), line.color = "black", point.color = "grey10", main = NULL, ylim = NULL, xlim = NULL, ylab = NULL, xlab=NULL){
 

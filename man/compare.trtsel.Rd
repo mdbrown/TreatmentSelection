@@ -167,7 +167,6 @@ compare.trtsel(trtsel1 = trtsel.Y1_disc, trtsel2 = trtsel.Y2_disc, ci = "vertica
                bootstraps = 10, plot = TRUE, offset = .1)                
                                 
 
-
 }
 \references{
 Janes, Holly; Brown, Marshall D; Pepe, Margaret; Huang, Ying; "An Approach

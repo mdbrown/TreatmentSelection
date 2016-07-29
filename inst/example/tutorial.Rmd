@@ -28,9 +28,7 @@ devtools::install_github("mdbrown/TreatmentSelection")
 
 First, load the example data set for this package called `tsdata`. Four markers are included in the data example, a ''weak'' and a ''strong'' marker ($Y1$ and $Y2$ respectively), along with a weak/strong discrete markers. 
 
-
-
-## Create TrtSel objects 
+## First steps 
 
 Load the example data set for this package called `tsdata`. These are hypothetical data from an RCT with a binary outcome (`outcome`) and treatment assignment (`trt`). Four markers, measured on all RCT participants, are included-- a ''weak'' and a ''strong'' marker (`Y1` and `Y2` respectively), along with binary versions of these markers. 
 
@@ -43,7 +41,41 @@ data(tsdata)
 tsdata[1:5, ]
 ```
 
-Create a treatment selection R object using the function `trtsel`. Creating this object entails estimating risk of the clinical outcome given treatment and marker, i.e. fitting a "risk model".  Here, logistic regression is used (`link="logit"`) and the formula is specified in the first argument.  The default treatment strategy-- that which would be recommended in the absence of marker measurements-- is specified as `default.trt="trt all"`.  The methodology considers marker-specific treatment rules or policies that recommend treatment if the marker-specific treatment effect-- on the risk difference scale-- is above a specified `thresh`; the default is `thresh = 0`.  (Alternatively, see the tab on "additional features"" to see how an arbitrary user-specified treatment rule can be evaluated.)  The `study design="RCT"` indicates that the markers are measured on all RCT participants.   
+### Evaluate performance of user-specified marker-based treatment rule
+
+For a pre-defined marker-based treatment rule, we provide a simple function to estimate point estimates of performance measures. This is done using the `trtsel_measures()` function.  The user must specify a vector of clinical outcomes, a vector of treatment assigments, and a vector of marker-based treatment recommendations based on the pre-specified rule.
+
+Here we let `Y1_disc` represent a user-specified treatment rule and evaluate its performance.  
+
+```{r}
+
+trtsel_measures(event = tsdata$event, trt = tsdata$trt, trt.rule = 1- tsdata$Y1_disc )
+
+```
+
+
+We can also fit our own risk model using GLM, use this model to develop a marker-based treatment recommendation, and evaluate its performance. This allows us to obtain model-based estimates of performance:
+
+
+```{r}
+
+mod <- glm(event~trt*Y1_disc,  data = tsdata, family = binomial())
+
+tsdata.0 <- tsdata; 
+tsdata.0$trt = 0 
+tsdata.1 <- tsdata;
+tsdata.1$trt = 1
+delta.hat <- predict(mod, newdata= tsdata.0, type = "response") - predict(mod, newdata= tsdata.1, type = "response")
+
+trtsel_measures(event = tsdata$event, trt = tsdata$trt, trt.rule = 1- tsdata$Y1_disc, trt.effect = delta.hat )
+
+```
+
+## Create TrtSel objects 
+
+An alternative to providing a pre-specified treatment rule the user can use the data to fit a risk model and to develop a treatment rule based on estimated treatment effect. 
+
+The user can do this by first creating a treatment selection R object using the function `trtsel`. Creating this object entails estimating risk of the clinical outcome given treatment and marker, i.e. fitting a "risk model".  Here, logistic regression is used (`link="logit"`) and the formula is specified in the first argument.  The default treatment strategy-- that which would be recommended in the absence of marker measurements-- is specified as `default.trt="trt all"`.  The methodology considers marker-specific treatment rules or policies that recommend treatment if the marker-specific treatment effect-- on the risk difference scale-- is above a specified `thresh`; the default is `thresh = 0`.  (Alternatively, see the tab on "additional features"" to see how an arbitrary user-specified treatment rule can be evaluated.)  The `study design="RCT"` indicates that the markers are measured on all RCT participants.   
 
 
 
@@ -171,10 +203,10 @@ plot(trtsel.Y1,
 Here is an example of a treatment effect plot for a discrete marker:
 
 ```{r}
-plot.trtsel(trtsel.Y2_disc, 
-            plot.type = "treatment effect", 
-            conf.bands = TRUE, 
-            bootstraps = 50)
+plot(trtsel.Y2_disc, 
+    plot.type = "treatment effect", 
+    conf.bands = TRUE, 
+    bootstraps = 50)
 ```
 
  
@@ -184,11 +216,11 @@ plot.trtsel(trtsel.Y2_disc,
 The selection impact plot also applies to both univariate and multivariate markers.  They show the population rate of the clinical outcome as a function of the proportion of the population recommended treatment according a marker-specific treatment rule.  Rules that recommend treatment based on the marker-specific treatment effect (on the risk difference scale) are considered, and are indexed by the proportion of the population recommended treatment according to the rule.  The outcome rates under "treat all" and "treat none" policies are shown for comparison.
 
 ```{r}
-plot.trtsel(trtsel.Y1, 
-            plot.type = "selection impact", 
-            ci = "vertical", 
-            conf.bands = TRUE, 
-            bootstraps = 50)
+plot(trtsel.Y1, 
+     plot.type = "selection impact", 
+     ci = "vertical", 
+     conf.bands = TRUE, 
+     bootstraps = 50)
 ```
 
 
@@ -201,7 +233,11 @@ tmp <- evaluate(trtsel.Y1, bias.correction = TRUE, bootstraps = 50)
 tmp
 ```
 
-Here is what performance evaluation looks like for a discret marker:
+The `evaluate` function used this way both fit and evaluates a risk model using the same data, which is known to bias performance measure estimates to be overly optimistic. To correct for this bias, the evaluate function by default sets `bias.correction=TRUE`. This implements bootstrap bias correction via the ``refined bootstrap" method described in Efron and Tibshirani 1994. 
+
+In short, we sample $B$ bootstrap datasets. For each, obtain a new treatment selection rule based on the re-fit model and calculate the difference in estimated performance of this rule using the bootstrap vs. original data.  The average of these differences estimates the bias.  We shift naive performance estimates and confidence intervals down by the estimated bias.
+
+Here is what performance evaluation looks like for a discrete marker:
 
 ```{r}
 # discrete marker
@@ -231,11 +267,8 @@ A suite of performance measures is estimated for each marker, and marker-compari
 mycompare <- compare(trtsel1 = trtsel.Y1, 
                      trtsel2 = trtsel.Y2, 
                      model.names = c("Y1", "Y1 + Y2"), 
-                     bootstraps = 50, 
-                     plot = TRUE, 
-                     ci = "vertical", 
-                     offset = 0.01, 
-                     conf.bands = TRUE)
+                     bootstraps = 50,
+                     ci = "vertical")
 mycompare
 ```
 
@@ -247,14 +280,13 @@ trtsel.Y1_disc <- trtsel(event~Y1_disc*trt,
                          data = tsdata)
 
 
-compare.trtsel(trtsel1 = trtsel.Y1_disc, 
-               trtsel2 = trtsel.Y2_disc, 
-               ci = "vertical", 
-               offset = 0.2, 
-               bootstraps = 50, 
-               plot = TRUE, 
-               conf.bands = TRUE, 
-               annotate.plot = FALSE)
+compare(trtsel1 = trtsel.Y1_disc, 
+        trtsel2 = trtsel.Y2_disc, 
+        ci = "vertical", 
+        offset = 0.2, 
+        bootstraps = 50, 
+        conf.bands = TRUE, 
+        annotate.plot = TRUE)
 ```
 
 See `?compare.trtsel` for more options.
@@ -286,41 +318,12 @@ myfitted.trtsel <- trtsel( event~trt, treatment.name = "trt",
 We can now use this `trtsel` object to plot and evaluate performance just as before, but confidence intervals are narrower because they are conditional on the fitted risk model. 
 
 ```{r}
-plot.trtsel(myfitted.trtsel, bootstraps = 50, plot.type = "risk",
-            ci = "horizontal", show.marker.axis = FALSE)
+plot(myfitted.trtsel, bootstraps = 50, plot.type = "risk",
+     ci = "vertical", show.marker.axis = FALSE)
 ```
 
 
 
-### Evaluate performance of user-specified marker-based treatment rule
-
-An alternative to using the data to fit a risk model and to develop a treatment rule based on estimated treatment effect is to input a user-specified treatment rule. This is done using the `estimate_measures()` function.  The user must specify a vector of clinical outcomes, a vector of treatment assigments, and a vector of marker-based treatment recommendations based on the pre-specified rule. Clearly, the inference provided based on bootstrap confidence intervals is conditional on this user-specified treatment rule.  
-
-Here we let `Y1_disc` represent a user-specified treatment rule and evaluate its performance.  
-
-```{r}
-
-trtsel_measures(event = tsdata$event, trt = tsdata$trt, trt.rule = 1- tsdata$Y1_disc )
-
-```
-
-
-We can also fit our own risk model using GLM, use this model to develop a marker-based treatment recommendation, and evaluate its performance:
-
-
-```{r}
-
-mod <- glm(event~trt*Y1_disc,  data = tsdata, family = binomial())
-
-tsdata.0 <- tsdata; 
-tsdata.0$trt = 0 
-tsdata.1 <- tsdata;
-tsdata.1$trt = 1
-delta.hat <- predict(mod, newdata= tsdata.0, type = "response") - predict(mod, newdata= tsdata.1, type = "response")
-
-trtsel_measures(event = tsdata$event, trt = tsdata$trt, trt.rule = 1- tsdata$Y1_disc, trt.effect = delta.hat )
-
-```
 
 ## References
 

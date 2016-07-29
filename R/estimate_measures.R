@@ -32,7 +32,7 @@ trtsel_measures <- function(event, trt, trt.rule, trt.effect, time, default.trt 
   
   
   if(missing(trt.effect)){ 
-    warning("Estimates of trt.effect are not provided. Only empirical estimates will be calculated.")
+    message("Estimates of trt.effect are not provided. Only empirical estimates will be calculated.")
     noModelBased <- TRUE
     trt.effect <- rep(NA, length(trt))
   }else{

@@ -80,11 +80,11 @@ predcurvePLOT_gg <-
     #change the names for the legend
     p <- p + scale_linetype_manual(values = c(2, 1), labels = trt.names)+
       theme(legend.title = element_blank(), #,  text = element_text(size=14), 
-            legend.key.size = ggplot2::unit(1.5, "lines")) #, 
+            legend.key.size = unit(1.5, "lines")) #, 
     #legend.text = element_text(size = 16))
     p <- p + scale_x_continuous(breaks = breaks, limits = xlim)
     if(show.marker.axis){
-      p <- p + theme(plot.margin = ggplot2::unit(c(1,1,4,1), "lines"))
+      p <- p + theme(plot.margin = unit(c(1,1,4,1), "lines"))
       
       p <- p + annotation_custom(grob = xaxisGrob( at = breaks, label = round(quantile(marker, prob = breaks/100), 1)), #, gp = gpar( fontsize=11.5)), #col = gray(.55),
                                  xmin = 0, xmax = 1, ymin = ylim[1]-diff(ylim)*.25, ymax = ylim[1]-diff(ylim)*.25)

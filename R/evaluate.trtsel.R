@@ -1,5 +1,62 @@
+#' a method for evaluating a trtsel object
+#' @param x object
+#' @param \dots not used  
+#' @seealso \code{\link{evaluate.trtsel}}
+#' @export 
 evaluate <- function(x, ...) UseMethod("evaluate")
 
+#' evaluate the performance of one or more biomarkers for their ability to guide patient treatment recommendations.
+#' 
+#'   Evaluates the ability of one or more biomarkers for their ability to guide patient treatment recommendations.  
+#'   (Bias-corrected) summary measures of marker performance are estimated and confidence intervals are provided.  
+#'   This function accepts as input an object of class "trtsel", created using the function "trtsel". 
+#' 
+#'@aliases evaluate evaluate.trtsel 
+#' 
+#'@param x An object of class "trtsel", created by using the function "trtsel." 
+#'@param bootstraps Number of bootstrap replicates for creating confidence intervals for each performance measure. The default value is 1000. Set bootstraps = 0 if no confidence intervals are desired.
+#'@param bias.correct logical indicator of whether to bias-correct measures for over-optimism using bootstrap-bias correction. When the same data is used to fit and evaluate the model, performance measures are over-optimistic. Setting this equal to TRUE uses a bootstrap method to bias-correct performance measures. 
+#'@param alpha (1-alpha)*100\% confidence intervals are calculated. Default value is alpha = 0.05 which yields 95\% CI's.  The same alpha is used for the two-sided type-I error for the test of H0: No decrease in event rate under marker-based treatment.
+#'@return  A list with the following components (see Janes et al. (2013) for a description of the summary measures and estimators): 
+#'\item{test.Null }{ List of results of a test of the null hypothesis H0: No decrease in event rate under marker-based treatment. Contains "reject" (logical; was H0 rejected), p.value, z.statistic, and alpha }
+#'\item{estimates }{data.frame of dimension 1x9 of summary measure estimates. Includes:
+#'    p.neg : proportion with negative treatment effect estimates (marker-negatives);
+#'  p.pos : proportion with positive treatment effect estimates (marker-negatives);
+#'  B.neg.emp, B.neg.mod: Average benefit of no treatment among marker-negatives, empirical and model-based estimates;
+#'  B.pos.emp, B.neg.mod: Average benefit of treatment among marker-positives, empirical and model-based estimates;
+#'  Theta.emp, Theta.mod: Decrease in event rate under marker-based treatment, empirical and model-based estimates; 
+#'  Var.Delta: variance in estimated treatment effect; 
+#'  TG: Total gain.  
+#'  ER.trt0.emp/mod, ER.trt1.emp/mod, ER.mkrbased.emp/mod: Event rates under trt = 0, trt = 1 or for marker-based treatment. 
+#'  Marker.Thresh: Marker positivity threshold-- defined as the maximum marker value such that estimated treatment effect < "thresh" (=treatment effect used to define the treatment rule, this is set when creating the trtsel object). If all observations are marker negative (or all are positive), Marker.Thresh has value NA}
+#' \item{conf.intervals}{ data.frame of dimension 2x9 with bootstrap-based confidence intervals for each summary measures. If bootstraps = 0 or boot = FALSE, this component is NULL. }
+#' 
+#'@seealso \code{\link{trtsel}} for creating trtsel objects, \code{\link{plot.trtsel}} for plotting risk curves and more, \code{\link{calibrate.trtsel}} for assessing model calibration, and \code{\link{compare.trtsel}} to compare two trtsel object. 
+#'@examples 
+#'data(tsdata)
+#'
+#'###########################
+#'## Create trtsel objects 
+#'###########################
+#'
+#'trtsel.Y1 <- trtsel(event ~ Y1*trt, 
+                    #'                    treatment.name = "trt", 
+                    #'                    data = tsdata, 
+                    #'                    study.design = "RCT",
+                    #'                    link = "logit", 
+                    #'                    default.trt = "trt all")
+#'trtsel.Y1
+#'
+#'#################################
+#'## Evaluate marker performance
+#'#################################
+#'
+#'# Marker Y1
+#'estimates.Y1 <- evaluate(trtsel.Y1, bootstraps = 50)
+#'estimates.Y1
+#'
+#'@method evaluate trtsel 
+#'@export  
 evaluate.trtsel <-
 function(x, bias.correct = TRUE, bootstraps = 1000, alpha = .05){
 

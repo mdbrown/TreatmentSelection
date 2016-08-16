@@ -6,7 +6,15 @@
 \usage{
 calibrate(x, ...)
 }
+\arguments{
+\item{x}{object}
+
+\item{\dots}{not used}
+}
 \description{
 method for calibrating trtsel objects
+}
+\seealso{
+\code{\link{calibrate.trtsel}}
 }
 

@@ -6,7 +6,7 @@ function(data, formula, treatment.name, rho, study.design, obe.boot.sample, obe.
     event.name = formula[[2]]
     mysurv <- with(data, eval(event.name))
     event <- mysurv[,2]
-    stime <- musurv[,1]
+    stime <- mysurv[,1]
    
     data$prediction.time <- prediction.time
   }else{

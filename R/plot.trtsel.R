@@ -1,4 +1,3 @@
-#' 
 #' plot risk curves, treatment effect curves or cdf of risk for a trtsel
 #' object.
 #' 
@@ -73,12 +72,7 @@
 #' \code{\link{evaluate.trtsel}} for evaluating marker performance,
 #' \code{\link{calibrate.trtsel}} for assessing model calibration, and
 #' \code{\link{compare.trtsel}} to compare two trtsel object.
-#' @references
-#' 
-#' Janes, Holly; Brown, Marshall D; Pepe, Margaret; Huang, Ying; "An Approach
-#' to Evaluating and Comparing Biomarkers for Patient Treatment Selection" The
-#' International Journal of Biostatistics. Volume 0, Issue 0, ISSN (Online)
-#' 1557-4679, ISSN (Print) 2194-573X, DOI: 10.1515/ijb-2012-0052, April 2014
+
 #' @examples
 #' 
 #' 
@@ -108,7 +102,7 @@
 #'      trt.names=c("trt","no trt"))
 #'      
 #' # Now with confidence intervals around fixed.values 
-#'  plot.trtsel(trtsel.Y1, main = "Marker Y1",
+#'  plot(trtsel.Y1, main = "Marker Y1",
 #'                         plot.type = "risk", ci = "horizontal", 
 #'                         fixed.values = c(.2, .5), 
 #'                         offset = .01, bootstraps = 10,
@@ -116,7 +110,7 @@
 #'                         
 #' # Plot treatment effect curves
 #' #with confidence intervals around fixed.values
-#' plot.trtsel(trtsel.Y1, main = "Marker Y1", 
+#' plot(trtsel.Y1, main = "Marker Y1", 
 #'                        plot.type = "treatment effect",
 #'                        ci = "vertical", conf.bands = FALSE,
 #'                        fixed.values = c(10, 20), bootstraps = 10)

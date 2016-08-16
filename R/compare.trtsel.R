@@ -1,10 +1,9 @@
 #' method to compare trtsel objects
+#' @param x object
+#' @param \dots not used  
 #' @export
 compare <- function(x, ...) UseMethod("compare")
 
-
-
-#' 
 #' compare the performance of two treatment selection markers
 #' 
 #' Evaluates and compares the performance of two treatment selection markers
@@ -19,7 +18,7 @@ compare <- function(x, ...) UseMethod("compare")
 #' must be identical for the two markers.
 #' 
 #' 
-#' @param trtsel1 An object of class "trtsel" created by using function
+#' @param x An object of class "trtsel" created by using function
 #' "trtsel". This is created using data for the first marker.  Note: event and
 #' treatment vectors provided to create this trtsel object must be identical to
 #' those used to create the trtsel2 object.
@@ -96,7 +95,7 @@ compare <- function(x, ...) UseMethod("compare")
 #' bootstrap confidence bands are calculated.
 #' @seealso \code{\link{trtsel}} for creating trtsel objects,
 #' \code{\link{plot.trtsel}} for plotting risk curves and more,
-#' \code{\link{eval.trtsel}} for evaluating marker performance, and
+#' \code{\link{evaluate.trtsel}} for evaluating marker performance, and
 #' \code{\link{calibrate.trtsel}} for assessing model calibration..
 #' @references
 #' 

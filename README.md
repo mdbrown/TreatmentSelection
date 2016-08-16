@@ -1,14 +1,13 @@
 TreatmentSelection
 ==================
 
-This R package includes a suite of descriptive and inferential methods designed to evaluate
-individual treatment selection markers and to compare candidate markers.  
+This R package includes a suite of descriptive and inferential methods designed to evaluate one or more biomarkers for their ability to guide patient treatment recommendations.
+relevant functions are:
 
-functions included are:
-
+- `trtsel_measures` for evaluating the performance of a user-specified marker-based treatment rule
 - `trtsel` for creating trtsel objects
 - `plot.trtsel` for plotting risk curves and more
-- `eval.trtsel` for evaluating marker performance
+- `evaluate.trtsel` for evaluating marker performance
 - `calibrate.trtsel` for assessing model calibration
 - `compare.trtsel` to compare two trtsel objects. 
 

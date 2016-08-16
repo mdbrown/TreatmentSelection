@@ -1,4 +1,3 @@
-#' 
 #' print a trtsel object
 #' 
 #' S3 method for class ''trtsel''
@@ -407,7 +406,7 @@ print.compare.trtsel <-
 #' @param x object of class "calibrate.trtsel", output from the
 #' calibrate.trtsel function
 #' @param \dots ignored
-#' @print calibrate.trtsel
+#' @method print calibrate.trtsel
 #' @export
 print.calibrate.trtsel <-
   function( x, ... ) {

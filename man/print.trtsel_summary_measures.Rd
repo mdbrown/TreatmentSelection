@@ -12,6 +12,6 @@
 \item{\dots}{ignored}
 }
 \description{
-S3 method for class ''trtsel''
+S3 method for class ''trtsel_measures''
 }
 

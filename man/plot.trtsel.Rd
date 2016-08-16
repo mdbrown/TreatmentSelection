@@ -142,12 +142,6 @@ plot(trtsel.Y1, main = "Marker Y1",
                        fixed.values = c(10, 20), bootstraps = 10)
 
 }
-\references{
-Janes, Holly; Brown, Marshall D; Pepe, Margaret; Huang, Ying; "An Approach
-to Evaluating and Comparing Biomarkers for Patient Treatment Selection" The
-International Journal of Biostatistics. Volume 0, Issue 0, ISSN (Online)
-1557-4679, ISSN (Print) 2194-573X, DOI: 10.1515/ijb-2012-0052, April 2014
-}
 \seealso{
 \code{\link{trtsel}} for creating trtsel objects,
 \code{\link{evaluate.trtsel}} for evaluating marker performance,

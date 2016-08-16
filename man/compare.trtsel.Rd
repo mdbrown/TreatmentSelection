@@ -11,11 +11,6 @@
   main = NULL, annotate.plot = TRUE)
 }
 \arguments{
-\item{trtsel1}{An object of class "trtsel" created by using function
-"trtsel". This is created using data for the first marker.  Note: event and
-treatment vectors provided to create this trtsel object must be identical to
-those used to create the trtsel2 object.}
-
 \item{trtsel2}{An object of class "trtsel" created by using function
 "trtsel". This is created using data for the second marker.}
 
@@ -74,6 +69,11 @@ Only applies if plot = TRUE.}
 \item{annotate.plot}{Only applies to comparison of two discrete markers.
 Should the plot be annotated with the marker group percentages? default is
 TRUE.}
+
+\item{x}{An object of class "trtsel" created by using function
+"trtsel". This is created using data for the first marker.  Note: event and
+treatment vectors provided to create this trtsel object must be identical to
+those used to create the trtsel2 object.}
 }
 \value{
 A list with components (see Janes et al. (2013) for a description of
@@ -119,33 +119,41 @@ under ?plot.trtsel, for a description of the differences between how the
 bootstrap confidence bands are calculated.
 }
 \examples{
- trtsel.Y1 <- trtsel(event ~ Y1*trt, 
-                     treatment.name = "trt", 
-                     data = tsdata, 
-                     study.design = "RCT",
-                     link = "logit", 
-                     default.trt = "trt all")
- 
-  trtsel.Y1
-  
-  trtsel.Y2 <- trtsel(event ~ Y2*trt, 
-                     treatment.name = "trt", 
-                     data = tsdata, 
-                     default.trt = "trt all")
-  trtsel.Y2
-                            
-  
-  ###############################
-  ## Compare marker performance
-  ###############################
-  
-  
-  # Plot treatment effect curves with pointwise confidence intervals
-  ## use more bootstraps in practice
-  compare(trtsel1 = trtsel.Y1, trtsel2 = trtsel.Y2,
-                                  bootstraps = 10, plot = TRUE,      
-                                  ci = "horizontal",  conf.bands = TRUE) 
-                                  
+
+
+data(tsdata)
+
+###########################
+## Create trtsel objects 
+###########################
+
+trtsel.Y1 <- trtsel(event ~ Y1*trt, 
+                   treatment.name = "trt", 
+                   data = tsdata, 
+                   study.design = "RCT",
+                   link = "logit", 
+                   default.trt = "trt all")
+
+trtsel.Y1
+
+trtsel.Y2 <- trtsel(event ~ Y2*trt, 
+                   treatment.name = "trt", 
+                   data = tsdata, 
+                   default.trt = "trt all")
+trtsel.Y2
+                          
+
+###############################
+## Compare marker performance
+###############################
+
+
+# Plot treatment effect curves with pointwise confidence intervals
+## use more bootstraps in practice
+compare(trtsel1 = trtsel.Y1, trtsel2 = trtsel.Y2,
+                                bootstraps = 10, plot = TRUE,      
+                                ci = "horizontal",  conf.bands = TRUE) 
+                                
 
 }
 \references{

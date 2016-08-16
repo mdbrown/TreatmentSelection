@@ -3,20 +3,50 @@
 #' Provides point estimates for summary measures used to evaluate a rule used to select treatment. 
 #' 
 #' 
-#' @param event  vector for adverse event. Can be binary (1 is bad, 0 is good) or continuous (large numbers are worse). If failure time variable 'time' is set, event is used as the adverse event status indicator. 
-#' @param trt binary trt status 1 for "treated" and 0 for "un-treated."
-#' @param trt.rule a binary treatment rule used to recommend treatment where 1 means recommend treatment and 0 means recommend no treatment.
-#' @param time the failure time for survival outcomes.
-#' @param trt.effect estimated treatment effects. 
-#' @param default.trt The default treatment assignment to compare with
+#'@param event  vector for adverse event. Can be binary (1 is bad, 0 is good) or continuous (large numbers are worse). If failure time variable 'time' is set, event is used as the adverse event status indicator. 
+#'@param trt binary trt status 1 for "treated" and 0 for "un-treated."
+#'@param trt.rule a binary treatment rule used to recommend treatment where 1 means recommend treatment and 0 means recommend no treatment.
+#'@param time the failure time for survival outcomes.
+#'@param trt.effect estimated treatment effects. 
+#'@param default.trt The default treatment assignment to compare with
 #' marker-based treatment. Can either be set at "trt all" (default) or "trt
 #' none". Use "trt all" if everyone is treated and the aim is to discover those
 #' who would benefit from no treatment, but use "trt none" if the common
 #' practice is to treat no-one and the goal is to discover those who would
 #' benefit from treatment.
-#' @param prediction.time a landmark prediction time used only when the 'time' variable is set. 
+#'@param prediction.time a landmark prediction time used only when the 'time' variable is set. 
+#'@examples 
+#' data(tsdata)
+#' #The user must specify a vector of clinical outcomes, 
+#' #a vector of treatment assigments, and a vector of 
+#' #marker-based treatment recommendations based on the pre-specified rule.
+#'
+#' #Here we let Y1_disc represent a user-specified treatment 
+#' #rule and evaluate its performance.
 #' 
-#' @export
+#' trtsel_measures(event = tsdata$event, trt = tsdata$trt, trt.rule = 1- tsdata$Y1_disc )
+#' 
+#' #We can also fit our own risk model using GLM, use this model
+#' #to develop a marker-based treatment recommendation, and evaluate its performance. 
+#' #This allows us to obtain model-based estimates of performance:
+#'
+#'mod <- glm(event~trt*Y1_disc,  data = tsdata, family = binomial())
+#'
+#'tsdata.0 <- tsdata; 
+#'tsdata.0$trt = 0 
+#'tsdata.1 <- tsdata;
+#'tsdata.1$trt = 1
+#'delta.hat <- predict(mod, 
+#'                     newdata= tsdata.0,
+#'                     type = "response") - 
+#'             predict(mod,
+#'                     newdata= tsdata.1, 
+#'                     type = "response")
+#'
+#'trtsel_measures(event = tsdata$event, trt = tsdata$trt, 
+#'                trt.rule = 1- tsdata$Y1_disc, trt.effect = delta.hat )
+#' 
+#'@export
 trtsel_measures <- function(event, trt, trt.rule, trt.effect, time, default.trt = c("trt all", "trt none"), 
                             prediction.time = NULL){
   
@@ -228,10 +258,9 @@ trtsel_measures <- function(event, trt, trt.rule, trt.effect, time, default.trt 
 
 
 
+#'print output from 'trtsel_measures'
 #' 
-#' print output from 'trtsel_measures'
-#' 
-#' S3 method for class ''trtsel''
+#' S3 method for class ''trtsel_measures''
 #' 
 #' 
 #' @param x object of class "trtsel_summary_measures", output from the estimate_measures function

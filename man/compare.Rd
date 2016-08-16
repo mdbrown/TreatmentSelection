@@ -6,6 +6,11 @@
 \usage{
 compare(x, ...)
 }
+\arguments{
+\item{x}{object}
+
+\item{\dots}{not used}
+}
 \description{
 method to compare trtsel objects
 }

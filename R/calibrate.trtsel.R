@@ -1,4 +1,7 @@
 #' method for calibrating trtsel objects 
+#' @seealso \code{\link{calibrate.trtsel}}
+#' @param x object
+#' @param \dots not used  
 #' @export
 calibrate <- function(x, ...){ UseMethod("calibrate")}
 
@@ -11,7 +14,7 @@ calibrate <- function(x, ...){ UseMethod("calibrate")}
 #' supplying a data.frame containing marker, treatment, and event status
 #' information.
 #' 
-#' 
+#' @aliases calibrate calibrate.trtsel
 #' @param x An object of class "trtsel", created by using the function
 #' "trtsel."
 #' @param groups Number of groups; observations are split into groups based on
@@ -30,6 +33,8 @@ calibrate <- function(x, ...){ UseMethod("calibrate")}
 #' treatment options, T= 1 and T = 0, respectively, for the plot legend. This
 #' option is only used when plot.type="calibration". The default value is
 #' c("Treatment", "No Treatment").
+#' @param line.color color for lines in calibration plots. 
+#' @param point.color  color for points in calibration plots. 
 #' @param xlab A label for the x-axis. Default values depend on plot.type. Only
 #' applies if plot.type is specified.
 #' @param ylab A label for the y-axis. Default values depend on plot.type.
@@ -51,12 +56,6 @@ calibrate <- function(x, ...){ UseMethod("calibrate")}
 #' \code{\link{plot.trtsel}} for plotting risk curves and more,
 #' \code{\link{evaluate.trtsel}} for evaluating marker performance, and
 #' \code{\link{compare.trtsel}} to compare two trtsel object.
-#' @references
-#' 
-#' Janes, Holly; Brown, Marshall D; Pepe, Margaret; Huang, Ying; "An Approach
-#' to Evaluating and Comparing Biomarkers for Patient Treatment Selection" The
-#' International Journal of Biostatistics. Volume 0, Issue 0, ISSN (Online)
-#' 1557-4679, ISSN (Print) 2194-573X, DOI: 10.1515/ijb-2012-0052, April 2014
 #' @examples
 #' 
 #' data(tsdata)
@@ -83,12 +82,13 @@ calibrate <- function(x, ...){ UseMethod("calibrate")}
 #' cali.Y1
 #' 
 #' # A "treatment effect" plot 
-#' calibrate.trtsel(trtsel.Y1, plot.type = "treatment effect")
+#' calibrate(trtsel.Y1, plot.type = "treatment effect")
 #' 
 #' 
 #' @importFrom binom binom.confint
 #' @method calibrate trtsel 
 #' @export 
+#' 
 calibrate.trtsel <-
 function( x, groups = 10, plot.type = "calibration", trt.names = c("Treatment", "No Treatment"), line.color = "black", point.color = "grey10", main = NULL, ylim = NULL, xlim = NULL, ylab = NULL, xlab=NULL){
 
@@ -97,7 +97,7 @@ function( x, groups = 10, plot.type = "calibration", trt.names = c("Treatment", 
   if(!is.null(x$model.fit$disc.marker.neg)) stop("Calibration not supported for a discrete marker")
 
   event.name = as.character(x$formula[[2]])
-  
+  lower <- upper <- 
   if( x$model.fit$link == "time-to-event"){
     event.name = x$formula[[2]]
     mysurv <- with(x$derived.data, eval(event.name))
@@ -421,8 +421,8 @@ if( is.element(plot.type, "risk.t0")) {
      obsdata$upper <- 1- sfit.t0$lower
      obsdata$lower <- 1- sfit.t0$upper
    }else{
-     obsdata$upper <-  binom.confint(obsdata$y*ng.t0, ng.t0, method = "wilson")$upper
-     obsdata$lower <- binom.confint(obsdata$y*ng.t0, ng.t0, method = "wilson")$lower
+     obsdata$upper <-  binom.confint(obsdata$y*ng.t0, ng.t0, methods = "wilson")$upper
+     obsdata$lower <- binom.confint(obsdata$y*ng.t0, ng.t0, methods = "wilson")$lower
    }
    
    p <- p +geom_errorbar(data = obsdata, color  = point.color,  aes(ymin = lower, ymax = upper, x = x), width = 2)+
@@ -457,8 +457,8 @@ if( x$model.fit$link == "time-to-event"){
   obsdata$upper <- 1- sfit.t1$lower
   obsdata$lower <- 1- sfit.t1$upper
 }else{
-  obsdata$upper <-  binom.confint(obsdata$y*ng.t1, ng.t1, method = "wilson")$upper
-  obsdata$lower <- binom.confint(obsdata$y*ng.t1, ng.t1, method = "wilson")$lower
+  obsdata$upper <-  binom.confint(obsdata$y*ng.t1, ng.t1, methods = "wilson")$upper
+  obsdata$lower <- binom.confint(obsdata$y*ng.t1, ng.t1, methods = "wilson")$lower
 }
 
 p <- p +geom_errorbar(data = obsdata,  color  = point.color, aes(ymin = lower, ymax = upper, x = x), width = 2)+

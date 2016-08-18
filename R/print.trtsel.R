@@ -97,7 +97,7 @@ print.eval.trtsel <-
     cat("\n\n")
     
     cat("  Proportion recommended no treatment:\n")
-    cat(paste("   ", round(x$estimates$p.rec.notrt,      3), " (",
+    cat(paste("   ", round(x$estimates$p.rec.no.trt,      3), " (",
               round(unname(x$conf.intervals[1,1]), 3), ",",
               round(unname(x$conf.intervals[2,1]), 3), ") ", sep = ""))
     cat("\n")
@@ -258,9 +258,9 @@ print.compare.trtsel <-
     if(is.element(tmp.pval, 0)) tmp.pval <- paste("<", 1/bootN)
     
     cat("            ")  
-    cat(paste(" ", sprintf("   %.3f      |", round(x$estimates.marker1$p.rec.notrt,  3)),  
-              sprintf("     %.3f      |",round(x$estimates.marker2$p.rec.notrt,  3)), 
-              sprintf("     %.3f    ", round(x$estimates.diff$p.rec.notrt,  3)), 
+    cat(paste(" ", sprintf("   %.3f      |", round(x$estimates.marker1$p.rec.no.trt,  3)),  
+              sprintf("     %.3f      |",round(x$estimates.marker2$p.rec.no.trt,  3)), 
+              sprintf("     %.3f    ", round(x$estimates.diff$p.rec.no.trt,  3)), 
               "     (", tmp.pval,")", sep=""))
     
     

@@ -100,7 +100,7 @@ trteffectPLOT_gg_disc <-
   function(x, ci, ci.bounds, get.F,  xlab, ylab, xlim, ylim, main, markerTWO=FALSE, lty = 1,  p=NULL, trt.names = NULL){ 
     
     trt.effect <- x$derived.data$trt.effect
-    marker <- x$derived.data$marker
+    marker <- x$derived.data[, x$model.fit$marker.names]
     if(x$model.fit$link == "time-to-event"){
       event = rep(0, nrow(x$derived.data))
       event.name = x$formula[[2]]

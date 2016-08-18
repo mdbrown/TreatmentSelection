@@ -73,10 +73,10 @@
 #' columns for coefficient estimates, standard errors, t-statistics, and
 #' two-sided p-values.  "cohort.attributes" -- the vector of cohort.attributes
 #' provided "study.design" -- character string of study.design provided }
-#' \item{derived.data }{ A data.frame with "event", "trt", "marker",
+#' \item{derived.data }{ A data.frame with event, trt, and marker information along with
 #' "fittedrisk.t0" (risk estimates given no treatment), "fittedrisk.t1" (risk
 #' estimates given treatment), "trt.effect" (treatment effect estimates), and
-#' "marker.neg" (indicator of trt.effect < thresh) columns.  }
+#' "trt.rec" (indicator of trt recommendation) columns.  }
 #' \item{functions}{ For internal package use only }
 #' @seealso \code{\link{plot.trtsel}} for plotting risk curves and more,
 #' \code{\link{evaluate.trtsel}} for evaluating marker performance,
@@ -185,11 +185,11 @@ function(formula, treatment.name, data,
   if(!is.element(treatment.name, all.vars(formula))) stop("variable with name treatment.name was not found in the model formula.")
   marker.names = all.vars(formula)[!is.element( all.vars(formula), c(event.name, treatment.name)) ]
   
-  if(any(is.element(marker.names, c("fittedrisk.t0", "fittedrisk.t1", "trt.effect", "marker.pos", "marker.neg", "marker")))) stop("one of your variable names is in the following set \n of protected names  {'fittedrisk.t0', 'fittedrisk.t1', 'trt.effect', \n  'marker.pos', 'marker.neg', 'marker'}\n  please change the names of your variables")
+  if(any(is.element(marker.names, c("fittedrisk.t0", "fittedrisk.t1", "trt.effect", "rec.trt", "rec.notrt")))) stop("one of your variable names is in the following set \n of protected names  {'fittedrisk.t0', 'fittedrisk.t1', 'trt.effect', \n  'rec.trt', 'rec.notrt',}\n  please change the names of your variables")
   if(length(marker.names)==1){ 
-    
-    marker = data[[marker.names]]
+    marker = data[,marker.names]
     if(!is.numeric(marker)) stop("For a model with a single marker, the marker must be numeric.")
+    
   }else{
     marker = NULL
   }
@@ -283,8 +283,8 @@ function(formula, treatment.name, data,
 
   if(!is.null(fittedrisk.t0)) {
     fitted_risk_t0 = data[[fittedrisk.t0]]
-    if(!is.null(marker)) warning("fitted risks provided: marker data will be ignored")
-    marker <- NULL
+    if(length(marker.names)>1) warning("fitted risks provided: marker data will be ignored")
+   
     link <- "risks_provided"
     if(is.null(fittedrisk.t1)) stop("must provide fitted risk for trt = 1 as well")
     if(any(fitted_risk_t0 > 1) | any(fitted_risk_t0 <0)) stop("fitted risks for trt = 0 are outside of bounds (0,1)")
@@ -353,14 +353,14 @@ function(formula, treatment.name, data,
   
    # if(Meantrteff.y1 < d & Meantrteff.y2 <d){ stop()}
     if(Meantrteff.y1 > Meantrteff.y2){ 
-      marker.neg <- as.numeric(marker==unique(marker)[2])
-      model.fit$disc.marker.neg = unique(marker)[2]
+      rec.no.trt <- as.numeric(marker==unique(marker)[2])
+      model.fit$disc.rec.no.trt = unique(marker)[2]
       }else{
-      marker.neg <- as.numeric(marker==unique(marker)[1])
-      model.fit$disc.marker.neg = unique(marker)[1]
+      rec.no.trt <- as.numeric(marker==unique(marker)[1])
+      model.fit$disc.rec.no.trt = unique(marker)[1]
     }
   }else{
-    marker.neg <- ifelse( trt.effect < d, 1, 0) # indicator of being marker negative
+    rec.no.trt <- ifelse( trt.effect < d, 1, 0) # indicator of being marker negative
   }
 
   ## if we dont use marker; we use fitted risks
@@ -369,13 +369,13 @@ function(formula, treatment.name, data,
               fittedrisk.t1 = fitted_risk_t1,
               trt.effect = trt.effect)
   
-  derived.data$marker = marker 
+
   if(default.trt =="trt all"){
-      derived.data$marker.neg <- marker.neg
+      derived.data$rec.no.trt <- rec.no.trt
       
     }else{
-      marker.pos <- 1-marker.neg # indicator of being marker negative
-      derived.data$marker.pos <- marker.pos 
+      rec.trt <- 1-rec.no.trt # indicator of being marker negative
+      derived.data$rec.trt <- rec.trt 
     }
     
   #need to add sampling weights to time-to-event outcome 

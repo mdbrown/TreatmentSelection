@@ -30,5 +30,12 @@ TreatmentSelection 1.1.1
  * calibrate.trtsel: fixed bug when calibrating models fit using stratified case-control data. 
 
 
+TreatmentSelection 2.0.0
+========================
 
+Note: This is a large update with many changes. Although, the estimation methods remain the same, many of the functions inputs have changed. This is to accomodate multivariate models and survival outcomes. 
+
+- Addition of 'trtsel_measures' 
+- Input formulas into trtsel objects instead of univariate marker information. This allows 
+- The package now allows for survival outcomes. 
 

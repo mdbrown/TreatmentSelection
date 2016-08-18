@@ -126,7 +126,7 @@ calibrate(trtsel.Y1,
           groups = 10, 
           plot = "treatment effect", 
           trt.names = c("chemo.", "no chemo."), 
-          point.color = "light", 
+          point.color = "lightcoral", 
           line.color = "black")
 
 ```
@@ -164,7 +164,6 @@ tmp <- plot(trtsel.Y2_disc,
                    plot.type = "risk", 
                    ci = "vertical", 
                    conf.bands = TRUE, 
-                   offset = 0.01, 
                    bootstraps = 50, 
                    trt.names = c("chemo.", "no chemo."))
 ```

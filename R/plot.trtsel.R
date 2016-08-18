@@ -168,7 +168,7 @@ function(x, bootstraps = 500,
 
   if(ci =="default"){
     #continuous marker
-    if(is.null(x$model.fit$disc.marker.neg)){
+    if(is.null(x$model.fit$disc.rec.no.trt)){
       if(substr(plot.type, 1, 3) =="ris") ci = "horizontal"
       if(substr(plot.type, 1, 3) =="tre") ci = "horizontal"
       if(substr(plot.type, 1, 3) =="cdf") ci = "vertical"
@@ -183,7 +183,8 @@ function(x, bootstraps = 500,
 
   }
   #no cdf plots for binary marker
-  if(!is.null(x$model.fit$disc.marker.neg)){
+  
+  if(!is.null(x$model.fit$disc.rec.no.trt)){
   if(is.element(substr(plot.type, 1, 3), c("cdf", "sel"))) stop("cdf or selection impact plots cannot be created for a binary marker. Please choose plot.type to be \"risk\" or \"treatment effect\" ")
   }
   #save the current plot parameters
@@ -205,12 +206,10 @@ function(x, bootstraps = 500,
   if(link == "risks_provided") {
     marker = NULL
     show.marker.axis = FALSE
-  }else{
-    marker <- x$derived.data[["marker"]]
   }
   
 
- if(is.null(x$model.fit$disc.marker.neg)){  #continuous marker 
+ if(is.null(x$model.fit$disc.rec.no.trt)){  #continuous marker 
     plot.functions <- list(  predcurvePLOT_gg, trteffectPLOT_gg, CDFdeltaPLOT_gg, SelectionImpactPLOT_gg)
     
   if(length(fixed.values)!=0) conf.bands = FALSE
@@ -284,7 +283,7 @@ function(x, bootstraps = 500,
   tmp.plotfun <- plot.functions[[match(plot.type, c("risk", "treatment effect", "cdf", "selection impact"))]]
    
 
-if(is.null(x$model.fit$disc.marker.neg)){  # continous marker 
+if(is.null(x$model.fit$disc.rec.no.trt)){  # continous marker 
   if(substring(plot.type, 1, 4) == "risk"){
 
   curves <- tmp.plotfun(x, ci, ci.bounds, get.F, fixed.values, conf.bands,  rho, trt.names, xlab, ylab, xlim, ylim, main, show.marker.axis, offset = offset)

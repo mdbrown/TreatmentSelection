@@ -93,8 +93,8 @@ calibrate.trtsel <-
 function( x, groups = 10, plot.type = "calibration", trt.names = c("Treatment", "No Treatment"), line.color = "black", point.color = "grey10", main = NULL, ylim = NULL, xlim = NULL, ylab = NULL, xlab=NULL){
 
   if(!is.trtsel(x)) stop("x must be an object of class 'trtsel' created by using the function 'trtsel' see ?trtsel for more help")
-  if(!is.null(x$model.fit$disc.marker.neg)) stop("Calibration not supported for a discrete marker")
-  if(!is.null(x$model.fit$disc.marker.neg)) stop("Calibration not supported for a discrete marker")
+  if(!is.null(x$model.fit$disc.rec.no.trt)) stop("Calibration not supported for a discrete marker")
+  if(!is.null(x$model.fit$disc.rec.no.trt)) stop("Calibration not supported for a discrete marker")
 
   event.name = as.character(x$formula[[2]])
   lower <- upper <- 

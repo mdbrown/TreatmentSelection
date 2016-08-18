@@ -7,8 +7,8 @@ predcurvePLOT_gg <-
     fittedrisk.t0 <- x$derived.data$fittedrisk.t0
     fittedrisk.t1 <- x$derived.data$fittedrisk.t1
     # browser()
-    if(any(names(x$derived.data)=="marker")){
-      marker <- x$derived.data$marker
+    if(length(x$model.fit$marker.names)==1){
+      marker <- x$derived.data[, x$model.fit$marker]
       if(is.null(xlab)) xlab <- "% population below marker value"
       if(is.null(ylab)) ylab <- "risk given marker"
     }else{
@@ -110,10 +110,9 @@ predcurvePLOT_gg <-
 predcurvePLOT_gg_disc <-
   function(x, ci, ci.bounds, get.F,  xlab, ylab, xlim, ylim, main, trt.names){ 
     
- 
     fittedrisk.t0 <- x$derived.data$fittedrisk.t0
     fittedrisk.t1 <- x$derived.data$fittedrisk.t1
-    marker <- x$derived.data$marker
+    marker <- x$derived.data[,x$model.fit$marker.names]
     trt <- x$derived.data[[x$treatment.name]]
     
     mydata <- data.frame(risk = fittedrisk.t0*(1-trt)+fittedrisk.t1*trt, trt = trt,  marker)

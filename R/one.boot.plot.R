@@ -59,7 +59,12 @@ function(x, ci, fixed.values, fix.ind, out.ind){
   
   ## if there is a single marker, use that to calculate F.Y, otherwise use treatment 
   ## effect as the marker 
-  marker.b <- x$derived.data[['marker']][ind]
+  if(length(x$model.fit$marker.names) ==1 ){ 
+    marker.b <- x$derived.data[ind, x$model.fit$marker.names]
+  }else{
+      marker.b <- NULL
+    }
+  
   if(is.null(marker.b)) marker.b <- obsrisk.t0.b - obsrisk.t1.b#
   
   F.Y <- x$functions$get.F( marker.b,  event.b, trt.b,  rho.b)*100#
@@ -124,7 +129,7 @@ one.boot.plot_disc <-
    # browser()
     #event.b  <- x$derived.data[[as.character(x$formula[[2]])]][ind]
    # trt.b  <- x$derived.data[[x$treatment.name]][ind]
-    marker.b  <- x$derived.data$marker[ind] 
+    marker.b  <- x$derived.data[ind, x$model.fit$marker.names] 
     
     if(x$model.fit$link == "risks_provided") 
     {
@@ -140,7 +145,7 @@ one.boot.plot_disc <-
                               rho = rho.b, 
                               study.design = x$model.fit$study.design,
                               link  =  x$model.fit$link, 
-                              disc.marker.neg = x$model.fit$disc.marker.neg, 
+                              disc.rec.no.trt = x$model.fit$disc.rec.no.trt, 
                               provided_risk = provided_risk, 
                               prediction.time = x$prediction.time)
     ####

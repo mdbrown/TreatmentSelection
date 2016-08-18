@@ -5,16 +5,16 @@ get.summary.measures.cohort <-
     trt = data[[treatment.name]]
     trt.effect <- data$trt.effect
     
-    if(is.null(data[["marker.pos"]])){
-      neg <- data$marker.neg
+    if(is.null(data[["rec.trt"]])){
+      neg <- data$rec.no.trt
       pos <- 1 - neg
     }else{
-      pos <- data$marker.pos
+      pos <- data$rec.trt
       neg <- 1 - pos
     }
     #proportion marker negative
-    p.marker.neg <- mean(neg)
-    p.marker.pos <- mean(pos)
+    p.rec.no.trt <- mean(neg)
+    p.rec.trt <- mean(pos)
     #Average Benefit (B) of no treatment among marker negatives...
     
     #empirical estimate
@@ -37,13 +37,13 @@ get.summary.measures.cohort <-
     
     #Theta
     
-    if(is.null(data[["marker.pos"]])){
-      Theta.emp <- B.neg.emp*p.marker.neg
-      Theta.mod <- B.neg.mod*p.marker.neg
+    if(is.null(data[["rec.trt"]])){
+      Theta.emp <- B.neg.emp*p.rec.no.trt
+      Theta.mod <- B.neg.mod*p.rec.no.trt
       
     }else{
-      Theta.emp <- B.pos.emp*p.marker.pos
-      Theta.mod <- B.pos.mod*p.marker.pos
+      Theta.emp <- B.pos.emp*p.rec.trt
+      Theta.mod <- B.pos.mod*p.rec.trt
     }
     
     p0.hat <- mean(event[trt==0])
@@ -64,7 +64,7 @@ get.summary.measures.cohort <-
     ER.trt1.emp = mean(event[trt==1])
     ER.trt1.mod = mean(data$fittedrisk.t1)
     
-    if(is.null(data[["marker.pos"]])){
+    if(is.null(data[["rec.trt"]])){
       #default is trt all
       ER.mkrbased.emp = ER.trt1.emp - Theta.emp 
       ER.mkrbased.mod = ER.trt1.mod - Theta.mod
@@ -74,8 +74,8 @@ get.summary.measures.cohort <-
     }
     
     
-    list(     p.rec.notrt = p.marker.neg,
-              p.rec.trt = p.marker.pos,
+    list(     p.rec.no.trt = p.rec.no.trt,
+              p.rec.trt = p.rec.trt,
               B.neg.emp = B.neg.emp,
               B.neg.mod = B.neg.mod, 
               B.pos.emp = B.pos.emp, 
@@ -114,16 +114,16 @@ get.summary.measures.cohort.survival <-
     status = tmp[,2] 
     
     
-    if(is.null(data[["marker.pos"]])){
-      neg <- data$marker.neg
+    if(is.null(data[["rec.trt"]])){
+      neg <- data$rec.no.trt
       pos <- 1 - neg
     }else{
-      pos <- data$marker.pos
+      pos <- data$rec.trt
       neg <- 1 - pos
     }
     #proportion marker negative
-    p.marker.neg <- mean(neg)
-    p.marker.pos <- mean(pos)
+    p.rec.no.trt <- mean(neg)
+    p.rec.trt <- mean(pos)
     #Average Benefit (B) of no treatment among marker negatives...
     
     #empirical estimate
@@ -169,13 +169,13 @@ get.summary.measures.cohort.survival <-
     
     #Theta
     
-    if(is.null(data[["marker.pos"]])){
-      Theta.emp <- B.neg.emp*p.marker.neg
-      Theta.mod <- B.neg.mod*p.marker.neg
+    if(is.null(data[["rec.trt"]])){
+      Theta.emp <- B.neg.emp*p.rec.no.trt
+      Theta.mod <- B.neg.mod*p.rec.no.trt
       
     }else{
-      Theta.emp <- B.pos.emp*p.marker.pos
-      Theta.mod <- B.pos.mod*p.marker.pos
+      Theta.emp <- B.pos.emp*p.rec.trt
+      Theta.mod <- B.pos.mod*p.rec.trt
     }
     
     
@@ -199,12 +199,12 @@ get.summary.measures.cohort.survival <-
     ER.trt1.mod = mean(data$fittedrisk.t1)
     
 
-      ER.mkrbased.emp = ER.pos.emp*p.marker.pos + ER.neg.emp*p.marker.neg 
-      ER.mkrbased.mod = ER.pos.mod*p.marker.pos + ER.neg.mod*p.marker.neg
+      ER.mkrbased.emp = ER.pos.emp*p.rec.trt + ER.neg.emp*p.rec.no.trt 
+      ER.mkrbased.mod = ER.pos.mod*p.rec.trt + ER.neg.mod*p.rec.no.trt
 
     
-    list(     p.rec.notrt = p.marker.neg,
-              p.rec.trt = p.marker.pos,
+    list(     p.rec.no.trt = p.rec.no.trt,
+              p.rec.trt = p.rec.trt,
               B.neg.emp = B.neg.emp,
               B.neg.mod = B.neg.mod, 
               B.pos.emp = B.pos.emp, 
@@ -237,11 +237,11 @@ get.summary.measures.stratified.case.control <-
     trt = data[[treatment.name]]
     trt.effect <- data$trt.effect
     
-    if(is.null(data[["marker.pos"]])){
-      neg <- data$marker.neg
+    if(is.null(data[["rec.trt"]])){
+      neg <- data$rec.no.trt
       pos <- 1 - neg
     }else{
-      pos <- data$marker.pos
+      pos <- data$rec.trt
       neg <- 1 - pos
     }
     
@@ -255,12 +255,12 @@ get.summary.measures.stratified.case.control <-
     Pr.D1.givT0 <- rho[3]/(rho[2]+rho[3])
     Pr.D1.givT1 <- rho[5]/(rho[4]+rho[5])
     #proportion marker negative
-    p.marker.neg <- mean(neg[event==1 & trt==1])*Pr.D1.trt1 + 
+    p.rec.no.trt <- mean(neg[event==1 & trt==1])*Pr.D1.trt1 + 
       mean(neg[event==0 & trt==1])*Pr.D0.trt1 +
       mean(neg[event==1 & trt==0])*Pr.D1.trt0 +
       mean(neg[event==0 & trt==0])*Pr.D0.trt0
     
-    p.marker.pos <- mean(pos[event==1 & trt==1])*Pr.D1.trt1 + 
+    p.rec.trt <- mean(pos[event==1 & trt==1])*Pr.D1.trt1 + 
       mean(pos[event==0 & trt==1])*Pr.D0.trt1 +
       mean(pos[event==1 & trt==0])*Pr.D1.trt0 +
       mean(pos[event==0 & trt==0])*Pr.D0.trt0
@@ -327,13 +327,13 @@ get.summary.measures.stratified.case.control <-
     #Theta
     
     
-    if(is.null(data[["marker.pos"]])){
-      Theta.emp <- B.neg.emp*p.marker.neg
-      Theta.mod <- B.neg.mod*p.marker.neg
+    if(is.null(data[["rec.trt"]])){
+      Theta.emp <- B.neg.emp*p.rec.no.trt
+      Theta.mod <- B.neg.mod*p.rec.no.trt
       
     }else{
-      Theta.emp <- B.pos.emp*p.marker.pos
-      Theta.mod <- B.pos.mod*p.marker.pos
+      Theta.emp <- B.pos.emp*p.rec.trt
+      Theta.mod <- B.pos.mod*p.rec.trt
     }
     
     
@@ -389,7 +389,7 @@ get.summary.measures.stratified.case.control <-
       mean(data$fittedrisk.t1[event==1 & trt==0])*Pr.D1.trt0 +
       mean(data$fittedrisk.t1[event==0 & trt==0])*Pr.D0.trt0
     
-    if(is.null(data[["marker.pos"]])){
+    if(is.null(data[["rec.trt"]])){
       #default is trt all
       ER.mkrbased.emp = ER.trt1.emp - Theta.emp 
       ER.mkrbased.mod = ER.trt1.mod - Theta.mod
@@ -405,8 +405,8 @@ get.summary.measures.stratified.case.control <-
       mean(trt.effect[event==0 & trt==0]^2)*Pr.D0.trt0 -(ER.trt0.emp - ER.trt1.emp)^2
     
     
-    list(     p.rec.notrt = p.marker.neg,
-              p.rec.trt = p.marker.pos,
+    list(     p.rec.no.trt = p.rec.no.trt,
+              p.rec.trt = p.rec.trt,
               B.neg.emp = B.neg.emp,
               B.neg.mod = B.neg.mod, 
               B.pos.emp = B.pos.emp, 
@@ -435,16 +435,16 @@ get.summary.measures.case.control <-
     trt = data[[treatment.name]]
     trt.effect <- data$trt.effect
     
-    if(is.null(data[["marker.pos"]])){
-      neg <- data$marker.neg
+    if(is.null(data[["rec.trt"]])){
+      neg <- data$rec.no.trt
       pos <- 1 - neg
     }else{
-      pos <- data$marker.pos
+      pos <- data$rec.trt
       neg <- 1 - pos
     }
     #proportion marker negative
-    p.marker.neg <- mean(neg[event==1])*rho[3] + mean(neg[event==0])*(1-rho[3])
-    p.marker.pos<- mean(pos[event==1])*rho[3] + mean(pos[event==0])*(1-rho[3])
+    p.rec.no.trt <- mean(neg[event==1])*rho[3] + mean(neg[event==0])*(1-rho[3])
+    p.rec.trt<- mean(pos[event==1])*rho[3] + mean(pos[event==0])*(1-rho[3])
     
     #Average Benefit (B) of no treatment among marker negatives...
     
@@ -487,13 +487,13 @@ get.summary.measures.case.control <-
     
     #Theta
     
-    if(is.null(data[["marker.pos"]])){
-      Theta.emp <- B.neg.emp*p.marker.neg
-      Theta.mod <- B.neg.mod*p.marker.neg
+    if(is.null(data[["rec.trt"]])){
+      Theta.emp <- B.neg.emp*p.rec.no.trt
+      Theta.mod <- B.neg.mod*p.rec.no.trt
       
     }else{
-      Theta.emp <- B.pos.emp*p.marker.pos
-      Theta.mod <- B.pos.mod*p.marker.pos
+      Theta.emp <- B.pos.emp*p.rec.trt
+      Theta.mod <- B.pos.mod*p.rec.trt
     }
     
     # Variance of Trt Effects
@@ -532,7 +532,7 @@ get.summary.measures.case.control <-
     ER.trt1.emp = ifelse( sum(trt==1)>0, expit( logit(mean(event[trt==1])) + logit(rho[3]) - logit(mean(event)) ), 0)
     ER.trt1.mod = mean(data$fittedrisk.t1[event==1])*rho[3] + mean(data$fittedrisk.t1[event==0])*(1-rho[3])
     
-    if(is.null(data[["marker.pos"]])){
+    if(is.null(data[["rec.trt"]])){
       #default is trt all
       ER.mkrbased.emp = ER.trt1.emp - Theta.emp 
       ER.mkrbased.mod = ER.trt1.mod - Theta.mod
@@ -546,8 +546,8 @@ get.summary.measures.case.control <-
     Var.Delta = mean((trt.effect[event==1])^2)*rho[3] + mean((trt.effect[event==0])^2)*(1-rho[3]) - (ER.trt0.emp - ER.trt1.emp)^2
     
     
-    list(     p.rec.notrt = p.marker.neg,
-              p.rec.trt = p.marker.pos,
+    list(     p.rec.no.trt = p.rec.no.trt,
+              p.rec.trt = p.rec.trt,
               B.neg.emp = B.neg.emp,
               B.neg.mod = B.neg.mod, 
               B.pos.emp = B.pos.emp, 

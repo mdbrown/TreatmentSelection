@@ -2,7 +2,7 @@ trtsel.boot <-
 function(formula, treatment.name, data, 
          d=0, 
          rho = NULL, study.design, link, 
-         disc.marker.neg = NULL, provided_risk = NULL,
+         disc.rec.no.trt = NULL, provided_risk = NULL,
          prediction.time){
   
   
@@ -38,12 +38,7 @@ function(formula, treatment.name, data,
 
   trt.effect <- fittedrisk.t0 - fittedrisk.t1
   
-  if(is.null(disc.marker.neg)){
-    marker.neg <- ifelse( trt.effect < d, 1, 0) # indicator of being marker negative
-  }else{
-    marker.neg <- as.numeric(data$marker==disc.marker.neg)
-  }
-
+  
   event.name = as.character(formula[[2]])
   marker.names = all.vars(formula)[!is.element( all.vars(formula), c(event.name, treatment.name)) ]
   if(length(marker.names)==1){ 
@@ -52,6 +47,14 @@ function(formula, treatment.name, data,
     marker = NULL
   }
   
+  
+  if(is.null(disc.rec.no.trt)){
+    rec.no.trt <- ifelse( trt.effect < d, 1, 0) # indicator of being marker negative
+  }else{
+    rec.no.trt <- as.numeric(marker==disc.rec.no.trt)
+  }
+
+
 
   derived.data <- data.frame( data[,c(all.vars(formula))] ,
                               fittedrisk.t0 = fittedrisk.t0, 
@@ -65,13 +68,13 @@ function(formula, treatment.name, data,
     derived.data$censoring.weights  <- wi
   }
   
-  derived.data$marker <- marker
-  if(is.null(data$marker.neg)){
-    marker.pos <- 1-marker.neg # indicator of being marker negative
-    derived.data$marker.pos <- marker.pos 
+  
+  if(is.null(data$rec.no.trt)){
+    rec.trt <- 1-rec.no.trt # indicator of being marker negative
+    derived.data$rec.trt <- rec.trt 
   
   }else{
-    derived.data$marker.neg <- marker.neg
+    derived.data$rec.no.trt <- rec.no.trt
     
  }
   

@@ -83,7 +83,7 @@ CDFdeltaPLOT_gg_disc <-
     
     
     trt.effect <- x$derived.data$trt.effect
-    marker <- x$derived.data$marker
+    marker <- x$derived.data[, x$model.fit$marker.names]
     
     if(x$model.fit$link == "time-to-event"){
       event = 0

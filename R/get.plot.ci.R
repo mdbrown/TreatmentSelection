@@ -129,7 +129,7 @@ get.plot.ci_disc <-
     # now bootstrap
     boot.data <- replicate(bootstraps, one.boot.plot_disc(x))
     
-    mval <- sort(unique(x$derived.data$marker))
+    mval <- sort(unique(x$derived.data[, x$model.fit$marker.names]))
     row.names(boot.data) = c(paste("risk.trt0.mkr", mval[1], sep = ""), 
                              paste("risk.trt1.mkr", mval[1], sep = ""), 
                              paste("risk.trt0.mkr", mval[2], sep = ""), 

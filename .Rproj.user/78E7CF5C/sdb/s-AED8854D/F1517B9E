@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "---\ntitle: \"Proposed Updates for new version of package TreatmentSelection\"\nauthor: \"Marshall Brown\"\ndate: \"April 12, 2016\"\noutput: html_document\n---\n\nWe wish to make the following changes to the R package \n\n1.  Users need to install package 'binom' if they don't have it. Fix this. \n\n# check all man files\n\nmain file ...\ntrtsel_measures ...\ntrtsel ...\nplot trtsel ...\nevaluate trtsel ...\ncalibrate trtsel ...\ncompare trtsel ...\n\n#change \n\n# bias correction for compare function ...\n# checks + add to cran\n\n\n\n",
+    "created" : 1473714549659.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2231635233",
+    "id" : "F1517B9E",
+    "lastKnownWriteTime" : 1473728874,
+    "last_content_update" : 1473728874881,
+    "path" : "~/TreatmentSelection/inst/todo.Rmd",
+    "project_path" : "inst/todo.Rmd",
+    "properties" : {
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

@@ -52,7 +52,7 @@ SIM.data.singleMarker <-
 
 surv_tsdata <- SIM.data.singleMarker(1000)
 
-
+data(surv_tsdata)
 ts_surv <- trtsel(Surv(time = xi, event = di)~Y*trt,
                   treatment.name = "trt", 
                   prediction.time = 1, 

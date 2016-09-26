@@ -52,14 +52,15 @@ SIM.data.singleMarker <-
 
 surv_tsdata <- SIM.data.singleMarker(1000)
 
+
 ts_surv <- trtsel(Surv(time = xi, event = di)~Y*trt,
                   treatment.name = "trt", 
                   prediction.time = 1, 
                   data = surv_tsdata)
 
-plot(ts_surv, bootstraps = 50)
-calibrate(ts_surv, plot.type = "risk.t1")
+plot(ts_surv, bootstraps = 10)
+calibrate(ts_surv)
 
-TreatmentSelection::evaluate(ts_surv, bootstraps = 50)
+evaluate(ts_surv, bootstraps = 10)
 
 TreatmentSelection::evaluate(ts_surv, bootstraps = 50,bias.correct = FALSE)

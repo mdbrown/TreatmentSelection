@@ -40,11 +40,11 @@ evaluate <- function(x, ...) UseMethod("evaluate")
 #'###########################
 #'
 #'trtsel.Y1 <- trtsel(event ~ Y1*trt, 
-                    #'                    treatment.name = "trt", 
-                    #'                    data = tsdata, 
-                    #'                    study.design = "RCT",
-                    #'                    link = "logit", 
-                    #'                    default.trt = "trt all")
+#'                    treatment.name = "trt", 
+#'                    data = tsdata, 
+#'                    study.design = "RCT",
+#'                    link = "logit", 
+#'                    default.trt = "trt all")
 #'trtsel.Y1
 #'
 #'#################################
@@ -66,6 +66,9 @@ function(x, bias.correct = TRUE, bootstraps = 1000, alpha = .05){
   if(bootstraps ==0 ) print("bootstrap confidence intervals will not be calculated")
   if(bootstraps == 1) warning("Number of bootstraps must be greater than 1, bootstrap confidence intervals will not be computed") 
   stopifnot(is.logical(bias.correct))
+  if(x$model.fit$link == "risks_provided"){
+    bias.correct = FALSE
+  }
   if(missing(bias.correct)){
     if(x$model.fit$link == "risks_provided"){
       bias.correct = FALSE
@@ -138,8 +141,11 @@ function(x, bias.correct = TRUE, bootstraps = 1000, alpha = .05){
   
   ## 2. Estimate summary measures
   if(x$model.fit$link == "time-to-event") event.name = x$formula[[2]]
+  
+  
   summary.measures <- data.frame(get.summary.measures(data, event.name, treatment.name,  rho))
   summary.measures <- summary.measures - bias
+  
   #marker threshold st delta(mthresh) = 0
   if(any(data$rec.no.trt==0) & any(data$rec.no.trt==1) &is.null(x$model.fit$disc.rec.no.trt)& link != "risks_provided" ){
 
@@ -169,6 +175,7 @@ function(x, bias.correct = TRUE, bootstraps = 1000, alpha = .05){
   result <- list(#test.Null          = test.Null.val, 
                  estimates = summary.measures, 
                  conf.intervals = conf.intervals,
+                 bias = bias, 
                  bias.correct = bias.correct)
   if(!is.null(x$model.fit$disc.rec.no.trt)) result$discrete.marker = TRUE
   

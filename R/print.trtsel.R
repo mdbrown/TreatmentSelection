@@ -84,7 +84,7 @@ print.eval.trtsel <-
       x$conf.intervals <- matrix( nrow = 2, ncol = 16)
     }
     
-    cat("  Decrease in rate of outcomes under marker-based treatment rule (Theta)\n")
+    cat("  Decrease in rate of outcomes under model-based treatment rule (Theta)\n")
     cat("    Empirical:   ")
     cat(paste(" ", round(x$estimates$Theta.emp,  3), " (",
               round(unname(x$conf.intervals[1,7]), 3), ",",
@@ -205,14 +205,14 @@ print.compare.trtsel <-
     
     
     
-    cat("Decrease in rate of outcomes under marker-based treatment rules (Theta)\n")
+    cat("Decrease in rate of outcomes under model-based treatment rules (Theta)\n")
     bootN <- x$bootstraps  
     
     if(bootN==0){ 
       x$p.values = rep(NA, 10)
       cat("   No confidence intervals calculated...returning NA for lower and upper bounds"); cat("\n\n")
-      x$ci.marker1 <- matrix( nrow = 2, ncol = 10)
-      x$ci.marker2 <- matrix( nrow = 2, ncol = 10)
+      x$ci.model1 <- matrix( nrow = 2, ncol = 10)
+      x$ci.model2 <- matrix( nrow = 2, ncol = 10)
       x$ci.diff <- matrix( nrow = 2, ncol = 1)
     }
     
@@ -222,32 +222,32 @@ print.compare.trtsel <-
     
     
     cat(" Empirical: ")
-    cat(paste(" ", sprintf("   %.3f      |", round(x$estimates.marker1$Theta.emp,  3)),  
-              sprintf("     %.3f     |",round(x$estimates.marker2$Theta.emp,  3)), 
+    cat(paste(" ", sprintf("   %.3f      |", round(x$estimates.model1$Theta.emp,  3)),  
+              sprintf("     %.3f     |",round(x$estimates.model2$Theta.emp,  3)), 
               sprintf("     %.3f    ", round(x$estimates.diff$Theta.emp,  3)), 
               "     (", tmp.pval,")", sep=""))
     
     
     
     cat("\n          ")
-    cat(paste(" ",sprintf(" (%.3f,%.3f) |", round(unname(x$ci.marker1[1,7]), 3), round(unname(x$ci.marker1[2,6]), 3)), 
-              sprintf(" (%.3f,%.3f) |", round(unname(x$ci.marker2[1,7]), 3), round(unname(x$ci.marker2[2,6]), 3)), 
+    cat(paste(" ",sprintf(" (%.3f,%.3f) |", round(unname(x$ci.model1[1,7]), 3), round(unname(x$ci.model1[2,6]), 3)), 
+              sprintf(" (%.3f,%.3f) |", round(unname(x$ci.model2[1,7]), 3), round(unname(x$ci.model2[2,6]), 3)), 
               sprintf(" (%.3f,%.3f) ", round(unname(x$ci.diff[1,7]), 3),round(unname(x$ci.diff[2,6]	), 3)), sep = ""))
     tmp.pval <- x$p.values[8]
     if(is.element(tmp.pval, 0)) tmp.pval <- paste("<", 1/bootN)
     
     cat("\n")
     cat(" Model Based:")  
-    cat(paste(" ", sprintf("  %.3f      |", round(x$estimates.marker1$Theta.mod,  3)),  
-              sprintf("     %.3f      |",round(x$estimates.marker2$Theta.mod,  3)), 
+    cat(paste(" ", sprintf("  %.3f      |", round(x$estimates.model1$Theta.mod,  3)),  
+              sprintf("     %.3f      |",round(x$estimates.model2$Theta.mod,  3)), 
               sprintf("     %.3f    ", round(x$estimates.diff$Theta.mod,  3)), 
               "     (", tmp.pval,")", sep=""))
     
     
     
     cat("\n          ")
-    cat(paste(" ",sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.marker1[1,8]), 3), round(unname(x$ci.marker1[2,7]), 3)), 
-              sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.marker2[1,8]), 3), round(unname(x$ci.marker2[2,7]), 3)), 
+    cat(paste(" ",sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.model1[1,8]), 3), round(unname(x$ci.model1[2,7]), 3)), 
+              sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.model2[1,8]), 3), round(unname(x$ci.model2[2,7]), 3)), 
               sprintf(" (%.3f,%.3f) ", round(unname(x$ci.diff[1,8]), 3),round(unname(x$ci.diff[2,7]), 3)), sep = ""))
     
     cat("\n")
@@ -258,16 +258,16 @@ print.compare.trtsel <-
     if(is.element(tmp.pval, 0)) tmp.pval <- paste("<", 1/bootN)
     
     cat("            ")  
-    cat(paste(" ", sprintf("   %.3f      |", round(x$estimates.marker1$p.rec.no.trt,  3)),  
-              sprintf("     %.3f      |",round(x$estimates.marker2$p.rec.no.trt,  3)), 
+    cat(paste(" ", sprintf("   %.3f      |", round(x$estimates.model1$p.rec.no.trt,  3)),  
+              sprintf("     %.3f      |",round(x$estimates.model2$p.rec.no.trt,  3)), 
               sprintf("     %.3f    ", round(x$estimates.diff$p.rec.no.trt,  3)), 
               "     (", tmp.pval,")", sep=""))
     
     
     
     cat("\n          ")
-    cat(paste(" ",sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.marker1[1,1]), 3), round(unname(x$ci.marker1[2,1]), 3)), 
-              sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.marker2[1,1]), 3), round(unname(x$ci.marker2[2,1]), 3)), 
+    cat(paste(" ",sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.model1[1,1]), 3), round(unname(x$ci.model1[2,1]), 3)), 
+              sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.model2[1,1]), 3), round(unname(x$ci.model2[2,1]), 3)), 
               sprintf(" (%.3f,%.3f) ", round(unname(x$ci.diff[1,1]), 3),round(unname(x$ci.diff[2,1]), 3)), sep = ""))
     cat("\n")
     
@@ -277,16 +277,16 @@ print.compare.trtsel <-
     if(is.element(tmp.pval, 0)) tmp.pval <- paste("<", 1/bootN)
     
     cat("            ")  
-    cat(paste(" ", sprintf("   %.3f      |", round(x$estimates.marker1$p.rec.trt,  3)),  
-              sprintf("     %.3f      |",round(x$estimates.marker2$p.rec.trt,  3)), 
+    cat(paste(" ", sprintf("   %.3f      |", round(x$estimates.model1$p.rec.trt,  3)),  
+              sprintf("     %.3f      |",round(x$estimates.model2$p.rec.trt,  3)), 
               sprintf("     %.3f    ", round(x$estimates.diff$p.rec.trt,  3)), 
               "     (", tmp.pval,")", sep=""))
     
     
     
     cat("\n          ")
-    cat(paste(" ",sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.marker1[1,2]), 3), round(unname(x$ci.marker1[2,2]), 3)), 
-              sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.marker2[1,2]), 3), round(unname(x$ci.marker2[2,2]), 3)), 
+    cat(paste(" ",sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.model1[1,2]), 3), round(unname(x$ci.model1[2,2]), 3)), 
+              sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.model2[1,2]), 3), round(unname(x$ci.model2[2,2]), 3)), 
               sprintf(" (%.3f,%.3f) ", round(unname(x$ci.diff[1,2]), 3),round(unname(x$ci.diff[2,2]), 3)), sep = ""))
     
     cat("\n")
@@ -297,32 +297,32 @@ print.compare.trtsel <-
     
     cat("Average benefit of no treatment among those recommended no treatment (B.neg)\n")
     cat(" Empirical: ")
-    cat(paste(" ", sprintf("   %.3f      |", round(x$estimates.marker1$B.neg.emp,  3)),  
-              sprintf("     %.3f     |",round(x$estimates.marker2$B.neg.emp,  3)), 
+    cat(paste(" ", sprintf("   %.3f      |", round(x$estimates.model1$B.neg.emp,  3)),  
+              sprintf("     %.3f     |",round(x$estimates.model2$B.neg.emp,  3)), 
               sprintf("     %.3f    ", round(x$estimates.diff$B.neg.emp,  3)), 
               "     (", tmp.pval,")", sep=""))
     
     
     
     cat("\n          ")
-    cat(paste(" ",sprintf(" (%.3f,%.3f) |", round(unname(x$ci.marker1[1,3]), 3), round(unname(x$ci.marker1[2,3]), 3)), 
-              sprintf(" (%.3f,%.3f) |", round(unname(x$ci.marker2[1,3]), 3), round(unname(x$ci.marker2[2,3]), 3)), 
+    cat(paste(" ",sprintf(" (%.3f,%.3f) |", round(unname(x$ci.model1[1,3]), 3), round(unname(x$ci.model1[2,3]), 3)), 
+              sprintf(" (%.3f,%.3f) |", round(unname(x$ci.model2[1,3]), 3), round(unname(x$ci.model2[2,3]), 3)), 
               sprintf(" (%.3f,%.3f) ", round(unname(x$ci.diff[1,3]), 3),round(unname(x$ci.diff[2,3]), 3)), sep = ""))
     tmp.pval <- x$p.values[4]
     if(is.element(tmp.pval, 0)) tmp.pval <- paste("<", 1/bootN)
     
     cat("\n")
     cat(" Model Based:")  
-    cat(paste(" ", sprintf("  %.3f      |", round(x$estimates.marker1$B.neg.mod,  3)),  
-              sprintf("     %.3f      |",round(x$estimates.marker2$B.neg.mod,  3)), 
+    cat(paste(" ", sprintf("  %.3f      |", round(x$estimates.model1$B.neg.mod,  3)),  
+              sprintf("     %.3f      |",round(x$estimates.model2$B.neg.mod,  3)), 
               sprintf("     %.3f    ", round(x$estimates.diff$B.neg.mod,  3)), 
               "     (", tmp.pval,")", sep=""))
     
     
     
     cat("\n          ")
-    cat(paste(" ",sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.marker1[1,4]), 3), round(unname(x$ci.marker1[2,4]), 3)), 
-              sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.marker2[1,4]), 3), round(unname(x$ci.marker2[2,4]), 3)), 
+    cat(paste(" ",sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.model1[1,4]), 3), round(unname(x$ci.model1[2,4]), 3)), 
+              sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.model2[1,4]), 3), round(unname(x$ci.model2[2,4]), 3)), 
               sprintf(" (%.3f,%.3f) ", round(unname(x$ci.diff[1,4]), 3),round(unname(x$ci.diff[2,4]), 3)), sep = ""))
     
     cat("\n")
@@ -334,32 +334,32 @@ print.compare.trtsel <-
     
     cat("Average benefit of treatment among those recommended treatment (B.pos)\n")
     cat(" Empirical: ")
-    cat(paste(" ", sprintf("   %.3f      |", round(x$estimates.marker1$B.pos.emp,  3)),  
-              sprintf("     %.3f     |",round(x$estimates.marker2$B.pos.emp,  3)), 
+    cat(paste(" ", sprintf("   %.3f      |", round(x$estimates.model1$B.pos.emp,  3)),  
+              sprintf("     %.3f     |",round(x$estimates.model2$B.pos.emp,  3)), 
               sprintf("     %.3f    ", round(x$estimates.diff$B.pos.emp,  3)), 
               "     (", tmp.pval,")", sep=""))
     
     
     
     cat("\n          ")
-    cat(paste(" ",sprintf(" (%.3f,%.3f) |", round(unname(x$ci.marker1[1,5]), 3), round(unname(x$ci.marker1[2,5]), 3)), 
-              sprintf(" (%.3f,%.3f) |", round(unname(x$ci.marker2[1,5]), 3), round(unname(x$ci.marker2[2,5]), 3)), 
+    cat(paste(" ",sprintf(" (%.3f,%.3f) |", round(unname(x$ci.model1[1,5]), 3), round(unname(x$ci.model1[2,5]), 3)), 
+              sprintf(" (%.3f,%.3f) |", round(unname(x$ci.model2[1,5]), 3), round(unname(x$ci.model2[2,5]), 3)), 
               sprintf(" (%.3f,%.3f) ", round(unname(x$ci.diff[1,5]), 3),round(unname(x$ci.diff[2,5]), 3)), sep = ""))
     tmp.pval <- x$p.values[6]
     if(is.element(tmp.pval, 0)) tmp.pval <- paste("<", 1/bootN)
     
     cat("\n")
     cat(" Model Based:")  
-    cat(paste(" ", sprintf("  %.3f      |", round(x$estimates.marker1$B.pos.mod,  3)),  
-              sprintf("     %.3f      |",round(x$estimates.marker2$B.pos.mod,  3)), 
+    cat(paste(" ", sprintf("  %.3f      |", round(x$estimates.model1$B.pos.mod,  3)),  
+              sprintf("     %.3f      |",round(x$estimates.model2$B.pos.mod,  3)), 
               sprintf("     %.3f    ", round(x$estimates.diff$B.pos.mod,  3)), 
               "     (",tmp.pval,")", sep=""))
     
     
     
     cat("\n          ")
-    cat(paste(" ",sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.marker1[1,6]), 3), round(unname(x$ci.marker1[2,6]), 3)), 
-              sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.marker2[1,6]), 3), round(unname(x$ci.marker2[2,6]), 3)), 
+    cat(paste(" ",sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.model1[1,6]), 3), round(unname(x$ci.model1[2,6]), 3)), 
+              sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.model2[1,6]), 3), round(unname(x$ci.model2[2,6]), 3)), 
               sprintf(" (%.3f,%.3f) ", round(unname(x$ci.diff[1,6]), 3),round(unname(x$ci.diff[2,6]), 3)), sep = ""))
     
     cat("\n\n\n")
@@ -368,13 +368,13 @@ print.compare.trtsel <-
     
     cat("Variance in estimated treatment effect : \n  ")
     cat("          ")  
-    cat(paste(" ", sprintf("   %.3f      |", round(x$estimates.marker1$Var.Delta,  3)),  
-              sprintf("     %.3f      |",round(x$estimates.marker2$Var.Delta,  3)), 
+    cat(paste(" ", sprintf("   %.3f      |", round(x$estimates.model1$Var.Delta,  3)),  
+              sprintf("     %.3f      |",round(x$estimates.model2$Var.Delta,  3)), 
               sprintf("     %.3f    ", round(x$estimates.diff$Var.Delta,  3)), 
               "     (", tmp.pval,")", sep=""))  
     cat("\n          ")
-    cat(paste(" ",sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.marker1[1,9]), 3), round(unname(x$ci.marker1[2,9]), 3)), 
-              sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.marker2[1,9]), 3), round(unname(x$ci.marker2[2,9]), 3)), 
+    cat(paste(" ",sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.model1[1,9]), 3), round(unname(x$ci.model1[2,9]), 3)), 
+              sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.model2[1,9]), 3), round(unname(x$ci.model2[2,9]), 3)), 
               sprintf(" (%.3f,%.3f) ", round(unname(x$ci.diff[1,9]), 3),round(unname(x$ci.diff[2,9]), 3)), sep = ""))
     
     cat("\n\n")
@@ -384,13 +384,13 @@ print.compare.trtsel <-
     
     cat("Total Gain: \n")
     cat("          ")  
-    cat(paste(" ", sprintf("     %.3f      |", round(x$estimates.marker1$TG,  3)),  
-              sprintf("     %.3f      |",round(x$estimates.marker2$TG,  3)), 
+    cat(paste(" ", sprintf("     %.3f      |", round(x$estimates.model1$TG,  3)),  
+              sprintf("     %.3f      |",round(x$estimates.model2$TG,  3)), 
               sprintf("     %.3f    ", round(x$estimates.diff$TG,  3)), 
               "     (", tmp.pval,")", sep=""))  
     cat("\n          ")
-    cat(paste(" ",sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.marker1[1,10]), 3), round(unname(x$ci.marker1[2,10]), 3)), 
-              sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.marker2[1,10]), 3), round(unname(x$ci.marker2[2,10]), 3)), 
+    cat(paste(" ",sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.model1[1,10]), 3), round(unname(x$ci.model1[2,10]), 3)), 
+              sprintf(" (%.3f,%.3f)  |", round(unname(x$ci.model2[1,10]), 3), round(unname(x$ci.model2[2,10]), 3)), 
               sprintf(" (%.3f,%.3f) ", round(unname(x$ci.diff[1,10]), 3),round(unname(x$ci.diff[2,10]), 3)), sep = ""))
     
     cat("\n\n")  

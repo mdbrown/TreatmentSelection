@@ -65,7 +65,7 @@ in cohort, \cr Pr(trt==1 & event==0) in cohort, \cr fraction of cases with
 trt == 0 sampled from cohort, \cr fraction of cases with trt == 1 sampled
 from cohort )\cr \cr}
 
-\item{link}{Link function used to fit the risk model. Options are
+\item{link}{Link function used to fit the risk model for binary outcomes. Options are
 "logit"(default), "probit", "cauchit", "log" and "cloglog." Link functions
 other than "logit" are available only when study.design = "randomized
 cohort".}
@@ -84,10 +84,10 @@ An object of class "trtsel," which is a list containing:
 columns for coefficient estimates, standard errors, t-statistics, and
 two-sided p-values.  "cohort.attributes" -- the vector of cohort.attributes
 provided "study.design" -- character string of study.design provided }
-\item{derived.data }{ A data.frame with "event", "trt", "marker",
+\item{derived.data }{ A data.frame with event, trt, and marker information along with
 "fittedrisk.t0" (risk estimates given no treatment), "fittedrisk.t1" (risk
 estimates given treatment), "trt.effect" (treatment effect estimates), and
-"marker.neg" (indicator of trt.effect < thresh) columns.  }
+"trt.rec" (indicator of trt recommendation) columns.  }
 \item{functions}{ For internal package use only }
 }
 \description{

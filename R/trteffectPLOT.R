@@ -311,9 +311,9 @@ trteffectPLOTcompare_gg <-
 trteffectPLOTcompare_gg_disc <-
   function(x1, x2, ci.bounds, conf.bands, offset,  xlab, ylab, xlim, ylim, main, marker.names, lty = 1,  annotate.plot = TRUE){ 
     
-    
+  
     trt.effect1 <- x1$derived.data$trt.effect
-    marker1 <- x1$derived.data$marker
+    marker1 <-  x1$derived.data[[x1$model.fit$marker.names]]
     if(x1$model.fit$link == "time-to-event"){
       event = rep(0, nrow(x1$derived.data))
       event.name = x1$formula[[2]]
@@ -329,11 +329,12 @@ trteffectPLOTcompare_gg_disc <-
     
     
     trt.effect2 <- x2$derived.data$trt.effect
-    mkrvals <- unique(c(marker1, x2$derived.data$marker))
-    marker2 <- x2$derived.data$marker + offset
+   
+    marker2 <-   x2$derived.data[[x2$model.fit$marker.names]] + offset
     mval2 = sort(unique(marker2))
     markerValue <- markerName <- trt.effect <- lower <- upper <- NULL
-    
+    mkrvals <- unique(c(marker1, marker2))
+    if(length(mkrvals) > 2) message("Note: Discrete marker values are different for the two models being compared. Figures may not look as expected!\n\n")
     mydata = data.frame("trt.effect" = c(trt.effect1, trt.effect2),
                         "markerValue" = c(marker1, marker2), 
                         "markerName" = c(rep(marker.names, c(n,n))))

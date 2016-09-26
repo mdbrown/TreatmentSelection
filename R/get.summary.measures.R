@@ -130,7 +130,6 @@ get.summary.measures.cohort.survival <-
     num <- (wi*I(stime < t0)*I(neg)); 
     den <- (wi*I(neg))
 
-   
     if(sum(den[trt==0])==0 | sum(den[trt==1]) ==0) {
       B.neg.emp <- 0
       ER.neg.emp <- 0 
@@ -198,7 +197,17 @@ get.summary.measures.cohort.survival <-
     ER.trt1.emp = p1.hat
     ER.trt1.mod = mean(data$fittedrisk.t1)
     
-
+    if(is.null(data[["rec.trt"]])){
+      ER.mkrbased.emp = ER.trt1.emp - Theta.emp 
+      ER.mkrbased.mod = ER.trt1.mod - Theta.mod 
+      
+    }else{
+      
+      ER.mkrbased.emp = ER.trt0.emp - Theta.emp 
+      ER.mkrbased.mod = ER.trt0.mod - Theta.mod 
+      
+    }
+    
       ER.mkrbased.emp = ER.pos.emp*p.rec.trt + ER.neg.emp*p.rec.no.trt 
       ER.mkrbased.mod = ER.pos.mod*p.rec.trt + ER.neg.mod*p.rec.no.trt
 

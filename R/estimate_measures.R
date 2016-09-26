@@ -92,6 +92,7 @@ trtsel_measures <- function(event, trt, trt.rule, trt.effect, time, default.trt 
                       mean(event[trt==0 & pos==1]) - mean(event[trt==1 & pos==1]), 
                       0)
   
+
   #model based estimate
   B.pos.mod <- ifelse(sum(pos)>0, mean(trt.effect[pos==1]), 0)
   
@@ -127,12 +128,22 @@ trtsel_measures <- function(event, trt, trt.rule, trt.effect, time, default.trt 
   ER.trt0.emp = mean(event[trt==0])
   ER.trt1.emp = mean(event[trt==1])
   
+
   if(default.trt == "trt all"){
     #default is trt all
     ER.mkrbased.emp = ER.trt1.emp - Theta.emp 
+    
+   # ER.pos.emp <-  mean(event[trt==1 & pos==1])
+   # ER.neg.emp <-  mean(event[trt==0 & neg==1])
+    
+   # ER.trt1.emp - (ER.pos.emp*p.marker.pos + ER.neg.emp*p.marker.neg )
+    
   }else{
     ER.mkrbased.emp = ER.trt0.emp - Theta.emp    
   }
+  
+  
+  
   }else{
     ##time-to-event marker 
     if(!all(is.element(unique(event), c(0,1)))) stop( "when survival time is provided, event must be a numeric vector with elements 1 or 0") 
@@ -230,8 +241,14 @@ trtsel_measures <- function(event, trt, trt.rule, trt.effect, time, default.trt 
     ER.trt1.emp = p1.hat
     #ER.trt1.mod = mean(data$fittedrisk.t1)
     
+
+    #ER.mkrbased.emp = ER.pos.emp*p.marker.pos + ER.neg.emp*p.marker.neg 
     
-    ER.mkrbased.emp = ER.pos.emp*p.marker.pos + ER.neg.emp*p.marker.neg 
+    if(default.trt == "trt all"){
+       ER.mkrbased.emp = ER.trt1.emp - Theta.emp 
+    }else{
+      ER.mkrbased.emp = ER.trt0.emp - Theta.emp 
+    }
    # ER.mkrbased.mod = ER.pos.mod*p.marker.pos + ER.neg.mod*p.marker.neg
     
     

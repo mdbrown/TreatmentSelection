@@ -7,7 +7,7 @@ compare <- function(x, ...) UseMethod("compare")
 #' compare the performance of two treatment selection markers
 #' 
 #' Evaluates and compares the performance of two treatment selection markers
-#' measured in the same data.  Summary measures of the performance of each
+#' measured in the same data.  (Bias-corrected) summary measures for the performance of each
 #' marker are estimated and confidence intervals are provided.  Differences in
 #' measures of performance between markers are estimated along with confidence
 #' intervals, and the results of tests comparing marker performance measures
@@ -27,6 +27,7 @@ compare <- function(x, ...) UseMethod("compare")
 #' @param bootstraps Number of bootstrap replicates for creating confidence
 #' intervals and bands. Default value is 500. Set bootstraps=0 if no confidence
 #' intervals or bands are desired.
+#' @param bias.correct logical indicator of whether to bias-correct measures for over-optimism using bootstrap-bias correction. When the same data is used to fit and evaluate the model, performance measures are over-optimistic. Setting this equal to TRUE uses a bootstrap method to bias-correct performance measures. 
 #' @param alpha (1-alpha)*100\% confidence intervals are calculated. Default
 #' value is alpha = 0.05 which yields 95\% CI's.
 #' @param plot Indication of whether a plot showing treatment effect curves for
@@ -143,14 +144,15 @@ compare <- function(x, ...) UseMethod("compare")
 #' @method compare trtsel
 #' @export
 compare.trtsel <-
-function(trtsel1, trtsel2, bootstraps = 500, alpha = .05, plot = TRUE, 
-                           ci   = "horizontal", fixed.values =  NULL, offset = .01,
-                            conf.bands = TRUE, conf.bandsN =100, model.names = c("Model 1", "Model 2"), 
-                           xlab = NULL, 
-                           ylab = NULL, 
-                           xlim = NULL, 
-                           ylim = NULL, 
-                           main = NULL, annotate.plot = TRUE){
+function(trtsel1, trtsel2, bootstraps = 500,
+         bias.correct = TRUE, 
+         alpha = .05, plot = TRUE, 
+         ci   = "horizontal", fixed.values =  NULL, offset = .01,
+         conf.bands = TRUE, conf.bandsN =100, model.names = c("Model 1", "Model 2"), 
+         xlab = NULL, ylab = NULL, 
+         xlim = NULL, ylim = NULL, 
+         main = NULL, annotate.plot = TRUE){
+  
   quantile <- NULL #appease check
   # assume paired data here, so each individual has a measurement on y1 and y2. Also I am assuming each data set is ordered the same way. 
 
@@ -164,7 +166,22 @@ function(trtsel1, trtsel2, bootstraps = 500, alpha = .05, plot = TRUE,
   if(alpha<0 | alpha > 1) stop("Error: alpha should be between 0 and 1")
   if(bootstraps ==0 ) cat("bootstrap confidence intervals will not be calculated\n")
   if(bootstraps == 1) {warning("Number of bootstraps must be greater than 1, bootstrap confidence intervals will not be computed"); bootstraps <- 0;}  
-  
+
+  stopifnot(is.logical(bias.correct))
+  if(trtsel1$model.fit$link == "risks_provided"){
+    bias.correct = FALSE
+  }
+  if(missing(bias.correct)){
+    if(trtsel1$model.fit$link == "risks_provided"){
+      bias.correct = FALSE
+    }else if (bootstraps > 1){
+      bias.correct  =TRUE
+      message("Bootstrap bias-correction will be implemented to correct for over-optimism bias in estimation.")
+    }else{
+      bias.correct = FALSE
+    }
+    
+  }
   
   study.design  <-trtsel1$model.fit$study.design
   rho   <-trtsel1$model.fit$cohort.attributes #because of paired data, rho should be the same for each trtsel object
@@ -216,14 +233,17 @@ function(trtsel1, trtsel2, bootstraps = 500, alpha = .05, plot = TRUE,
                                                       rho = rho, study.design = study.design, obe.boot.sample = boot.sample, 
                                                       obe.get.summary.measures = get.summary.measures, link = link, 
                                                       d = trtsel1$model.fit$thresh, 
-                                                      disc.marker.neg1 = trtsel1$model.fit$disc.marker.neg, 
-                                                      disc.marker.neg2 = trtsel2$model.fit$disc.marker.neg, 
-                                                      prediction.times = c(trtsel1$prediction.time, trtsel2$prediction.time)))
+                                                      disc.rec.no.trt1 = trtsel1$model.fit$disc.rec.no.trt, 
+                                                      disc.rec.no.trt2 = trtsel2$model.fit$disc.rec.no.trt, 
+                                                      prediction.times = c(trtsel1$prediction.time, trtsel2$prediction.time), 
+                                                      bbc = bias.correct))
   
-  boot.data1 <- boot.data[c(1:4, 9:18),]
-  boot.data2 <- boot.data[c(5:8, 25:34),]
 
-  boot.data = boot.data1 - boot.data2
+  
+  boot.data1 <- boot.data[c( 9:24),]
+  boot.data2 <- boot.data[c( 25:40),]
+
+  boot.data.diff = (boot.data1) - (boot.data2 )
 
   ## Estimate summary measures
   if(link == "time-to-event") data1$prediction.time = trtsel1$prediction.time
@@ -232,22 +252,37 @@ function(trtsel1, trtsel2, bootstraps = 500, alpha = .05, plot = TRUE,
   sm.m1 <- get.summary.measures(data1, event.name1, trtsel1$treatment.name,  rho)
   sm.m2 <- get.summary.measures(data2, event.name2, trtsel2$treatment.name, rho)
   sm.diff <- as.data.frame(t(unlist(sm.m1) - unlist(sm.m2) ))
+
+  ci.m1   <- apply(boot.data1, 1, quantile, probs = c(alpha/2, 1-alpha/2), na.rm = TRUE)
+  ci.m2   <- apply(boot.data2, 1, quantile, probs = c(alpha/2, 1-alpha/2), na.rm = TRUE)
+
+  ci.diff <- apply(boot.data.diff, 1, quantile, probs = c(alpha/2, 1-alpha/2), na.rm = TRUE)
+
+
   
-  ci.m1   <- apply(boot.data1[-c(1:4),], 1, quantile, probs = c(alpha/2, 1-alpha/2), na.rm = TRUE)
-  ci.m2   <- apply(boot.data2[-c(1:4),], 1, quantile, probs = c(alpha/2, 1-alpha/2), na.rm = TRUE)
+  if(bias.correct){
+    biasvec <- apply(boot.data[9:72, ], 1, mean, na.rm  = TRUE)
+    bias1 <- biasvec[1:16] - biasvec[33:48]
+    
+    bias2  <- biasvec[17:32] - biasvec[49:64]
+ 
 
-  ci.diff <- apply(boot.data[-c(1:4),], 1, quantile, probs = c(alpha/2, 1-alpha/2), na.rm = TRUE)
+  }else{
+    bias1 <- bias2 <-  rep(0, dim(ci.m2)[[2]])
+  }
 
-
+  ci.m1 <- ci.m1 - rbind(bias1, bias1) 
+  ci.m2 <- ci.m2 - rbind(bias2, bias2)
+  ci.diff <- ci.diff - (rbind(bias1, bias1)  - rbind(bias2, bias2) )
   ## Get p-values for differences in all performance measures (ie boot.data[5:13,])
 
   potential.pvals <- (1:bootstraps)/bootstraps
-  p.vals <- rep(0, 10)  
+  p.vals <- rep(0, 16)  
 
-  for( i in 1:10 ){
+  for( tmp.ind in 1:16 ){
 
-   tmp.ind <- c(5:14)[i]
-   tmp.boot.data <- boot.data[tmp.ind,]
+  i = tmp.ind
+   tmp.boot.data <- boot.data.diff[tmp.ind,]
    tmp.boot.data <- tmp.boot.data[is.finite(tmp.boot.data)]
 
    if(!cover(min(tmp.boot.data), max(tmp.boot.data), 0) ){ 
@@ -269,44 +304,50 @@ function(trtsel1, trtsel2, bootstraps = 500, alpha = .05, plot = TRUE,
   }
 
   p.vals <- data.frame(t(p.vals))
-  names(p.vals) <- names(sm.diff)[1:10]
+  names(p.vals) <- names(sm.diff)
   row.names(p.vals) <- c("p.values")
   row.names(ci.m1) <- c("lower", "upper")
   row.names(ci.m2) <- c("lower", "upper")
   row.names(ci.diff) <- c("lower", "upper")
-  result <- list(estimates.marker1   = data.frame(sm.m1),
-                 estimates.marker2   = data.frame(sm.m2), 
+  result <- list(estimates.model1   = data.frame(sm.m1) - bias1,
+                 estimates.model2   = data.frame(sm.m2) - bias2, 
                  estimates.diff = data.frame(sm.diff), 
-                 ci.marker1   = data.frame(ci.m1), 
-                 ci.marker2   = data.frame(ci.m2), 
+                 ci.model1   = data.frame(ci.m1), 
+                 ci.model2   = data.frame(ci.m2), 
                  ci.diff   = data.frame(ci.diff),
+                 bias.model1 = bias1, 
+                 bias.model2 = bias2, 
                  trtsel1 = trtsel1, 
                  trtsel2 = trtsel2, 
                  p.values = p.vals,  
-                 bootstraps = bootstraps)
+                 bootstraps = bootstraps,
+                 bias.correct = bias.correct)
 
   }else{
+    
+    #no bootstrapping...things are simpler!
   sm.m1 <- get.summary.measures(data1, rho)
   sm.m2 <- get.summary.measures(data2, rho)
   sm.diff <- as.data.frame(t(unlist(sm.m1) - unlist(sm.m2) ))
 
-result <- list(estimates.marker1   = data.frame(sm.m1),
-                 estimates.marker2   = data.frame(sm.m2), 
+result <- list(estimates.model1   = data.frame(sm.m1) ,
+                 estimates.model2 = data.frame(sm.m2) , 
                  estimates.diff = data.frame(sm.diff), 
                  trtsel1 = trtsel1, 
                  trtsel2 = trtsel2, 
-                 bootstraps = bootstraps)
+                 bootstraps = bootstraps, 
+               bias.correct = bias.correct)
   }
 
   #for plotting, we can only compare marker types that are the same...ie discrete to discrete, continuous to continuous
-  same.marker.type = (is.null(trtsel1$model.fit$disc.marker.neg) == is.null(trtsel2$model.fit$disc.marker.neg))
+  same.marker.type = (is.null(trtsel1$model.fit$disc.rec.no.trt) == is.null(trtsel2$model.fit$disc.rec.no.trt))
   if(plot & !same.marker.type) {
     warning("Can not generate plots to compare a discrete marker to a continuous marker (bootstrap methods are not comparable). No plots will be produced!")
     plot = FALSE
   }
   
 
-  if(plot & is.null(trtsel1$model.fit$disc.marker.neg)){ 
+  if(plot & is.null(trtsel1$model.fit$disc.rec.no.trt)){ 
     if(!is.element(ci, c("vertical", "horizontal"))) stop("If plotting, ci must be one of `vertical` or `horizontal`")
     
   if(length(fixed.values>0)) conf.bands = FALSE 
@@ -340,7 +381,7 @@ result <- list(estimates.marker1   = data.frame(sm.m1),
 
   result$plot.ci.marker1 <- curves$trtsel1$conf.intervals
   result$plot.ci.marker2 <- curves$trtsel2$conf.intervals
-  }else if(plot & !is.null(trtsel1$model.fit$disc.marker.neg)){
+  }else if(plot & !is.null(trtsel1$model.fit$disc.rec.no.trt)){
     
     curves <-  myplotcompare.trtsel_disc( x = result, bootstraps =bootstraps, alpha  = alpha, ci = ci, marker.names = model.names, 
                                      xlab = xlab, 
@@ -360,9 +401,9 @@ result <- list(estimates.marker1   = data.frame(sm.m1),
   result$trtsel1 <- NULL
   result$trtsel2 <- NULL
   class(result) <- "compare.trtsel"
-  result$alpha = alpha
-  result$model.names = model.names 
-  result$formulas = list(trtsel1$formula, trtsel2$formula)
+  result$alpha <- alpha
+  result$model.names <- model.names 
+  result$formulas <- list(trtsel1$formula, trtsel2$formula)
   return(result) 
 
 }

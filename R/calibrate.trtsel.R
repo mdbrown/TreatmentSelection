@@ -403,7 +403,7 @@ if(is.element(plot.type, "calibration")){
   
 if( is.element(plot.type, "risk.t0")) { 
 # trt = 0
-
+   
    if(is.null(xlab)) xlab <- "% population below risk"
    if(is.null(ylab)) ylab <- "risk"
    if(is.null(xlim)) xlim <- c(0,100)
@@ -427,7 +427,7 @@ if( is.element(plot.type, "risk.t0")) {
    
    p <- p +geom_errorbar(data = obsdata, color  = point.color,  aes(ymin = lower, ymax = upper, x = x), width = 2)+
      geom_point(data = obsdata, aes(x = x, y = y), color = point.color) 
-   p <- p + ylab(ylab) + xlab(xlab) + ggtitle(main) + #theme( text = element_text(size=16)) 
+   p <- p + ylab(ylab) + xlab(xlab) + ggtitle(main)  #theme( text = element_text(size=16)) 
    if(!is.null(xlim)) p <- p + xlim(xlim)
    if(!is.null(ylim)) p <- p + ylim(ylim)
    print(p)
@@ -464,7 +464,7 @@ if( x$model.fit$link == "time-to-event"){
 p <- p +geom_errorbar(data = obsdata,  color  = point.color, aes(ymin = lower, ymax = upper, x = x), width = 2)+
   geom_point(data = obsdata, aes(x = x, y = y),  color  = point.color)#, size = 4) 
 
-p <- p + ylab(ylab) + xlab(xlab) + ggtitle(main) + #theme( text = element_text(size=16)) 
+p <- p + ylab(ylab) + xlab(xlab) + ggtitle(main) #theme( text = element_text(size=16)) 
 if(!is.null(xlim)) p <- p + xlim(xlim)
 if(!is.null(ylim)) p <- p + ylim(ylim)
 print(p)

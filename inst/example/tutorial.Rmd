@@ -49,7 +49,15 @@ Here we let `Y1_disc` represent a user-specified treatment rule and evaluate its
 
 ```{r}
 
-trtsel_measures(event = tsdata$event, trt = tsdata$trt, trt.rule = 1- tsdata$Y1_disc )
+trtsel_measures(event = tsdata$event, trt = tsdata$trt, trt.rule = tsdata$Y1_disc, default.trt = "trt all" )
+
+
+trtsel_measures(event = surv_tsdata$di, 
+                time = surv_tsdata$xi,
+                trt = surv_tsdata$trt, 
+                trt.rule = as.numeric(surv_tsdata$Y > 0), 
+                prediction.time = 1, 
+                default.trt = "trt none" )
 
 ```
 
@@ -129,6 +137,13 @@ calibrate(trtsel.Y1,
           point.color = "lightcoral", 
           line.color = "black")
 
+
+calibrate(trtsel.Y1, 
+          groups = 10, 
+          plot = "risk.t0", 
+          trt.names = c("chemo.", "no chemo."), 
+          point.color = "lightcoral", 
+          line.color = "black")
 ```
 
 
@@ -266,7 +281,8 @@ A suite of performance measures is estimated for each marker, and marker-compari
 ```{r}
 # Compare the markers based on summary measures
 mycompare <- compare(trtsel1 = trtsel.Y1, 
-                     trtsel2 = trtsel.Y2, 
+                     trtsel2 = trtsel.Y2,
+                     bias.correct =TRUE, 
                      model.names = c("Y1", "Y1 + Y2"), 
                      bootstraps = 50,
                      ci = "vertical")
@@ -283,6 +299,7 @@ trtsel.Y1_disc <- trtsel(event~Y1_disc*trt,
 
 compare(trtsel1 = trtsel.Y1_disc, 
         trtsel2 = trtsel.Y2_disc, 
+        bias.correct = TRUE, 
         ci = "vertical", 
         offset = 0.2, 
         bootstraps = 50, 
@@ -322,6 +339,10 @@ We can now use this `trtsel` object to plot and evaluate performance just as bef
 plot(myfitted.trtsel, bootstraps = 50, plot.type = "risk",
      ci = "vertical", show.marker.axis = FALSE)
 ```
+
+### Time-to-event outcomes
+
+
 
 
 

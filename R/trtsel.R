@@ -52,7 +52,7 @@
 #' in cohort, \cr Pr(trt==1 & event==0) in cohort, \cr fraction of cases with
 #' trt == 0 sampled from cohort, \cr fraction of cases with trt == 1 sampled
 #' from cohort )\cr \cr
-#' @param link Link function used to fit the risk model. Options are
+#' @param link Link function used to fit the risk model for binary outcomes. Options are
 #' "logit"(default), "probit", "cauchit", "log" and "cloglog." Link functions
 #' other than "logit" are available only when study.design = "randomized
 #' cohort".

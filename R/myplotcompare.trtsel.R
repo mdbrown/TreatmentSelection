@@ -185,19 +185,19 @@ myplotcompare.trtsel_disc <-
            main = NULL, offset = offset, conf.bands,  annotate.plot)
   {
     
-    
-    
+
     quantile <- NULL #appease check
     ts1 <- x$trtsel1
     ts2 <- x$trtsel2
     fittedrisk.t0.y1 <- ts1$derived.data$fittedrisk.t0
     fittedrisk.t1.y1 <- ts1$derived.data$fittedrisk.t1
-    marker1 = ts1$derived.data$marker
+    
+    marker1 = ts1$derived.data[[ts1$model.fit$marker.names]]
     delta.y1 <- ts1$derived.data$trt.effect
     link <- ts1$model.fit$link
     fittedrisk.t0.y2 <- ts2$derived.data$fittedrisk.t0
     fittedrisk.t1.y2 <- ts2$derived.data$fittedrisk.t1
-    marker2 <- ts2$derived.data$marker
+    marker2 <- ts2$derived.data[[ts2$model.fit$marker.names]]
     delta.y2 <-  ts2$derived.data$trt.effect
     
 
@@ -265,7 +265,16 @@ myplotcompare.trtsel_disc <-
     }
     
     
-    ts1.curves <- trteffectPLOTcompare_gg_disc(x1=ts1, x2 = ts2, ci.bounds = myconf.ints, conf.bands = conf.bands, offset = offset, xlab=xlab, ylab = ylab, xlim=xlim, ylim = ylim, main = main,marker.names = marker.names,  annotate.plot = annotate.plot) 
+    ts1.curves <- trteffectPLOTcompare_gg_disc(x1=ts1, 
+                                               x2 = ts2, 
+                                               ci.bounds = myconf.ints, 
+                                               conf.bands = conf.bands,
+                                               offset = offset,
+                                               xlab=xlab, ylab = ylab,
+                                               xlim=xlim, ylim = ylim, 
+                                               main = main, 
+                                               marker.names = marker.names, 
+                                               annotate.plot = annotate.plot) 
     
     p <- ts1.curves[[1]]
     print(p)

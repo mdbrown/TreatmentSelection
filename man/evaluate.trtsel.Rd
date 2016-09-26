@@ -21,11 +21,11 @@
 A list with the following components (see Janes et al. (2013) for a description of the summary measures and estimators): 
 \item{test.Null }{ List of results of a test of the null hypothesis H0: No decrease in event rate under marker-based treatment. Contains "reject" (logical; was H0 rejected), p.value, z.statistic, and alpha }
 \item{estimates }{data.frame of dimension 1x9 of summary measure estimates. Includes:
-   p.neg : proportion with negative treatment effect estimates (marker-negatives);
- p.pos : proportion with positive treatment effect estimates (marker-negatives);
- B.neg.emp, B.neg.mod: Average benefit of no treatment among marker-negatives, empirical and model-based estimates;
- B.pos.emp, B.neg.mod: Average benefit of treatment among marker-positives, empirical and model-based estimates;
- Theta.emp, Theta.mod: Decrease in event rate under marker-based treatment, empirical and model-based estimates; 
+   p.rec.trt : proportion recommended treatment;
+ p.rec.notrt : proportion recommended no treatment;
+ B.neg.emp, B.neg.mod: Average benefit of no treatment among those recommended no trt, empirical and model-based estimates;
+ B.pos.emp, B.neg.mod: Average benefit of treatment among those recommended trt, empirical and model-based estimates;
+ Theta.emp, Theta.mod: Decrease in rate of outcomes under marker-based treatment, empirical and model-based estimates; 
  Var.Delta: variance in estimated treatment effect; 
  TG: Total gain.  
  ER.trt0.emp/mod, ER.trt1.emp/mod, ER.mkrbased.emp/mod: Event rates under trt = 0, trt = 1 or for marker-based treatment. 

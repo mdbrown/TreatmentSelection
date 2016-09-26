@@ -4,11 +4,12 @@
 \alias{compare.trtsel}
 \title{compare the performance of two treatment selection markers}
 \usage{
-\method{compare}{trtsel}(trtsel1, trtsel2, bootstraps = 500, alpha = 0.05,
-  plot = TRUE, ci = "horizontal", fixed.values = NULL, offset = 0.01,
-  conf.bands = TRUE, conf.bandsN = 100, model.names = c("Model 1",
-  "Model 2"), xlab = NULL, ylab = NULL, xlim = NULL, ylim = NULL,
-  main = NULL, annotate.plot = TRUE)
+\method{compare}{trtsel}(trtsel1, trtsel2, bootstraps = 500,
+  bias.correct = TRUE, alpha = 0.05, plot = TRUE, ci = "horizontal",
+  fixed.values = NULL, offset = 0.01, conf.bands = TRUE,
+  conf.bandsN = 100, model.names = c("Model 1", "Model 2"), xlab = NULL,
+  ylab = NULL, xlim = NULL, ylim = NULL, main = NULL,
+  annotate.plot = TRUE)
 }
 \arguments{
 \item{trtsel2}{An object of class "trtsel" created by using function
@@ -17,6 +18,8 @@
 \item{bootstraps}{Number of bootstrap replicates for creating confidence
 intervals and bands. Default value is 500. Set bootstraps=0 if no confidence
 intervals or bands are desired.}
+
+\item{bias.correct}{logical indicator of whether to bias-correct measures for over-optimism using bootstrap-bias correction. When the same data is used to fit and evaluate the model, performance measures are over-optimistic. Setting this equal to TRUE uses a bootstrap method to bias-correct performance measures.}
 
 \item{alpha}{(1-alpha)*100\% confidence intervals are calculated. Default
 value is alpha = 0.05 which yields 95\% CI's.}
@@ -101,7 +104,7 @@ fixed.values they are centered around, where applicable. }
 }
 \description{
 Evaluates and compares the performance of two treatment selection markers
-measured in the same data.  Summary measures of the performance of each
+measured in the same data.  (Bias-corrected) summary measures for the performance of each
 marker are estimated and confidence intervals are provided.  Differences in
 measures of performance between markers are estimated along with confidence
 intervals, and the results of tests comparing marker performance measures

@@ -1,5 +1,5 @@
 one.boot.eval <-
-function(data, formula, treatment.name, rho, study.design, obe.boot.sample, obe.get.summary.measures, link, d, disc.marker.neg = NULL, provided_risk = NULL, prediction.time = NULL, bbc){
+function(data, formula, treatment.name, rho, study.design, obe.boot.sample, obe.get.summary.measures, link, d, disc.rec.no.trt = NULL, provided_risk = NULL, prediction.time = NULL, bbc){
 
 
   if( link == "time-to-event"){
@@ -15,7 +15,6 @@ function(data, formula, treatment.name, rho, study.design, obe.boot.sample, obe.
   }
   
   
-  #  browser()
   sample <- obe.boot.sample( event = event, trt = data[[treatment.name]], rho = rho)
   rho.b <- sample[1:7]
   ind   <- sample[-c(1:7)]
@@ -28,7 +27,7 @@ function(data, formula, treatment.name, rho, study.design, obe.boot.sample, obe.
                       study.design = study.design, 
                       rho = rho.b, 
                       link = link, 
-                      disc.marker.neg = disc.marker.neg, 
+                      disc.rec.no.trt =  disc.rec.no.trt, 
                       provided_risk = provided_risk[ind,], 
                       prediction.time = prediction.time)
   if(bbc){ 
@@ -41,7 +40,9 @@ function(data, formula, treatment.name, rho, study.design, obe.boot.sample, obe.
       obsrisk.t0.f <- get.risk.t_coxph(coxfit, treatment.name, data, prediction.time, t = 0)
       obsrisk.t1.f  <- get.risk.t_coxph(coxfit, treatment.name, data, prediction.time, t = 1)
       #we still need to incorporate the nelson aalen baseline haz to get absolute risk at t = 'prediction.time'
- 
+      tmp <- with(data, eval(formula[[2]]))
+      wi = get.censoring.weights(ti = prediction.time, stime = tmp[,1], status = tmp[,2] )
+      
     }else{
       
       coef <- unname(get.coef(formula,treatment.name, data[ind,], 
@@ -65,14 +66,16 @@ function(data, formula, treatment.name, rho, study.design, obe.boot.sample, obe.
                         data = data, 
                         d = d, 
                         study.design = study.design, 
-                        rho = rho.b, 
+                        rho = rho, 
                         link = "risks_provided", 
-                        disc.marker.neg = disc.marker.neg, 
+                        disc.rec.no.trt = disc.rec.no.trt, 
                         provided_risk = provided_risk.f, 
                         prediction.time = prediction.time)
     
     
     x.f$derived.data$prediction.time <- prediction.time
+    x.f$derived.data$censoring.weights <- wi 
+    
     sm.f <- obe.get.summary.measures(x.f$derived.data, 
                                      event.name = event.name,
                                      treatment.name = treatment.name, 
@@ -82,8 +85,8 @@ function(data, formula, treatment.name, rho, study.design, obe.boot.sample, obe.
     sm.f <- NULL
   }
   
-  if(is.null(data[["marker.neg"]])){
-    x.b$derived.data$marker.neg <- 1- x.b$derived.data$marker.pos
+  if(is.null(data[["rec.no.trt"]])){
+    x.b$derived.data$rec.no.trt <- 1- x.b$derived.data$rec.trt
 
   }
   
@@ -110,6 +113,6 @@ function(data, formula, treatment.name, rho, study.design, obe.boot.sample, obe.
 
   #c(a3.b = a3.b, a1.b = a1.b, unlist(sm.b))
   if(is.null(coefs)) coefs <- rep(0, 4)
-   c(unlist(coefs), unlist(sm.b), unlist(sm.f))#, thresh.b)
+   c(unlist(coefs)[1:4], unlist(sm.b), unlist(sm.f))#, thresh.b)
 
 }

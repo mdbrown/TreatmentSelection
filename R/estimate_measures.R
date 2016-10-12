@@ -154,6 +154,17 @@ trtsel_measures <- function(event, trt, trt.rule, trt.effect, time, default.trt 
     
     t0 <- prediction.time 
     #event = data[[event.name]]
+    
+    wi = numeric(length(event))
+    
+    wi[trt==1] <- get.censoring.weights(ti = prediction.time, 
+                                        stime =  time[trt==1], 
+                                        status = event[trt==1])
+    
+    wi[trt==0] <-  get.censoring.weights(ti = prediction.time, 
+                                         stime =  time[trt==0], 
+                                         status = event[trt==0])
+    
     wi <- get.censoring.weights(ti = prediction.time, status = event, stime = time)
     
     status = event

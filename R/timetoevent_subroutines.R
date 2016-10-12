@@ -7,7 +7,7 @@ get.censoring.weights <- function(ti, stime, status){
   
   
   # this saves some time. survival curve doesn't need to be estimated past ti.
-  #  ix <- stime > (ti + .1) # the magic number is necessary, otherwise the KM estimate at dc$ti is off.
+  # ix <- stime > (ti + .1) # the magic number is necessary, otherwise the KM estimate at dc$ti is off.
   #  stime[ix] <- (ti + .1)
   
   cc  <- survfit(Surv(stime, status == 0) ~ 1,

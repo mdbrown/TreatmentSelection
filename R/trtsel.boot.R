@@ -64,7 +64,12 @@ function(formula, treatment.name, data,
   if(link == "time-to-event"){
     
     tmp <- with(data, eval(formula[[2]]))
-    wi = get.censoring.weights(ti = prediction.time, stime = tmp[,1], status = tmp[,2] )
+    
+    wi = numeric(nrow(data))
+    
+    wi[trt==1] <- get.censoring.weights(ti = prediction.time, stime = tmp[trt==1,1], status = tmp[trt==1,2] )
+    wi[trt==0] <- get.censoring.weights(ti = prediction.time, stime = tmp[trt==0,1], status = tmp[trt==0,2] )
+    
     derived.data$censoring.weights  <- wi
   }
   

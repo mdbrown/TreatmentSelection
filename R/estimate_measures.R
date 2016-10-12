@@ -156,7 +156,7 @@ trtsel_measures <- function(event, trt, trt.rule, trt.effect, time, default.trt 
     #event = data[[event.name]]
     
     wi = numeric(length(event))
-    
+    #condition on trt arm to get sampling weights. 
     wi[trt==1] <- get.censoring.weights(ti = prediction.time, 
                                         stime =  time[trt==1], 
                                         status = event[trt==1])
@@ -165,7 +165,7 @@ trtsel_measures <- function(event, trt, trt.rule, trt.effect, time, default.trt 
                                          stime =  time[trt==0], 
                                          status = event[trt==0])
     
-    wi <- get.censoring.weights(ti = prediction.time, status = event, stime = time)
+   # wi <- get.censoring.weights(ti = prediction.time, status = event, stime = time)
     
     status = event
     

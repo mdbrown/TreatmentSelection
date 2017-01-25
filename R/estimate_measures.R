@@ -15,6 +15,7 @@
 #' practice is to treat no-one and the goal is to discover those who would
 #' benefit from treatment.
 #'@param prediction.time a landmark prediction time used only when the 'time' variable is set. 
+#'@param silent suppress messages 
 #'@examples 
 #' data(tsdata)
 #' #The user must specify a vector of clinical outcomes, 
@@ -47,8 +48,10 @@
 #'                trt.rule = 1- tsdata$Y1_disc, trt.effect = delta.hat )
 #' 
 #'@export
-trtsel_measures <- function(event, trt, trt.rule, trt.effect, time, default.trt = c("trt all", "trt none"), 
-                            prediction.time = NULL){
+trtsel_measures <- function(event, trt, trt.rule, trt.effect, time,
+                            default.trt = c("trt all", "trt none"), 
+                            prediction.time = NULL, 
+                            silent = FALSE){
   
   stopifnot(is.numeric(trt))
   stopifnot(is.numeric(event))
@@ -62,7 +65,9 @@ trtsel_measures <- function(event, trt, trt.rule, trt.effect, time, default.trt 
   
   
   if(missing(trt.effect)){ 
+    if(!silent){
     message("Estimates of trt.effect are not provided. Only empirical estimates will be calculated.")
+    }
     noModelBased <- TRUE
     trt.effect <- rep(NA, length(trt))
   }else{

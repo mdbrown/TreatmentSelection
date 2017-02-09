@@ -10,8 +10,8 @@ function(x, bootstraps = 500, alpha = .05,
 {
 
 
-  ts1 <- x$trtsel1
-  ts2 <- x$trtsel2
+  ts1 <- x$x
+  ts2 <- x$x2
 
   if(substr(ci, 1, 4) =="hori") {
            ## trt selcurve plot with horizontal ci bands
@@ -93,7 +93,7 @@ function(x, bootstraps = 500, alpha = .05,
                                                               fixeddeltas.y1 = fixeddeltas.y1, fixeddeltas.y2 = fixeddeltas.y2,
                                                               rho = rho, study.design = study.design,  obp.boot.sample = boot.sample, obp.get.F = get.F, fix.ind, out.ind, link = link, 
                                                              provided_risk = provided_risk, 
-                                                             prediction.times = c(x$trtsel1$prediction.time, x$trtsel2$prediction.time)))
+                                                             prediction.times = c(x$x$prediction.time, x$x2$prediction.time)))
     
 
     if(length(fixeddeltas.y1)==1){
@@ -159,8 +159,8 @@ function(x, bootstraps = 500, alpha = .05,
 
 
    result <- list("plot" = p, 
-                  "trtsel1" = list( "conf.intervals" = conf.ints.y1), 
-                  "trtsel2" = list( "conf.intervals" = conf.ints.y2))
+                  "x" = list( "conf.intervals" = conf.ints.y1), 
+                  "x2" = list( "conf.intervals" = conf.ints.y2))
  
    }else{
 
@@ -187,8 +187,8 @@ myplotcompare.trtsel_disc <-
     
 
     quantile <- NULL #appease check
-    ts1 <- x$trtsel1
-    ts2 <- x$trtsel2
+    ts1 <- x$x
+    ts2 <- x$x2
     fittedrisk.t0.y1 <- ts1$derived.data$fittedrisk.t0
     fittedrisk.t1.y1 <- ts1$derived.data$fittedrisk.t1
     

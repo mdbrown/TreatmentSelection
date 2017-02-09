@@ -2,10 +2,11 @@
 % Please edit documentation in R/estimate_measures.R
 \name{trtsel_measures}
 \alias{trtsel_measures}
-\title{a simple function to estimate summary measures for a  rule to select treatment.}
+\title{a simple function to estimate performance measures for a  rule used to select treatment.}
 \usage{
 trtsel_measures(event, trt, trt.rule, trt.effect, time,
-  default.trt = c("trt all", "trt none"), prediction.time = NULL)
+  default.trt = c("trt all", "trt none"), prediction.time = NULL,
+  silent = FALSE)
 }
 \arguments{
 \item{event}{vector for adverse event. Can be binary (1 is bad, 0 is good) or continuous (large numbers are worse). If failure time variable 'time' is set, event is used as the adverse event status indicator.}
@@ -26,9 +27,11 @@ practice is to treat no-one and the goal is to discover those who would
 benefit from treatment.}
 
 \item{prediction.time}{a landmark prediction time used only when the 'time' variable is set.}
+
+\item{silent}{suppress messages}
 }
 \description{
-Provides point estimates for summary measures used to evaluate a rule used to select treatment.
+Provides point estimates for summary measures to evaluate a rule used to select treatment.
 }
 \examples{
 data(tsdata)
@@ -62,4 +65,3 @@ trtsel_measures(event = tsdata$event, trt = tsdata$trt,
                trt.rule = 1- tsdata$Y1_disc, trt.effect = delta.hat )
 
 }
-

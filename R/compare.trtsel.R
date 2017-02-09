@@ -21,8 +21,8 @@ compare <- function(x, ...) UseMethod("compare")
 #' @param x An object of class "trtsel" created by using function
 #' "trtsel". This is created using data for the first marker.  Note: event and
 #' treatment vectors provided to create this trtsel object must be identical to
-#' those used to create the trtsel2 object.
-#' @param trtsel2 An object of class "trtsel" created by using function
+#' those used to create the x2 object.
+#' @param x2 An object of class "trtsel" created by using function
 #' "trtsel". This is created using data for the second marker.
 #' @param bootstraps Number of bootstrap replicates for creating confidence
 #' intervals and bands. Default value is 500. Set bootstraps=0 if no confidence
@@ -53,7 +53,7 @@ compare <- function(x, ...) UseMethod("compare")
 #' or y-axis at which to calculate the pointwise confidence intervals. The
 #' default is 100. Only applies if plot = TRUE.
 #' @param model.names A vector of length 2 indicating the names for the two
-#' markers in trtsel1, and trtsel2, respectively, for the plot legend. The default value is c("Model 1",
+#' markers in x, and x2, respectively, for the plot legend. The default value is c("Model 1",
 #' "Model 2").
 #' @param xlab A label for the x-axis. Default values depend on plot.type. Only
 #' applies if plot = TRUE.
@@ -67,6 +67,7 @@ compare <- function(x, ...) UseMethod("compare")
 #' @param annotate.plot Only applies to comparison of two discrete markers.
 #' Should the plot be annotated with the marker group percentages? default is
 #' TRUE.
+#' @param ... ignored.
 #' @return A list with components (see Janes et al. (2013) for a description of
 #' the summary measures and estimators):
 #' 
@@ -136,7 +137,7 @@ compare <- function(x, ...) UseMethod("compare")
 #' 
 #' # Plot treatment effect curves with pointwise confidence intervals
 #' ## use more bootstraps in practice
-#' compare(trtsel1 = trtsel.Y1, trtsel2 = trtsel.Y2,
+#' compare(x = trtsel.Y1, x2 = trtsel.Y2,
 #'                                 bootstraps = 10, plot = TRUE,      
 #'                                 ci = "horizontal",  conf.bands = TRUE) 
 #'                                 
@@ -144,7 +145,7 @@ compare <- function(x, ...) UseMethod("compare")
 #' @method compare trtsel
 #' @export
 compare.trtsel <-
-function(trtsel1, trtsel2, bootstraps = 500,
+function(x, ..., x2, bootstraps = 500,
          bias.correct = TRUE, 
          alpha = .05, plot = TRUE, 
          ci   = "horizontal", fixed.values =  NULL, offset = .01,
@@ -157,10 +158,10 @@ function(trtsel1, trtsel2, bootstraps = 500,
   # assume paired data here, so each individual has a measurement on y1 and y2. Also I am assuming each data set is ordered the same way. 
 
 
-  if(!is.trtsel(trtsel1)) stop("trtsel1 must be an object of class 'trtsel' created by using the function 'trtsel' see ?trtsel for more help")
-  if(!is.trtsel(trtsel2)) stop("trtsel2 must be an object of class 'trtsel' created by using the function 'trtsel' see ?trtsel for more help")
+  if(!is.trtsel(x)) stop("x must be an object of class 'trtsel' created by using the function 'trtsel' see ?trtsel for more help")
+  if(!is.trtsel(x2)) stop("x2 must be an object of class 'trtsel' created by using the function 'trtsel' see ?trtsel for more help")
   
-  if(trtsel1$model.fit$outcome != trtsel2$model.fit$outcome) stop("This function can not compare trtsel objects with different outcome types: binary outcome to one with a time-to-event outcome.")
+  if(x$model.fit$outcome != x2$model.fit$outcome) stop("This function can not compare trtsel objects with different outcome types: binary outcome to one with a time-to-event outcome.")
   
   
   if(alpha<0 | alpha > 1) stop("Error: alpha should be between 0 and 1")
@@ -168,11 +169,11 @@ function(trtsel1, trtsel2, bootstraps = 500,
   if(bootstraps == 1) {warning("Number of bootstraps must be greater than 1, bootstrap confidence intervals will not be computed"); bootstraps <- 0;}  
 
   stopifnot(is.logical(bias.correct))
-  if(trtsel1$model.fit$link == "risks_provided"){
+  if(x$model.fit$link == "risks_provided"){
     bias.correct = FALSE
   }
   if(missing(bias.correct)){
-    if(trtsel1$model.fit$link == "risks_provided"){
+    if(x$model.fit$link == "risks_provided"){
       bias.correct = FALSE
     }else if (bootstraps > 1){
       bias.correct  =TRUE
@@ -183,14 +184,14 @@ function(trtsel1, trtsel2, bootstraps = 500,
     
   }
   
-  study.design  <-trtsel1$model.fit$study.design
-  rho   <-trtsel1$model.fit$cohort.attributes #because of paired data, rho should be the same for each trtsel object
-  link <- trtsel1$model.fit$link
+  study.design  <-x$model.fit$study.design
+  rho   <-x$model.fit$cohort.attributes #because of paired data, rho should be the same for each trtsel object
+  link <- x$model.fit$link
   
-  data1 <- trtsel1$derived.data 
-  data2 <- trtsel2$derived.data
+  data1 <- x$derived.data 
+  data2 <- x2$derived.data
   
-  if(trtsel1$default.trt != trtsel2$default.trt) stop("default.trt is different between markers. Summary measure comparison would not be valid.")
+  if(x$default.trt != x2$default.trt) stop("default.trt is different between markers. Summary measure comparison would not be valid.")
   
   #cant compare a biomarker- provided trtsel object with one that was generated by fitted risks being input
   #if(ncol(data1) != ncol(data2)) stop("cannot compare a trtsel object that was created by providing fitted risk to another trtsel object that was not. Bootstrapping methods are not comparable.") 
@@ -198,44 +199,44 @@ function(trtsel1, trtsel2, bootstraps = 500,
   if(nrow(data1) != nrow(data2)) stop("trtsel objects must have the same number of observations for comparison")
   
   
-  if( trtsel1$model.fit$outcome  == "time-to-event"){
-    event.name1 = trtsel1$formula[[2]]
-    event.name2 = trtsel1$formula[[2]]
+  if( x$model.fit$outcome  == "time-to-event"){
+    event.name1 = x$formula[[2]]
+    event.name2 = x$formula[[2]]
     
-    mysurv <- with(trtsel1$derived.data, eval(event.name1))
+    mysurv <- with(x$derived.data, eval(event.name1))
     event1 <- mysurv[,2]
-    mysurv <- with(trtsel2$derived.data, eval(event.name2))
+    mysurv <- with(x2$derived.data, eval(event.name2))
     event2 <- mysurv[,2]
     
   }else{
-    event.name1 = as.character(trtsel1$formula[[2]])
-    event.name2 = as.character(trtsel2$formula[[2]])
+    event.name1 = as.character(x$formula[[2]])
+    event.name2 = as.character(x2$formula[[2]])
 
-    event1 <-  trtsel1$derived.data[[event.name1]]
-    event2 <-  trtsel2$derived.data[[event.name2]]
+    event1 <-  x$derived.data[[event.name1]]
+    event2 <-  x2$derived.data[[event.name2]]
   }
   
 
-  if(!all.equal(data1[[trtsel1$treatment.name]], 
-                data2[[trtsel2$treatment.name]], check.attributes = FALSE, use.names = FALSE)) stop("trt labels must be identical to compare markers!")
+  if(!all.equal(data1[[x$treatment.name]], 
+                data2[[x2$treatment.name]], check.attributes = FALSE, use.names = FALSE)) stop("trt labels must be identical to compare markers!")
 
   if(!all.equal(event1, event2, check.attributes = FALSE, use.names = FALSE)) stop("event labels must be identical to compare markers!")
   
-  boot.sample <- trtsel1$functions$boot.sample
-  get.summary.measures <- trtsel1$functions$get.summary.measures
+  boot.sample <- x$functions$boot.sample
+  get.summary.measures <- x$functions$get.summary.measures
   
   if(bootstraps > 1){
   #get bootstrap data
   boot.data <- replicate(bootstraps, one.boot.compare(data1 = data1, data2 = data2,
-                                                      formulas = list(trtsel1$formula, trtsel2$formula), 
+                                                      formulas = list(x$formula, x2$formula), 
                                                       event.names = c(event.name1, event.name2), 
-                                                      treatment.names = c(trtsel1$treatment.name, trtsel2$treatment.name), 
+                                                      treatment.names = c(x$treatment.name, x2$treatment.name), 
                                                       rho = rho, study.design = study.design, obe.boot.sample = boot.sample, 
                                                       obe.get.summary.measures = get.summary.measures, link = link, 
-                                                      d = trtsel1$model.fit$thresh, 
-                                                      disc.rec.no.trt1 = trtsel1$model.fit$disc.rec.no.trt, 
-                                                      disc.rec.no.trt2 = trtsel2$model.fit$disc.rec.no.trt, 
-                                                      prediction.times = c(trtsel1$prediction.time, trtsel2$prediction.time), 
+                                                      d = x$model.fit$thresh, 
+                                                      disc.rec.no.trt1 = x$model.fit$disc.rec.no.trt, 
+                                                      disc.rec.no.trt2 = x2$model.fit$disc.rec.no.trt, 
+                                                      prediction.times = c(x$prediction.time, x2$prediction.time), 
                                                       bbc = bias.correct))
   
 
@@ -246,11 +247,11 @@ function(trtsel1, trtsel2, bootstraps = 500,
   boot.data.diff = (boot.data1) - (boot.data2 )
 
   ## Estimate summary measures
-  if(link == "time-to-event") data1$prediction.time = trtsel1$prediction.time
-  if(link == "time-to-event") data2$prediction.time = trtsel2$prediction.time
+  if(link == "time-to-event") data1$prediction.time = x$prediction.time
+  if(link == "time-to-event") data2$prediction.time = x2$prediction.time
   
-  sm.m1 <- get.summary.measures(data1, event.name1, trtsel1$treatment.name,  rho)
-  sm.m2 <- get.summary.measures(data2, event.name2, trtsel2$treatment.name, rho)
+  sm.m1 <- get.summary.measures(data1, event.name1, x$treatment.name,  rho)
+  sm.m2 <- get.summary.measures(data2, event.name2, x2$treatment.name, rho)
   sm.diff <- as.data.frame(t(unlist(sm.m1) - unlist(sm.m2) ))
 
   ci.m1   <- apply(boot.data1, 1, quantile, probs = c(alpha/2, 1-alpha/2), na.rm = TRUE)
@@ -317,8 +318,8 @@ function(trtsel1, trtsel2, bootstraps = 500,
                  ci.diff   = data.frame(ci.diff),
                  bias.model1 = bias1, 
                  bias.model2 = bias2, 
-                 trtsel1 = trtsel1, 
-                 trtsel2 = trtsel2, 
+                 x = x, 
+                 x2 = x2, 
                  p.values = p.vals,  
                  bootstraps = bootstraps,
                  bias.correct = bias.correct)
@@ -333,21 +334,21 @@ function(trtsel1, trtsel2, bootstraps = 500,
 result <- list(estimates.model1   = data.frame(sm.m1) ,
                  estimates.model2 = data.frame(sm.m2) , 
                  estimates.diff = data.frame(sm.diff), 
-                 trtsel1 = trtsel1, 
-                 trtsel2 = trtsel2, 
+                 x = x, 
+                 x2 = x2, 
                  bootstraps = bootstraps, 
                bias.correct = bias.correct)
   }
 
   #for plotting, we can only compare marker types that are the same...ie discrete to discrete, continuous to continuous
-  same.marker.type = (is.null(trtsel1$model.fit$disc.rec.no.trt) == is.null(trtsel2$model.fit$disc.rec.no.trt))
+  same.marker.type = (is.null(x$model.fit$disc.rec.no.trt) == is.null(x2$model.fit$disc.rec.no.trt))
   if(plot & !same.marker.type) {
     warning("Can not generate plots to compare a discrete marker to a continuous marker (bootstrap methods are not comparable). No plots will be produced!")
     plot = FALSE
   }
   
 
-  if(plot & is.null(trtsel1$model.fit$disc.rec.no.trt)){ 
+  if(plot & is.null(x$model.fit$disc.rec.no.trt)){ 
     if(!is.element(ci, c("vertical", "horizontal"))) stop("If plotting, ci must be one of `vertical` or `horizontal`")
     
   if(length(fixed.values>0)) conf.bands = FALSE 
@@ -379,9 +380,9 @@ result <- list(estimates.model1   = data.frame(sm.m1) ,
                            main = main, offset = offset, conf.bands=conf.bands)
   result$plot <- curves$plot
 
-  result$plot.ci.marker1 <- curves$trtsel1$conf.intervals
-  result$plot.ci.marker2 <- curves$trtsel2$conf.intervals
-  }else if(plot & !is.null(trtsel1$model.fit$disc.rec.no.trt)){
+  result$plot.ci.marker1 <- curves$x$conf.intervals
+  result$plot.ci.marker2 <- curves$x2$conf.intervals
+  }else if(plot & !is.null(x$model.fit$disc.rec.no.trt)){
     
     curves <-  myplotcompare.trtsel_disc( x = result, bootstraps =bootstraps, alpha  = alpha, ci = ci, marker.names = model.names, 
                                      xlab = xlab, 
@@ -398,12 +399,12 @@ result <- list(estimates.model1   = data.frame(sm.m1) ,
   
   
   
-  result$trtsel1 <- NULL
-  result$trtsel2 <- NULL
+  result$x <- NULL
+  result$x2 <- NULL
   class(result) <- "compare.trtsel"
   result$alpha <- alpha
   result$model.names <- model.names 
-  result$formulas <- list(trtsel1$formula, trtsel2$formula)
+  result$formulas <- list(x$formula, x2$formula)
   return(result) 
 
 }

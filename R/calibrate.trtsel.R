@@ -45,6 +45,7 @@ calibrate <- function(x, ...){ UseMethod("calibrate")}
 #' c(lower,upper). Only applies if plot.type is specified.
 #' @param main The main title for the plot.  Only applies if plot.type is
 #' specified.
+#' @param ... ignored.
 #' @return A list with the following components:
 #' \item{HL.TestStat}{Hosmer-Lemeshow test statistic for assessing fit of the
 #' risk models for the T = 0 and T = 1 groups.} \item{p.value}{P-values for the
@@ -82,7 +83,7 @@ calibrate <- function(x, ...){ UseMethod("calibrate")}
 #' cali.Y1
 #' 
 #' # A "treatment effect" plot 
-#' calibrate(trtsel.Y1, plot.type = "treatment effect")
+#' calibrate(trtsel.Y1, line.color = "coral", plot.type = "treatment effect")
 #' 
 #' 
 #' @importFrom binom binom.confint
@@ -90,7 +91,10 @@ calibrate <- function(x, ...){ UseMethod("calibrate")}
 #' @export 
 #' 
 calibrate.trtsel <-
-function( x, groups = 10, plot.type = "calibration", trt.names = c("Treatment", "No Treatment"), line.color = "black", point.color = "grey10", main = NULL, ylim = NULL, xlim = NULL, ylab = NULL, xlab=NULL){
+function( x, ..., groups = 10, plot.type = "calibration",
+          trt.names = c("Treatment", "No Treatment"), 
+          line.color = "black", point.color = "grey10", 
+          main = NULL, ylim = NULL, xlim = NULL, ylab = NULL, xlab=NULL){
 
   if(!is.trtsel(x)) stop("x must be an object of class 'trtsel' created by using the function 'trtsel' see ?trtsel for more help")
   if(!is.null(x$model.fit$disc.rec.no.trt)) stop("Calibration not supported for a discrete marker")

@@ -334,7 +334,8 @@ trteffectPLOTcompare_gg_disc <-
     mval2 = sort(unique(marker2))
     markerValue <- markerName <- trt.effect <- lower <- upper <- NULL
     mkrvals <- unique(c(marker1, marker2))
-    if(length(mkrvals) > 2) message("Note: Discrete marker values are different for the two models being compared. Figures may not look as expected!\n\n")
+
+    #if(length(mkrvals) > 2) message("Note: Discrete marker values are different for the two models being compared. Figures may not look as expected!\n\n")
     mydata = data.frame("trt.effect" = c(trt.effect1, trt.effect2),
                         "markerValue" = c(marker1, marker2), 
                         "markerName" = c(rep(marker.names, c(n,n))))

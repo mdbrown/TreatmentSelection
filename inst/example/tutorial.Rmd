@@ -37,6 +37,7 @@ library(TreatmentSelection)
 set.seed(12321)
 
 data(tsdata)
+data(surv_tsdata)
 
 tsdata[1:5, ]
 ```
@@ -280,8 +281,8 @@ A suite of performance measures is estimated for each marker, and marker-compari
 
 ```{r}
 # Compare the markers based on summary measures
-mycompare <- compare(trtsel1 = trtsel.Y1, 
-                     trtsel2 = trtsel.Y2,
+mycompare <- compare(x = trtsel.Y1, 
+                     x2 = trtsel.Y2,
                      bias.correct =TRUE, 
                      model.names = c("Y1", "Y1 + Y2"), 
                      bootstraps = 50,
@@ -297,8 +298,8 @@ trtsel.Y1_disc <- trtsel(event~Y1_disc*trt,
                          data = tsdata)
 
 
-compare(trtsel1 = trtsel.Y1_disc, 
-        trtsel2 = trtsel.Y2_disc, 
+compare(x = trtsel.Y1_disc, 
+        x2 = trtsel.Y2_disc, 
         bias.correct = TRUE, 
         ci = "vertical", 
         offset = 0.2, 

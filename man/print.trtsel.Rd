@@ -15,4 +15,3 @@
 \description{
 S3 method for class ''trtsel''
 }
-

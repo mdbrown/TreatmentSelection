@@ -12,7 +12,7 @@ trtsel(formula, treatment.name, data, fittedrisk.t0 = NULL,
   default.trt = c("trt all", "trt none"))
 }
 \arguments{
-\item{formula}{a 'formula' object including outcome ~ markers and marker by treatment interactions for
+\item{formula}{a 'formula' object consisting of outcome ~ markers and marker by treatment interactions for
 the treatment selection model to be evaluated. The outcome can be either binary or a
  'Surv' object for time-to-event outcomes. Binary variable should equal 1 for cases and 0 for controls.}
 
@@ -67,7 +67,7 @@ from cohort )\cr \cr}
 
 \item{link}{Link function used to fit the risk model for binary outcomes. Options are
 "logit"(default), "probit", "cauchit", "log" and "cloglog." Link functions
-other than "logit" are available only when study.design = "randomized
+other than "logit" are available only when the outcome is binary and study.design = "randomized
 cohort".}
 
 \item{default.trt}{The default treatment assignment to compare with
@@ -92,10 +92,10 @@ estimates given treatment), "trt.effect" (treatment effect estimates), and
 }
 \description{
 Creates an object of class "trtsel" given a data.frame containing marker,
-treatment, and adverse event status information.  The functions "plot",
-"evaluate", and "calibrate" can then be used to plot risk and treatment
+treatment, and adverse event status information.  The functions "plot.trtsel",
+"evaluate.trtsel", and "calibrate.trtsel" can then be used to plot risk and treatment
 effect curves, estimate summary measures, and check model calibration. The
-function "compare" can also be used to compare two treatment selection
+function "compare.trtsel" can also be used to compare two treatment selection
 markers.
 }
 \examples{
@@ -154,4 +154,3 @@ April 2014
 \code{\link{calibrate.trtsel}} for assessing model calibration, and
 \code{\link{compare.trtsel}} to compare two trtsel object.
 }
-

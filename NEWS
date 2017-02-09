@@ -30,13 +30,13 @@ TreatmentSelection 1.1.1
  * calibrate.trtsel: fixed bug when calibrating models fit using stratified case-control data. 
 
 
-TreatmentSelection 2.0.0
+TreatmentSelection 2.0.3
 ========================
 
 Note: This is a large update with many changes. Although, the estimation methods remain the same, many of the functions inputs have changed. This is to accomodate multivariate models and survival outcomes. 
 
-- Addition of 'trtsel_measures' 
+- Addition of 'trtsel_measures': a simple function for evaluating the performance of a user-specified marker-based treatment rule.
 - Input formulas into trtsel objects instead of univariate marker information. This allows for the evaluation of multivariate models. 
 - The package now allows for survival outcomes.
-- Bias-correction to adjust for over-optimism that comes from evaluating models on the same data that were used to fit model parameters. `eval.trtsel` now implements a bootstrap bias-correction method. 
+- Bias-correction to adjust for over-optimism that comes from evaluating models on the same data that were used to fit model parameters. `eval.trtsel` and `compare.trtsel` now implements a bootstrap bias-correction method. 
 

@@ -13,10 +13,11 @@ evaluate <- function(x, ...) UseMethod("evaluate")
 #' 
 #'@aliases evaluate evaluate.trtsel 
 #' 
-#'@param x An object of class "trtsel", created by using the function "trtsel." 
+#'@param x An object of class "trtsel", created by using the function "trtsel."
 #'@param bootstraps Number of bootstrap replicates for creating confidence intervals for each performance measure. The default value is 1000. Set bootstraps = 0 if no confidence intervals are desired.
-#'@param bias.correct logical indicator of whether to bias-correct measures for over-optimism using bootstrap-bias correction. When the same data is used to fit and evaluate the model, performance measures are over-optimistic. Setting this equal to TRUE uses a bootstrap method to bias-correct performance measures. 
+#'@param bias.correct logical indicator of whether to bias-correct measures for over-optimism using bootstrap-bias correction. When the same data is used to fit and evaluate the model, performance measures are over-optimistic. Setting this equal to TRUE uses a bootstrap method to bias-correct performance measures. See details for more information.  
 #'@param alpha (1-alpha)*100\% confidence intervals are calculated. Default value is alpha = 0.05 which yields 95\% CI's.  The same alpha is used for the two-sided type-I error for the test of H0: No decrease in event rate under marker-based treatment.
+#'@param ... ignored.
 #'@return  A list with the following components (see Janes et al. (2013) for a description of the summary measures and estimators): 
 #'\item{test.Null }{ List of results of a test of the null hypothesis H0: No decrease in event rate under marker-based treatment. Contains "reject" (logical; was H0 rejected), p.value, z.statistic, and alpha }
 #'\item{estimates }{data.frame of dimension 1x9 of summary measure estimates. Includes:
@@ -30,7 +31,7 @@ evaluate <- function(x, ...) UseMethod("evaluate")
 #'  ER.trt0.emp/mod, ER.trt1.emp/mod, ER.mkrbased.emp/mod: Event rates under trt = 0, trt = 1 or for marker-based treatment. 
 #'  Marker.Thresh: Marker positivity threshold-- defined as the maximum marker value such that estimated treatment effect < "thresh" (=treatment effect used to define the treatment rule, this is set when creating the trtsel object). If all observations are marker negative (or all are positive), Marker.Thresh has value NA}
 #' \item{conf.intervals}{ data.frame of dimension 2x9 with bootstrap-based confidence intervals for each summary measures. If bootstraps = 0 or boot = FALSE, this component is NULL. }
-#' 
+#'@note The evaluate function used this way both fit and evaluates a risk model using the same data, which is known to bias performance measure estimates to be overly optimistic. To correct for this bias, the evaluate function by default sets bias.correct=TRUE. This implements bootstrap bias correction via the ``refined bootstrap" method described in Efron and Tibshirani 1994. In short, we sample BB bootstrap datasets. For each, obtain a new treatment selection rule based on the re-fit model and calculate the difference in estimated performance of this rule using the bootstrap vs. original data. The average of these differences estimates the bias. We shift naive performance estimates and confidence intervals down by the estimated bias.
 #'@seealso \code{\link{trtsel}} for creating trtsel objects, \code{\link{plot.trtsel}} for plotting risk curves and more, \code{\link{calibrate.trtsel}} for assessing model calibration, and \code{\link{compare.trtsel}} to compare two trtsel object. 
 #'@examples 
 #'data(tsdata)
@@ -55,11 +56,12 @@ evaluate <- function(x, ...) UseMethod("evaluate")
 #'estimates.Y1 <- evaluate(trtsel.Y1, bootstraps = 50)
 #'estimates.Y1
 #'
-#'@method evaluate trtsel 
+#'@method evaluate trtsel
+#'@import stats
 #'@export  
 evaluate.trtsel <-
-function(x, bias.correct = TRUE, bootstraps = 1000, alpha = .05){
-
+function(x, ...,  bias.correct = TRUE, bootstraps = 1000, alpha = .05){
+ 
   if(!is.trtsel(x)) stop("x must be an object of class 'trtsel' created by using the function 'trtsel' see ?trtsel for more help")
  
   if(alpha<0 | alpha > 1) stop("Error: alpha should be between 0 and 1")

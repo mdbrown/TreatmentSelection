@@ -34,7 +34,5 @@ Janes, Holly; Brown, Marshall D; Pepe, Margaret; Huang, Ying; "An Approach to Ev
 }
 
 
-\examples{
 
-}
 \keyword{datasets}

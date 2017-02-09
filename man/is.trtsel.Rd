@@ -16,4 +16,3 @@ not.
 \description{
 Function to check if an object is of class "trtsel"
 }
-

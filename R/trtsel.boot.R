@@ -35,7 +35,7 @@ function(formula, treatment.name, data,
                      "cohort.attributes" = rho,
                      "study.design" = study.design, 
                      "link" = link)
-
+  trt <- data[[treatment.name]]
   trt.effect <- fittedrisk.t0 - fittedrisk.t1
   
   

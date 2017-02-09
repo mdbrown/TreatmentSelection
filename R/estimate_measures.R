@@ -1,6 +1,6 @@
-#' a simple function to estimate summary measures for a  rule to select treatment.  
+#' a simple function to estimate performance measures for a  rule used to select treatment.  
 #' 
-#' Provides point estimates for summary measures used to evaluate a rule used to select treatment. 
+#' Provides point estimates for summary measures to evaluate a rule used to select treatment. 
 #' 
 #' 
 #'@param event  vector for adverse event. Can be binary (1 is bad, 0 is good) or continuous (large numbers are worse). If failure time variable 'time' is set, event is used as the adverse event status indicator. 

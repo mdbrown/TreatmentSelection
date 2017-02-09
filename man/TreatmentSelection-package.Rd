@@ -2,8 +2,8 @@
 % Please edit documentation in R/TreatmentSelection-package.R
 \docType{package}
 \name{TreatmentSelection-package}
-\alias{TreatmentSelection}
 \alias{TreatmentSelection-package}
+\alias{TreatmentSelection}
 \title{Evaluate markers used to guide patient treatment selection decisions}
 \description{
 A suite of descriptive and inferential methods designed to evaluate
@@ -26,11 +26,6 @@ Version: \tab 2.0.-\cr Date: \tab 2016-07-28\cr License: \tab GPL-2\cr }
 ?calibrate.trtsel
 
 }
-\author{
-Marshall Brown and Holly Janes
-
-Maintainer: Marshall Brown <mdbrown@fhcrc.org>
-}
 \references{
 Janes H, Brown MD, Huang Y, et al. An approach to evaluating and comparing
 biomarkers for patient treatment selection. 
@@ -44,5 +39,9 @@ biomarkers for patient treatment selection.
 \code{\link{calibrate.trtsel}} for assessing model calibration, and
 \code{\link{compare.trtsel}} to compare two trtsel object.
 }
-\keyword{package}
+\author{
+Marshall Brown and Holly Janes
 
+Maintainer: Marshall Brown <mdbrown@fhcrc.org>
+}
+\keyword{package}

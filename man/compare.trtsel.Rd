@@ -4,15 +4,21 @@
 \alias{compare.trtsel}
 \title{compare the performance of two treatment selection markers}
 \usage{
-\method{compare}{trtsel}(trtsel1, trtsel2, bootstraps = 500,
-  bias.correct = TRUE, alpha = 0.05, plot = TRUE, ci = "horizontal",
-  fixed.values = NULL, offset = 0.01, conf.bands = TRUE,
-  conf.bandsN = 100, model.names = c("Model 1", "Model 2"), xlab = NULL,
-  ylab = NULL, xlim = NULL, ylim = NULL, main = NULL,
-  annotate.plot = TRUE)
+\method{compare}{trtsel}(x, ..., x2, bootstraps = 500, bias.correct = TRUE,
+  alpha = 0.05, plot = TRUE, ci = "horizontal", fixed.values = NULL,
+  offset = 0.01, conf.bands = TRUE, conf.bandsN = 100,
+  model.names = c("Model 1", "Model 2"), xlab = NULL, ylab = NULL,
+  xlim = NULL, ylim = NULL, main = NULL, annotate.plot = TRUE)
 }
 \arguments{
-\item{trtsel2}{An object of class "trtsel" created by using function
+\item{x}{An object of class "trtsel" created by using function
+"trtsel". This is created using data for the first marker.  Note: event and
+treatment vectors provided to create this trtsel object must be identical to
+those used to create the x2 object.}
+
+\item{...}{ignored.}
+
+\item{x2}{An object of class "trtsel" created by using function
 "trtsel". This is created using data for the second marker.}
 
 \item{bootstraps}{Number of bootstrap replicates for creating confidence
@@ -52,7 +58,7 @@ or y-axis at which to calculate the pointwise confidence intervals. The
 default is 100. Only applies if plot = TRUE.}
 
 \item{model.names}{A vector of length 2 indicating the names for the two
-markers in trtsel1, and trtsel2, respectively, for the plot legend. The default value is c("Model 1",
+markers in x, and x2, respectively, for the plot legend. The default value is c("Model 1",
 "Model 2").}
 
 \item{xlab}{A label for the x-axis. Default values depend on plot.type. Only
@@ -72,11 +78,6 @@ Only applies if plot = TRUE.}
 \item{annotate.plot}{Only applies to comparison of two discrete markers.
 Should the plot be annotated with the marker group percentages? default is
 TRUE.}
-
-\item{x}{An object of class "trtsel" created by using function
-"trtsel". This is created using data for the first marker.  Note: event and
-treatment vectors provided to create this trtsel object must be identical to
-those used to create the trtsel2 object.}
 }
 \value{
 A list with components (see Janes et al. (2013) for a description of
@@ -153,7 +154,7 @@ trtsel.Y2
 
 # Plot treatment effect curves with pointwise confidence intervals
 ## use more bootstraps in practice
-compare(trtsel1 = trtsel.Y1, trtsel2 = trtsel.Y2,
+compare(x = trtsel.Y1, x2 = trtsel.Y2,
                                 bootstraps = 10, plot = TRUE,      
                                 ci = "horizontal",  conf.bands = TRUE) 
                                 
@@ -171,4 +172,3 @@ International Journal of Biostatistics. Volume 0, Issue 0, ISSN (Online)
 \code{\link{evaluate.trtsel}} for evaluating marker performance, and
 \code{\link{calibrate.trtsel}} for assessing model calibration..
 }
-

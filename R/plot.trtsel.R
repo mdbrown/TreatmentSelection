@@ -116,6 +116,8 @@
 #'                        fixed.values = c(10, 20), bootstraps = 10)
 #' 
 #' @import ggplot2
+#' @import grid 
+#' @import graphics
 #' @method plot trtsel
 #' @export
 

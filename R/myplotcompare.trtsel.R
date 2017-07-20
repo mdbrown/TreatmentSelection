@@ -27,7 +27,7 @@ function(x, bootstraps = 500, alpha = .05,
   fittedrisk.t1.y1 <- ts1$derived.data$fittedrisk.t1
  
   delta.y1 <- ts1$derived.data$trt.effect
-  link <- ts1$model.fit$link
+  link <- ts1$model.fit$family
   fittedrisk.t0.y2 <- ts2$derived.data$fittedrisk.t0
   fittedrisk.t1.y2 <- ts2$derived.data$fittedrisk.t1
 
@@ -39,7 +39,7 @@ function(x, bootstraps = 500, alpha = .05,
   trt <- ts1$derived.data[[ts1$treatment.name]]
   
 
-  if( link  == "time-to-event"){
+  if( link$family  == "time-to-event"){
     event.name1 = ts1$formula[[2]]
     event.name2 = ts2$formula[[2]]
     
@@ -74,7 +74,7 @@ function(x, bootstraps = 500, alpha = .05,
     #fixeddeltas.y1 <- fixed.values
     #fixeddeltas.y2 <- fixed.values
    # }
-    if(link == "risks_provided"){
+    if(link$family == "risks_provided"){
       
       provided_risk <- cbind(fittedrisk.t0.y1, 
                          fittedrisk.t1.y1, 
@@ -205,7 +205,7 @@ myplotcompare.trtsel_disc <-
     study.design <- ts1$model.fit$study.design
     trt <- ts1$derived.data$trt
     
-    if( ts1$model.fit$link == "time-to-event"){
+    if( ts1$model.fit$family$family == "time-to-event"){
       warning("plotting comparisons of two discrete markers with a time-to-event outcome is not implemented yet.")
       return(NULL)
     }else{

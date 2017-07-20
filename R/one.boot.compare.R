@@ -3,7 +3,7 @@ function(data1, data2, formulas,  event.names, treatment.names,  rho, study.desi
 
 
   
-  if( link  == "time-to-event"){
+  if( link$family  == "time-to-event"){
     event.name1 = formulas[[1]][[2]]
     event.name2 = formulas[[2]][[2]]
     
@@ -27,28 +27,30 @@ function(data1, data2, formulas,  event.names, treatment.names,  rho, study.desi
   ind   <- myboot.sample[-c(1:7)]
 
   #first model 
-  if(link == "risks_provided")
+  if(link$family == "risks_provided")
   {
      x1.b <- trtsel.boot( formula = formulas[[1]], treatment.name = treatment.names[1], data = data1[ind,],  
-                          d = d, study.design = study.design, rho = rho.b, link = link, disc.rec.no.trt =disc.rec.no.trt1, 
+                          d = d, study.design = study.design, rho = rho.b, family = link, disc.rec.no.trt =disc.rec.no.trt1, 
                           provided_risk = cbind(data1$fittedrisk.t0, data1$fittedrisk.t1)[ind,], 
                           prediction.time = prediction.times[[1]])
      coefs1 <- rep(0,4)
   }else{
      x1.b <- trtsel.boot( formula = formulas[[1]], treatment.name = treatment.names[1], data = data1[ind,],
-                          d = d, study.design = study.design, rho = rho.b, link = link, disc.rec.no.trt =disc.rec.no.trt1, 
+                          d = d, study.design = study.design, rho = rho.b, family = link, disc.rec.no.trt =disc.rec.no.trt1, 
                           prediction.time = prediction.times[[1]])
      coefs1 <- x1.b$model$coefficients[,1]
      coefs1 <- c(coefs1, 0,0,0,0)[1:4]
   }
   
 
+
   if(is.null(data1[["rec.no.trt"]])){
     x1.b$derived.data$rec.no.trt <- 1- x1.b$derived.data$rec.trt
     
   }
   
-  if(link == "time-to-event") x1.b$derived.data$prediction.time = prediction.times[[1]]
+
+  if(link$family == "time-to-event") x1.b$derived.data$prediction.time = prediction.times[[1]]
   sm1.b <- obe.get.summary.measures(x1.b$derived.data, event.names[[1]], treatment.names[1],  rho.b)
 
   
@@ -57,7 +59,7 @@ function(data1, data2, formulas,  event.names, treatment.names,  rho, study.desi
   if(bbc){
     
    
-  if(link == "time-to-event"){
+  if(link$family == "time-to-event"){
     
     coxfit <- do.call(coxph, list(formulas[[1]], data1[ind,]))
     
@@ -71,9 +73,9 @@ function(data1, data2, formulas,  event.names, treatment.names,  rho, study.desi
     tmpcoef <- unname(get.coef(formulas[[1]],treatment.names[[1]], data1[ind,], 
                             study.design, 
                             rho.b, 
-                            link = link)[,1])
+                            family = link)[,1])
     
-    linkinvfun <- binomial(link = link)$linkinv
+    linkinvfun <- link$linkinv
     obsrisk.t0.f  <-  get.risk.t(tmpcoef, formulas[[1]], treatment.names[[1]], data = data1, linkinvfun, t = 0)
     obsrisk.t1.f  <-  get.risk.t(tmpcoef, formulas[[1]], treatment.names[[1]], data = data1, linkinvfun, t = 1)
     wi = 0
@@ -90,7 +92,7 @@ function(data1, data2, formulas,  event.names, treatment.names,  rho, study.desi
                       d = d, 
                       study.design = study.design, 
                       rho = rho, 
-                      link = "risks_provided", 
+                      family = list(family = "risks_provided"), 
                       disc.rec.no.trt = disc.rec.no.trt1, 
                       provided_risk = provided_risk.f, 
                       prediction.time = prediction.times[[1]])
@@ -100,26 +102,27 @@ function(data1, data2, formulas,  event.names, treatment.names,  rho, study.desi
   sm1.f <- obe.get.summary.measures(x.f$derived.data, 
                                    event.name = event.names[[1]],
                                    treatment.name = treatment.names[[1]], 
-                                   rho)
+                                   rho, 
+                                   d = d)
   
 }else{
   sm1.f <- NULL
 }
 
   
-  
+
   
   #second model 
-  if(link == "risks_provided")
+  if(link$family == "risks_provided")
   {
     x2.b <- trtsel.boot( formula = formulas[[2]], treatment.name = treatment.names[2], data = data2[ind,],  
-                         d = d, study.design = study.design, rho = rho.b, link = link, disc.rec.no.trt =disc.rec.no.trt2, 
+                         d = d, study.design = study.design, rho = rho.b, family = link, disc.rec.no.trt =disc.rec.no.trt2, 
                          provided_risk = cbind(data2$fittedrisk.t0, data2$fittedrisk.t1)[ind,], 
                          prediction.time = prediction.times[[2]])
     coefs2 <- rep(0, 4)
   }else{
     x2.b <- trtsel.boot( formula = formulas[[2]], treatment.name = treatment.names[2], data = data2[ind,], 
-                         d = d, study.design = study.design, rho = rho.b, link = link, disc.rec.no.trt =disc.rec.no.trt2, 
+                         d = d, study.design = study.design, rho = rho.b, family = link, disc.rec.no.trt =disc.rec.no.trt2, 
                          prediction.time = prediction.times[[2]])
     coefs2 <- x2.b$model$coefficients[,1]
     coefs1 <- c(coefs1, 0,0,0,0)[1:4]
@@ -130,11 +133,11 @@ function(data1, data2, formulas,  event.names, treatment.names,  rho, study.desi
     
   }
   
-  if(link == "time-to-event") x2.b$derived.data$prediction.time = prediction.times[[1]]
+  if(link$family == "time-to-event") x2.b$derived.data$prediction.time = prediction.times[[1]]
   sm2.b <- obe.get.summary.measures(x2.b$derived.data, event.names[[2]], treatment.names[2], rho.b)
 
   if(bbc){
-    if(link == "time-to-event"){
+    if(link$family == "time-to-event"){
       
       coxfit <- do.call(coxph, list(formulas[[2]], data2[ind,]))
       
@@ -148,9 +151,9 @@ function(data1, data2, formulas,  event.names, treatment.names,  rho, study.desi
       tmpcoef <- unname(get.coef(formulas[[2]],treatment.names[[2]], data2[ind,], 
                                  study.design, 
                                  rho.b, 
-                                 link = link)[,1])
+                                 family = link)[,1])
       
-      linkinvfun <- binomial(link = link)$linkinv
+      linkinvfun <- link$linkinv
       obsrisk.t0.f  <-  get.risk.t(tmpcoef, formulas[[2]], treatment.names[[2]], data = data2, linkinvfun, t = 0)
       obsrisk.t1.f  <-  get.risk.t(tmpcoef, formulas[[2]], treatment.names[[2]], data = data2, linkinvfun, t = 1)
       wi = 0
@@ -167,7 +170,7 @@ function(data1, data2, formulas,  event.names, treatment.names,  rho, study.desi
                         d = d, 
                         study.design = study.design, 
                         rho = rho, 
-                        link = "risks_provided", 
+                        family = list(family = "risks_provided"), 
                         disc.rec.no.trt = disc.rec.no.trt2, 
                         provided_risk = provided_risk.f, 
                         prediction.time = prediction.times[[2]])

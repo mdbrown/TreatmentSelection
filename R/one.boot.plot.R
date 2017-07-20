@@ -1,7 +1,7 @@
 one.boot.plot <-
 function(x, ci, fixed.values, fix.ind, out.ind){
 
-  if( x$model.fit$link == "time-to-event"){
+  if( x$model.fit$family$family == "time-to-event"){
     mysurv <- with(x$derived.data, eval(x$formula[[2]]))
     event <- mysurv[,2]
   }else{
@@ -19,7 +19,7 @@ function(x, ci, fixed.values, fix.ind, out.ind){
   rho.b <- myboot.sample[1:7]
   ind   <- myboot.sample[-c(1:7)]
 
-  if( x$model.fit$link == "time-to-event"){
+  if( x$model.fit$family$family == "time-to-event"){
     event.b <- 0
   }else{
    event.b  <- x$derived.data[[as.character(x$formula[[2]])]][ind]
@@ -27,12 +27,12 @@ function(x, ci, fixed.values, fix.ind, out.ind){
   trt.b    <- x$derived.data[[x$treatment.name]][ind]
 
 
-  if(x$model.fit$link == "risks_provided"){
+  if(x$model.fit$family$family == "risks_provided"){
     obsrisk.t0.b <- x$derived.data$fittedrisk.t0[ind]
     obsrisk.t1.b <- x$derived.data$fittedrisk.t1[ind]
     linkinvfun <- NULL
     marker.b <- obsrisk.t0.b - obsrisk.t1.b#
-  }else if(x$model.fit$link == "time-to-event"){
+  }else if(x$model.fit$family$family == "time-to-event"){
     
     coxfit <- do.call(coxph, list(x$formula, x$derived.data[ind,]))
   
@@ -43,13 +43,13 @@ function(x, ci, fixed.values, fix.ind, out.ind){
 
     
   }else{
-
+   # browser()
     coef <- unname(get.coef(x$formula, x$treatment.name, x$derived.data[ind,], 
                             x$model.fit$study.design, 
                             rho.b, 
-                            link = x$model.fit$link)[,1])
+                            family = x$model.fit$family)[,1])
     
-    linkinvfun <- binomial(link = x$model.fit$link)$linkinv
+    linkinvfun <- x$model.fit$family$linkinv
     obsrisk.t0.b  <-  get.risk.t(coef, x$formula, x$treatment.name, data = x$derived.data[ind,], linkinvfun, t = 0)
     obsrisk.t1.b  <-  get.risk.t(coef, x$formula, x$treatment.name, data = x$derived.data[ind,], linkinvfun, t = 1)
     wi = 0
@@ -112,7 +112,7 @@ function(x, ci, fixed.values, fix.ind, out.ind){
 one.boot.plot_disc <-
   function(x){
     
-    if( x$model.fit$link == "time-to-event"){
+    if( x$model.fit$family$family == "time-to-event"){
       mysurv <- with(x$derived.data, eval(x$formula[[2]]))
       event <- mysurv[,2]
     }else{
@@ -131,7 +131,7 @@ one.boot.plot_disc <-
    # trt.b  <- x$derived.data[[x$treatment.name]][ind]
     marker.b  <- x$derived.data[ind, x$model.fit$marker.names] 
     
-    if(x$model.fit$link == "risks_provided") 
+    if(x$model.fit$family$family == "risks_provided") 
     {
       provided_risk <- cbind(x$derived.data$fittedrisk.t0[ind], 
                              x$derived.data$fittedrisk.t1[ind])
@@ -144,7 +144,7 @@ one.boot.plot_disc <-
                               d=x$model.fit$thresh, 
                               rho = rho.b, 
                               study.design = x$model.fit$study.design,
-                              link  =  x$model.fit$link, 
+                              family  =  x$model.fit$family, 
                               disc.rec.no.trt = x$model.fit$disc.rec.no.trt, 
                               provided_risk = provided_risk, 
                               prediction.time = x$prediction.time)
@@ -175,7 +175,7 @@ one.boot.plot.compare <-
     else addind = 1
     
     
-    if( link  == "time-to-event"){
+    if( link$family  == "time-to-event"){
       
       mysurv <- with(data1, eval(event.names[[1]]))
       event1 <- mysurv[,2]
@@ -199,12 +199,12 @@ one.boot.plot.compare <-
     
     fixed.values <- fixeddeltas.y1
    
-    if(link == "risks_provided"){
+    if(link$family == "risks_provided"){
       
       obsrisk.t0.b <- provided_risk[ind,1]
       obsrisk.t1.b <- provided_risk[ind,2]
       
-    }else if(link == "time-to-event"){
+    }else if(link$family == "time-to-event"){
       
       coxfit <- do.call(coxph, list(formulas[[1]], data1[ind,]))
       
@@ -218,7 +218,7 @@ one.boot.plot.compare <-
       
     }else{
       coef <- unname(get.coef(formulas[[1]], treatment.names[1], data1[ind,],  study.design, rho.b, link)[,1])
-      linkinvfun <- binomial(link = link)$linkinv
+      linkinvfun <- link$linkinv
       obsrisk.t0.b  <-  get.risk.t(coef, formulas[[1]], treatment.names[1], data1[ind,], linkinvfun, t = 0)
       obsrisk.t1.b  <-  get.risk.t(coef, formulas[[1]], treatment.names[1], data1[ind,], linkinvfun, t = 1)
       #obsrisk.t0.b  <- c(ifelse(coef[3]>0, 0,1),        get.risk.t0(coef,  marker.b, linkinvfun))
@@ -248,10 +248,10 @@ one.boot.plot.compare <-
     ### Y2
     fixed.values <- fixeddeltas.y2
    
-    if(link == "risks_provided"){
+    if(link$family == "risks_provided"){
       obsrisk.t0.b <- provided_risk[ind,3]
       obsrisk.t1.b <- provided_risk[ind,4]
-    }else if(link == "time-to-event"){
+    }else if(link$family == "time-to-event"){
       
       coxfit <- do.call(coxph, list(formulas[[2]], data2[ind,]))
       
@@ -265,7 +265,7 @@ one.boot.plot.compare <-
       
     }else{
       coef <- unname(get.coef(formulas[[2]], treatment.names[2], data2[ind,],study.design, rho.b, link)[,1])
-      linkinvfun <- binomial(link = link)$linkinv
+      linkinvfun <- link$linkinv
       obsrisk.t0.b  <-  get.risk.t(coef, formulas[[2]], treatment.names[2], data2[ind,], linkinvfun, t = 0)
       obsrisk.t1.b  <-  get.risk.t(coef, formulas[[2]], treatment.names[2], data2[ind,], linkinvfun, t = 1)
       #obsrisk.t0.b  <- c(ifelse(coef[3]>0, 0,1),        get.risk.t0(coef,  marker2.b, linkinvfun))

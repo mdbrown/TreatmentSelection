@@ -6,7 +6,7 @@ trteffectPLOT_gg <-
   
     trt.effect <- x$derived.data$trt.effect
     
-    if(x$model.fit$link == "time-to-event"){
+    if(x$model.fit$family$family == "time-to-event"){
       event = rep(0, nrow(x$derived.data))
       event.name = x$formula[[2]]
     }else{
@@ -101,7 +101,7 @@ trteffectPLOT_gg_disc <-
     
     trt.effect <- x$derived.data$trt.effect
     marker <- x$derived.data[, x$model.fit$marker.names]
-    if(x$model.fit$link == "time-to-event"){
+    if(x$model.fit$family$family == "time-to-event"){
       event = rep(0, nrow(x$derived.data))
       event.name = x$formula[[2]]
       #setting event.name to treatment.name: this doesn't matter since we use model 
@@ -205,7 +205,7 @@ trteffectPLOTcompare_gg <-
     trt.effect <- x1$derived.data$trt.effect
     
     
-    if(x1$model.fit$link == "time-to-event"){
+    if(x1$model.fit$family$family == "time-to-event"){
       event = rep(0, nrow(x1$derived.data))
       event.name = x1$formula[[2]]
       #setting event.name to treatment.name: this doesn't matter since we use model 
@@ -217,8 +217,8 @@ trteffectPLOTcompare_gg <-
     trt <- x1$derived.data[[x1$treatment.name]]
     
     trt.effect2 <- x2$derived.data$trt.effect
-    
-    if(x1$model.fit$link == "time-to-event"){
+   
+    if(x1$model.fit$family$family  == "time-to-event"){
       event2 = rep(0, nrow(x1$derived.data))
       event.name = x1$formula[[2]]
       x1$derived.data$prediction.time = x1$prediction.time
@@ -314,7 +314,7 @@ trteffectPLOTcompare_gg_disc <-
   
     trt.effect1 <- x1$derived.data$trt.effect
     marker1 <-  x1$derived.data[[x1$model.fit$marker.names]]
-    if(x1$model.fit$link == "time-to-event"){
+    if(x1$model.fit$family$family  == "time-to-event"){
       event = rep(0, nrow(x1$derived.data))
       event.name = x1$formula[[2]]
       #setting event.name to treatment.name: this doesn't matter since we use model 

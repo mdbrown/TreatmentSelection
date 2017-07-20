@@ -1,8 +1,8 @@
 Package: TreatmentSelection
 Type: Package
 Title: Evaluate Treatment Selection Biomarkers
-Version: 2.0.3
-Date: 2017-2-9
+Version: 2.1.0
+Date: 2017-7-20
 Author: Marshall Brown and Holly Janes
 Maintainer: Marshall Brown <mdbrown@fhcrc.org>
 Description: A suite of descriptive and inferential methods designed to evaluate one or more biomarkers for their ability to guide patient treatment recommendations.  Package includes functions to assess the calibration of risk models; and plot, evaluate, and compare markers.

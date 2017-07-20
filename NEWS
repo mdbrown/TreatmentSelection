@@ -40,3 +40,7 @@ Note: This is a large update with many changes. Although, the estimation methods
 - The package now allows for survival outcomes.
 - Bias-correction to adjust for over-optimism that comes from evaluating models on the same data that were used to fit model parameters. `eval.trtsel` and `compare.trtsel` now implements a bootstrap bias-correction method. 
 
+TreatmentSelection 2.0.4 
+========================
+- adjusted estimate of event rate under marker-based trt. 
+

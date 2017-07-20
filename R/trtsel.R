@@ -9,7 +9,7 @@
 #' 
 #' 
 #' @param formula a 'formula' object consisting of outcome ~ markers and marker by treatment interactions for
-#'  the treatment selection model to be evaluated. The outcome can be either binary or a
+#'  the treatment selection model to be evaluated. The outcome can be continuous, binary or a
 #'   'Surv' object for time-to-event outcomes. Binary variable should equal 1 for cases and 0 for controls.
 #' @param treatment.name  Name of the treatment variable in data.frame "data". The treatment variable must be coded 1 for
 #' "treated" and 0 for "un-treated."
@@ -52,10 +52,11 @@
 #' in cohort, \cr Pr(trt==1 & event==0) in cohort, \cr fraction of cases with
 #' trt == 0 sampled from cohort, \cr fraction of cases with trt == 1 sampled
 #' from cohort )\cr \cr
-#' @param link Link function used to fit the risk model for binary outcomes. Options are
-#' "logit"(default), "probit", "cauchit", "log" and "cloglog." Link functions
-#' other than "logit" are available only when the outcome is binary and study.design = "randomized
-#' cohort".
+#' @param family   function passed to `glm` describing the error distribution and link 
+#' function to be used in the model. Defaults to binomial(link = "logit") when the outcome is
+#' numeric with two values {0,1} and gaussian(link = "identity") otherwise.
+#' Ignored for time-to-event outcomes.
+#' For non RCT study designs, methods only exist for family = binomial(link = "logit"). 
 #' 
 #' @param default.trt The default treatment assignment to compare with
 #' marker-based treatment. Can either be set at "trt all" (default) or "trt
@@ -138,7 +139,7 @@ function(formula, treatment.name, data,
          prediction.time = NULL, 
          study.design = c("RCT", "nested case-control", "stratified nested case-control"), 
          cohort.attributes = NULL, 
-         link = c("logit", "probit", "cauchit", "log", "cloglog"), 
+         family, 
          default.trt = c("trt all", "trt none") ){
   
   call <- match.call() 
@@ -159,21 +160,33 @@ function(formula, treatment.name, data,
     data <- data[mycomplete,]
     
   }
-  ## Error Checking
+  ## Begin Error Checking
   
   event.name <- as.character(formula[[2]])
   #define outcome 
   if(event.name[[1]] == "Surv"){
     outcome = "time-to-event" 
-    link = "time-to-event"
+    family = list(family = "time-to-event")
     if(is.null(prediction.time)) stop("'prediction.time' must be set for a time-to-event outcome.")
     #make sure prediction time is reasonable value? 
     #...
   }else{
-    outcome = "binary"
-    if(!is.numeric(data[[event.name]]) | !all(is.element(unique(data[[event.name]]), c(0,1)))) stop( "Binary outcome must be a numeric vector with elements 1 or 0")
-    link = match.arg(link)
-    if(!is.element(link, c("logit", "probit", "cauchit", "log", "cloglog"))) stop("link must be one of ''logit'', ''probit'', ''cauchit'', ''log'', ''cloglog''")
+    yy <- data[[event.name]]
+    if(  length(unique(yy))==2){
+      outcome = "binary"
+     if(missing(family)) {
+       family = binomial(link = "logit")
+       message("Binary outcome detected: setting family = binomial(link = 'logit')")
+     }
+      
+    }else{
+      outcome = "continuous"
+      if(missing(family)) {
+        family = gaussian(link = "identity")
+        message("Continuous outcome detected: setting family = gaussian(link = 'identity')")
+      }
+    }
+
   }
   #check event
   
@@ -203,13 +216,13 @@ function(formula, treatment.name, data,
 
   d <- thresh
   study.design = match.arg(study.design) 
-  if(study.design == "RCT") study.design <- "randomized cohort"
-#find out which bootstrapping functions to use based on type
-  if( substr(study.design,1,4)  == "rand" ) { 
+  if(study.design == "RCT") study.design <- "RCT"
+  #find out which bootstrapping functions to use based on type
+  if( substr(study.design,1,3)  == "RCT" ) { 
    
     boot.sample <- boot.sample.cohort 
 
-    if(outcome == "binary"){
+    if(outcome != "time-to-event"){
       get.summary.measures <- get.summary.measures.cohort
       get.F <- get.F.cohort
       }
@@ -219,13 +232,14 @@ function(formula, treatment.name, data,
       get.F <- get.F.cohort.survival
     }
 
-    if(length(cohort.attributes) >0) warning("study.design = ''randomized cohort'', but cohort.attributes assigned: cohort.attributes will be ignored"); cohort.attributes=NULL;
+    if(length(cohort.attributes) >0) warning("study.design = ''RCT'', but cohort.attributes assigned: cohort.attributes will be ignored"); cohort.attributes=NULL;
      #just passing null value here 
     
 
-  }else if( substr(study.design, 1, 4) =="nest") { 
-    if(outcome == "time-to-event") stop("study.design must be ''randomized cohort'' for time-to-event outcomes.")
-    if(link!="logit") warning("when study.design is ''nested case-control'' only link=''logit'' is allowed, setting link = ''logit''"); link = "logit"
+  }else if( substr(study.design, 1, 4) =="nest") 
+    { 
+    if(outcome == "time-to-event") stop("study.design must be ''RCT'' for time-to-event outcomes.")
+    if(family$link!="logit") warning("when study.design is ''nested case-control'' only family = binomial(link = `logit`) is allowed, setting family = binomial(`logit`)"); family = binomial("logit")
     boot.sample <- boot.sample.case.control 
     get.F <- get.F.case.control
     get.summary.measures <- get.summary.measures.case.control
@@ -247,9 +261,10 @@ function(formula, treatment.name, data,
     #cohort attributes is c(N, Pr(trt = 1), Pr(event = 1) ) 
 
   }
-  else if( substr(study.design, 1, 5) =="strat") { 
-    if(outcome == "time-to-event") stop("study.design must be ''randomized cohort'' for time-to-event outcomes.")
-    if(link!="logit") warning("when study.design is ''stratified nested case-control'' only link=''logit'' is allowed, setting link = ''logit''"); link = "logit"
+  else if( substr(study.design, 1, 5) =="strat") 
+    { 
+    if(outcome == "time-to-event") stop("study.design must be ''RCT'' for time-to-event outcomes.")
+    if(family$link!="logit") warning("when study.design is ''stratified nested case-control'' only family = binomial(link = `logit`) is allowed, setting family = binomial(`logit`)"); family = binomial("logit")
     boot.sample <- boot.sample.stratified.case.control
     get.F <- get.F.stratified.case.control  
     get.summary.measures <- get.summary.measures.stratified.case.control
@@ -285,8 +300,8 @@ function(formula, treatment.name, data,
   if(!is.null(fittedrisk.t0)) {
     fitted_risk_t0 = data[[fittedrisk.t0]]
     if(length(marker.names)>1) warning("fitted risks provided: marker data will be ignored")
-   
-    link <- "risks_provided"
+    
+    family <- list(family = "risks_provided")
     if(is.null(fittedrisk.t1)) stop("must provide fitted risk for trt = 1 as well")
     if(any(fitted_risk_t0 > 1) | any(fitted_risk_t0 <0)) stop("fitted risks for trt = 0 are outside of bounds (0,1)")
     
@@ -309,11 +324,11 @@ function(formula, treatment.name, data,
   
   # derived.data
 
-  #now that we allow for different link functions for "randomized cohorts", we need to get the fitted risks using the coefs we calculated
+  #now that we allow for different link functions for "RCTs", we need to get the fitted risks using the coefs we calculated
 
-  if(link == "risks_provided"){
+  if(family$family == "risks_provided"){
     linkinvfun <- NULL
-  }else if(link == "time-to-event"){
+  }else if(family$family == "time-to-event"){
    
     coxfit <- do.call(coxph, list(formula,data))
     
@@ -328,9 +343,9 @@ function(formula, treatment.name, data,
                         data = data,
                         study.design = study.design, 
                         rho = rho, 
-                        link = link)
+                        family = family)
       
-    linkinvfun <- binomial(link = link)$linkinv
+    linkinvfun <- family$linkinv
     fitted_risk_t0 <- get.risk.t(coef[,1], formula, treatment.name, data, linkinvfun, t = 0)
     fitted_risk_t1 <- get.risk.t(coef[,1], formula, treatment.name, data, linkinvfun, t = 1)
     }
@@ -339,7 +354,7 @@ function(formula, treatment.name, data,
   
   model.fit <- list( "coefficients" = coef, "cohort.attributes" = rho, 
                      "study.design" = study.design, 
-                     "link" = link, "outcome" = outcome, 
+                     "family" = family, "outcome" = outcome, 
                      "thresh" = d, 
                      "marker.names"  = marker.names)
   

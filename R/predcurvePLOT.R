@@ -17,7 +17,7 @@ predcurvePLOT_gg <-
       if(is.null(ylab)) ylab <- "risk given treatment effect"
     }
  
-    if(x$model.fit$link == "time-to-event"){
+    if(x$model.fit$family$family == "time-to-event"){
       event = 0
     }else{
       event <- x$derived.data[[as.character(x$formula[[2]])]]
@@ -27,7 +27,9 @@ predcurvePLOT_gg <-
     
     F.Y <- get.F(marker, event, trt, rho = rho)*100
     n = length(fittedrisk.t0)
-    mydata <- data.frame(risk = c(fittedrisk.t0, fittedrisk.t1), trt = c(rep(1, n ), rep(0,n)), Fy = rep(F.Y,2))
+    mydata <- data.frame(risk = c(fittedrisk.t0, fittedrisk.t1),
+                         trt = c(rep(1, n ), rep(0,n)), 
+                         Fy = rep(F.Y,2))
     #mydata <- mydata[with(mydata, order(risk)),]
     mydata <- mydata[!duplicated(mydata),]
     #to appease check 

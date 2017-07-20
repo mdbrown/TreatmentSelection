@@ -5,7 +5,7 @@ CDFdeltaPLOT_gg <-
     trt.effect <- x$derived.data$trt.effect
     
     
-    if(x$model.fit$link == "time-to-event"){
+    if(x$model.fit$family$family == "time-to-event"){
       event = 0
       #event is only used to calculate F.D for subcohort sampling, which isn't allowed for survival outcomes (yet)
     }else{
@@ -85,7 +85,7 @@ CDFdeltaPLOT_gg_disc <-
     trt.effect <- x$derived.data$trt.effect
     marker <- x$derived.data[, x$model.fit$marker.names]
     
-    if(x$model.fit$link == "time-to-event"){
+    if(x$model.fit$family$family == "time-to-event"){
       event = 0
       #event is only used to calculate F.D for subcohort sampling, which isn't allowed for survival outcomes (yet)
     }else{

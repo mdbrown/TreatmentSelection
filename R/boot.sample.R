@@ -17,14 +17,17 @@ boot.sample.case.control <-
     myall   <- 1:length(trt) 
     
     Resample <- TRUE
-    tryN = 0
+   tryN = 0
     while(Resample){
+      
       ind.d0 <- sample(myall[event==0], size = n.d0, replace = TRUE)
       ind.d1 <- sample(myall[event==1], size = n.d1, replace = TRUE)
       
       ind <- c(ind.d0, ind.d1)
+      
       Resample <- any(table(event[ind], trt[ind]) == 0) | length(unique(trt[ind]))==1 | length(unique(event[ind]))==1
-      if(Resample){ warning("Bootstrap sample failed to sample individuals in each trt/event strata. Had to resample") ; tryN = tryN +1}
+      if(length(table(event)>2)) Resample = FALSE
+       if(Resample){ warning("Bootstrap sample failed to sample individuals in each trt/event strata. Had to resample") ; tryN = tryN +1}
       if(tryN >10) stop("Had to resample too many bootstrap replicates due to too few observations in trt/event strata")
     }
     
@@ -65,6 +68,7 @@ boot.sample.cohort <-
       
       Resample <- any(table(event[ind], trt[ind]) == 0) | length(unique(trt[ind]))==1 | length(unique(event[ind]))==1
       
+      if(length(table(event)>2)) Resample = FALSE
       
       if(Resample){ warning("Bootstrap sample failed to sample individuals in each trt/event strata. Had to resample") ; tryN = tryN +1}
       if(tryN >100) stop("Had to resample too many bootstrap replicates due to too few observations in trt/event strata")
@@ -104,6 +108,7 @@ boot.sample.stratified.case.control <-
     
     
     Resample <- TRUE
+    
     tryN = 0
     while(Resample){
       
@@ -115,6 +120,7 @@ boot.sample.stratified.case.control <-
       ind <- c(boot.t0.d0, boot.t1.d0, boot.t0.d1, boot.t1.d1)
       
       Resample <- any(table(event[ind], trt[ind]) == 0) | length(unique(trt[ind]))==1 | length(unique(event[ind]))==1
+      if(length(table(event)>2)) Resample = FALSE
       
       if(Resample){ warning("Bootstrap sample failed to sample individuals in each trt/event strata. Had to resample") ; tryN = tryN +1}
       if(tryN >10) stop("Had to resample too many bootstrap replicates due to too few observations in trt/event strata")

@@ -37,11 +37,9 @@ function(x, ...){
     cat("Fitted risks provided. No model fitting implemented.")
     
   }else{
-  cat("Model Fit:\n\n")
+  cat("Model Fit:")
  
-  
-
-    cat(paste(" Link function:", x$model.fit$link, "\n\n"))
+ print(x$model.fit$family)
   
    
   cat(" Coefficients: \n")

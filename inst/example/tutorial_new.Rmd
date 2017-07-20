@@ -60,6 +60,8 @@ trtsel_measures(event = surv_tsdata$di,
                 prediction.time = 1, 
                 default.trt = "trt none" )
 
+
+
 ```
 
 
@@ -90,8 +92,7 @@ The user can do this by first creating a treatment selection R object using the 
 
 ```{r}
 
-tsdata$event.c <- tsdata$event + rnorm( nrow(tsdata), mean = 0, sd = .1 )
-trtsel.Y1 <- trtsel(event.c ~ Y1*trt, 
+trtsel.Y1 <- trtsel(event ~ Y1*trt, 
                     treatment.name = "trt", 
                     data = tsdata, 
                     study.design = "RCT", 
@@ -162,7 +163,7 @@ Risk curves apply to individual markers.  They are plots of estimated risk of th
 ```{r}
 plot(trtsel.Y1, 
             main = "Y1: Oncotype-DX-like marker", 
-            plot.type = "risk", 
+            plot.type = "selection impact", 
             ci = "vertical", 
             conf.bands = TRUE, 
             bootstraps = 50,       #more bootstraps should be run than this in practice!
@@ -310,6 +311,68 @@ compare(x = trtsel.Y1_disc,
 
 See `?compare.trtsel` for more options.
 
+### Continuous outcomes 
+
+```{r}
+
+tsdata$event.c <- tsdata$event + rnorm( nrow(tsdata), mean = 0, sd = .1 )
+trtsel.Yc <- trtsel(event.c ~ Y1*trt, 
+                    treatment.name = "trt", 
+                    data = tsdata, 
+                    study.design = "RCT", 
+                    default.trt = "trt all")
+
+trtsel.Yc
+
+plot(trtsel.Yc, bootstraps = 25, 
+     show.marker.axis = FALSE)
+calibrate(trtsel.Yc, plot.type = "calibration")
+calibrate(trtsel.Yc, plot.type = "treatment effect")
+
+
+evaluate(trtsel.Yc, bootstraps = 25)
+
+trtsel.Y2c <- trtsel(event.c ~ (Y1+Y2)*trt, 
+                    treatment.name = "trt", 
+                    data = tsdata, 
+                    study.design = "RCT", 
+                    default.trt = "trt all")
+
+compare(x = trtsel.Yc, x2= trtsel.Y2c, bootstraps = 35)
+```
+
+## Time to event outcome 
+
+```{r}
+library(survival)
+trtsel.Ysurv <- trtsel(Surv(xi, di) ~ Y*trt, 
+                    treatment.name = "trt", 
+                    data = surv_tsdata,  #sample data set with time-to-event outcome
+                    prediction.time = 4, #landmark prediction time must be set
+                    study.design = "RCT", 
+                    default.trt = "trt all")
+
+trtsel.Ysurv #notice 'censoring weights' can now be found in 'derived.data' 
+
+plot(trtsel.Ysurv, bootstraps = 10, 
+     show.marker.axis = FALSE)
+calibrate(trtsel.Ysurv, plot.type = "calibration")
+calibrate(trtsel.Ysurv, plot.type = "treatment effect")
+
+
+evaluate(trtsel.Ysurv, bootstraps = 10)
+
+trtsel.Y2surv <- trtsel(Surv(xi, di) ~ Y^2 + (Y)*trt, 
+                    treatment.name = "trt", 
+                    data = surv_tsdata, 
+                    prediction.time = 4, 
+                    study.design = "RCT", 
+                    default.trt = "trt all")
+
+compare(x = trtsel.Ysurv, x2= trtsel.Y2surv, bootstraps = 10)
+```
+
+
 ## Additional features 
 
 ### Specifying fitted risks 
@@ -332,6 +395,7 @@ myfitted.trtsel <- trtsel( event~trt, treatment.name = "trt",
                          study.design = "RCT", 
                          default.trt = "trt all")
 
+
 ```
 
 We can now use this `trtsel` object to plot and evaluate performance just as before, but confidence intervals are narrower because they are conditional on the fitted risk model. 
@@ -340,9 +404,6 @@ We can now use this `trtsel` object to plot and evaluate performance just as bef
 plot(myfitted.trtsel, bootstraps = 50, plot.type = "risk",
      ci = "vertical", show.marker.axis = FALSE)
 ```
-
-### Time-to-event outcomes
-
 
 
 

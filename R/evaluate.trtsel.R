@@ -44,7 +44,7 @@ evaluate <- function(x, ...) UseMethod("evaluate")
 #'                    treatment.name = "trt", 
 #'                    data = tsdata, 
 #'                    study.design = "RCT",
-#'                    link = "logit", 
+#'                    family = binomial(link = "logit"), 
 #'                    default.trt = "trt all")
 #'trtsel.Y1
 #'
@@ -68,11 +68,11 @@ function(x, ...,  bias.correct = TRUE, bootstraps = 1000, alpha = .05){
   if(bootstraps ==0 ) print("bootstrap confidence intervals will not be calculated")
   if(bootstraps == 1) warning("Number of bootstraps must be greater than 1, bootstrap confidence intervals will not be computed") 
   stopifnot(is.logical(bias.correct))
-  if(x$model.fit$link == "risks_provided"){
+  if(x$model.fit$family$family == "risks_provided"){
     bias.correct = FALSE
   }
   if(missing(bias.correct)){
-    if(x$model.fit$link == "risks_provided"){
+    if(x$model.fit$family$family == "risks_provided"){
       bias.correct = FALSE
     }else if (bootstraps > 1){
       bias.correct  =TRUE
@@ -83,7 +83,7 @@ function(x, ...,  bias.correct = TRUE, bootstraps = 1000, alpha = .05){
     
   }
   
-  if(bias.correct & x$model.fit$link == "risks_provided") {
+  if(bias.correct & x$model.fit$family$family  == "risks_provided") {
     message("risks are already provided from a fitted model, bias-correction is not available. \n Reported measures will not be bias-corrected.")
     bias.correct = FALSE
   } 
@@ -92,16 +92,15 @@ function(x, ...,  bias.correct = TRUE, bootstraps = 1000, alpha = .05){
   rho<-x$model.fit$cohort.attributes
   boot.sample <- x$functions$boot.sample
   get.summary.measures <- x$functions$get.summary.measures
-  marker.bounds <- x$model.fit$marker.bounds
   
   #we only test the 
   test.Null.val <- NA #test.Null(x, alpha = alpha)
   event.name = as.character(x$formula[[2]])
   treatment.name = x$treatment.name 
   
-  link <- x$model.fit$link
+  family <- x$model.fit$family
   
-  if(link == "risks_provided") provided_risk <- cbind(x$derived.data$fittedrisk.t0, x$derived.data$fittedrisk.t1)
+  if(x$model.fit$family$family == "risks_provided") provided_risk <- cbind(x$derived.data$fittedrisk.t0, x$derived.data$fittedrisk.t1)
   else provided_risk = NULL
   
   data$prediction.time = x$prediction.time
@@ -117,7 +116,7 @@ function(x, ...,  bias.correct = TRUE, bootstraps = 1000, alpha = .05){
                                                    study.design = study.design, 
                                                    obe.boot.sample = boot.sample, 
                                                    obe.get.summary.measures = get.summary.measures, 
-                                                   link = link, 
+                                                   family= family, 
                                                    disc.rec.no.trt = x$model.fit$disc.rec.no.trt, 
                                                    provided_risk = provided_risk, 
                                                    prediction.time = x$prediction.time,
@@ -142,30 +141,31 @@ function(x, ...,  bias.correct = TRUE, bootstraps = 1000, alpha = .05){
   }
   
   ## 2. Estimate summary measures
-  if(x$model.fit$link == "time-to-event") event.name = x$formula[[2]]
+  if(x$model.fit$family$family == "time-to-event") event.name = x$formula[[2]]
   
   
   summary.measures <- data.frame(get.summary.measures(data, event.name, treatment.name,  rho))
   summary.measures <- summary.measures - bias
   
   #marker threshold st delta(mthresh) = 0
-  if(any(data$rec.no.trt==0) & any(data$rec.no.trt==1) &is.null(x$model.fit$disc.rec.no.trt)& link != "risks_provided" ){
-
-    #only calculate marker threshold if there is a single marker 
-     if(!is.null(data[["marker"]]) & is.numeric(data$marker)){
-       
-    summary.measures$Marker.Thresh <-ifelse( with(data, trt.effect[which.min(marker)]) < 0 , 
-                                             max(data$marker[data$rec.no.trt == 1]), 
-                                             min(data$marker[data$rec.no.trt == 1]))
-     }
-
-  }else if(any(data$rec.trt==1) & any(data$rec.trt==0) &is.null(x$model.fit$disc.rec.no.trt)& link != "risks_provided"){
+  if(any(data$rec.no.trt==0) & any(data$rec.no.trt==1) &is.null(x$model.fit$disc.rec.no.trt)& family$family != "risks_provided" ){
     
     #only calculate marker threshold if there is a single marker 
-    if(!is.null(data[["marker"]]) & is.numeric(data$marker)){
-    summary.measures$Marker.Thresh <-ifelse( with(data, trt.effect[which.min(marker)]) < 0 , 
-                                             max(data$marker[data$rec.trt == 0]), 
-                                             min(data$marker[data$rec.trt == 0]))
+    if(length(x$model.fit$marker.names)==1){
+      marker = data[[x$model.fit$marker.names]]
+    summary.measures$Marker.Thresh <-ifelse(  data$trt.effect[which.min(marker)] < 0 , 
+                                             max(marker[data$rec.no.trt == 1]), 
+                                             min(marker[data$rec.no.trt == 1]))
+     }
+
+  }else if(any(data$rec.trt==1) & any(data$rec.trt==0) &is.null(x$model.fit$disc.rec.no.trt)& family$family != "risks_provided"){
+   
+    #only calculate marker threshold if there is a single marker 
+    if(length(x$model.fit$marker.names)==1){
+      marker = data[[x$model.fit$marker.names]]
+    summary.measures$Marker.Thresh <-ifelse( data$trt.effect[which.min(marker)] < 0, 
+                                             max(marker[data$rec.trt == 0]), 
+                                             min(marker[data$rec.trt == 0]))
     
     }
   

@@ -169,11 +169,11 @@ function(x, ..., x2, bootstraps = 500,
   if(bootstraps == 1) {warning("Number of bootstraps must be greater than 1, bootstrap confidence intervals will not be computed"); bootstraps <- 0;}  
 
   stopifnot(is.logical(bias.correct))
-  if(x$model.fit$link == "risks_provided"){
+  if(x$model.fit$family$family == "risks_provided"){
     bias.correct = FALSE
   }
   if(missing(bias.correct)){
-    if(x$model.fit$link == "risks_provided"){
+    if(x$model.fit$family$family == "risks_provided"){
       bias.correct = FALSE
     }else if (bootstraps > 1){
       bias.correct  =TRUE
@@ -186,7 +186,7 @@ function(x, ..., x2, bootstraps = 500,
   
   study.design  <-x$model.fit$study.design
   rho   <-x$model.fit$cohort.attributes #because of paired data, rho should be the same for each trtsel object
-  link <- x$model.fit$link
+  link <- x$model.fit$family
   
   data1 <- x$derived.data 
   data2 <- x2$derived.data
@@ -247,8 +247,8 @@ function(x, ..., x2, bootstraps = 500,
   boot.data.diff = (boot.data1) - (boot.data2 )
 
   ## Estimate summary measures
-  if(link == "time-to-event") data1$prediction.time = x$prediction.time
-  if(link == "time-to-event") data2$prediction.time = x2$prediction.time
+  if(link$family == "time-to-event") data1$prediction.time = x$prediction.time
+  if(link$family == "time-to-event") data2$prediction.time = x2$prediction.time
   
   sm.m1 <- get.summary.measures(data1, event.name1, x$treatment.name,  rho)
   sm.m2 <- get.summary.measures(data2, event.name2, x2$treatment.name, rho)
@@ -260,7 +260,6 @@ function(x, ..., x2, bootstraps = 500,
   ci.diff <- apply(boot.data.diff, 1, quantile, probs = c(alpha/2, 1-alpha/2), na.rm = TRUE)
 
 
-  
   if(bias.correct){
     biasvec <- apply(boot.data[9:72, ], 1, mean, na.rm  = TRUE)
     bias1 <- biasvec[1:16] - biasvec[33:48]

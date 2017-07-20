@@ -5,7 +5,7 @@ function(x, ci, ci.bounds, get.F, fixed.values,conf.bands,  rho, xlab, ylab, xli
   risk.t1 <- x$derived.data$fittedrisk.t1
   trt.effect <- x$derived.data$trt.effect
 
-  if(x$model.fit$link == "time-to-event"){
+  if(x$model.fit$family$family == "time-to-event"){
     event = rep(0, nrow(x$derived.data))
     event.name = x$treatment.name 
     #setting event.name to treatment.name: this doesn't matter since we use model 

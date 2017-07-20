@@ -1,18 +1,18 @@
 trtsel.boot <-
 function(formula, treatment.name, data, 
          d=0, 
-         rho = NULL, study.design, link, 
+         rho = NULL, study.design, family, 
          disc.rec.no.trt = NULL, provided_risk = NULL,
          prediction.time){
   
   
   # derived.data
-  if(link == "risks_provided"){
+  if(family$family == "risks_provided"){
     fittedrisk.t0 <- provided_risk[,1]
     fittedrisk.t1 <- provided_risk[,2]
     linkinvfun <-NULL
     
-  }else if(link == "time-to-event"){
+  }else if(family$family == "time-to-event"){
     
     coxfit <- do.call(coxph, list(formula,data))
     
@@ -23,23 +23,25 @@ function(formula, treatment.name, data,
     
   }else{
     # model.fit
-    coef <- get.coef( formula, treatment.name, data, study.design, rho, link) #glm object
+    coef <- get.coef( formula, treatment.name, data, study.design, rho, family) #glm object
     
-    linkinvfun <- binomial(link = link)$linkinv
+    linkinvfun <- family$linkinv
     fittedrisk.t0 <- get.risk.t(coef[,1], formula, treatment.name, data, linkinvfun, t = 0)
     fittedrisk.t1 <- get.risk.t(coef[,1], formula, treatment.name, data, linkinvfun, t = 1)
   
   }
+
   
   model.fit <- list( "coefficients" = coef, 
                      "cohort.attributes" = rho,
                      "study.design" = study.design, 
-                     "link" = link)
+                     "family" = family)
   trt <- data[[treatment.name]]
   trt.effect <- fittedrisk.t0 - fittedrisk.t1
   
   
   event.name = as.character(formula[[2]])
+
   marker.names = all.vars(formula)[!is.element( all.vars(formula), c(event.name, treatment.name)) ]
   if(length(marker.names)==1){ 
     marker = data[[marker.names]] 
@@ -61,7 +63,7 @@ function(formula, treatment.name, data,
                               fittedrisk.t1 = fittedrisk.t1,
                               trt.effect = trt.effect)
 
-  if(link == "time-to-event"){
+  if(family$family == "time-to-event" | length(event.name) > 1){
     
     tmp <- with(data, eval(formula[[2]]))
     

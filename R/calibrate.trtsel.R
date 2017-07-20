@@ -91,18 +91,21 @@ calibrate <- function(x, ...){ UseMethod("calibrate")}
 #' @export 
 #' 
 calibrate.trtsel <-
-function( x, ..., groups = 10, plot.type = "calibration",
+function( x, ..., groups = 10,
+          plot.type = "calibration",
           trt.names = c("Treatment", "No Treatment"), 
-          line.color = "black", point.color = "grey10", 
+          line.color = "black",
+          point.color = "grey10", 
+          ci = 0.95, 
           main = NULL, ylim = NULL, xlim = NULL, ylab = NULL, xlab=NULL){
 
   if(!is.trtsel(x)) stop("x must be an object of class 'trtsel' created by using the function 'trtsel' see ?trtsel for more help")
   if(!is.null(x$model.fit$disc.rec.no.trt)) stop("Calibration not supported for a discrete marker")
-  if(!is.null(x$model.fit$disc.rec.no.trt)) stop("Calibration not supported for a discrete marker")
 
   event.name = as.character(x$formula[[2]])
-  lower <- upper <- 
-  if( x$model.fit$link == "time-to-event"){
+  lower <- upper <- NULL; 
+  
+  if( x$model.fit$family$family == "time-to-event"){
     event.name = x$formula[[2]]
     mysurv <- with(x$derived.data, eval(event.name))
     event <- mysurv[,2]
@@ -131,11 +134,8 @@ function( x, ..., groups = 10, plot.type = "calibration",
   fittedrisk.c.t0 <- x$derived.data$fittedrisk.t0[trt==0] #fitted risk conditional on trt
   fittedrisk.c.t1 <- x$derived.data$fittedrisk.t1[trt==1]
 
-
-
   D.t0 <- event[trt==0]
   D.t1 <- event[trt==1]
-
   
   trt.t0 <- trt[trt==0]
   n.t0 <- sum(trt==0)
@@ -151,7 +151,7 @@ function( x, ..., groups = 10, plot.type = "calibration",
 
   # calculate the empirical CDF...we use this to get the cut points for the HL statistic and for plotting the pred curves/trt effect curves. 
 
-  if( substr(study.design, 1,4) == "rand" ) { 
+  if( study.design == "RCT" ) { 
 
     F.risk.t0 <- get.F.cohort( fittedrisk.c.t0, D.t0, trt.t0, rho, return.fun=TRUE)
     F.risk.t1 <- get.F.cohort( fittedrisk.c.t1, D.t1, trt.t1, rho, return.fun=TRUE)
@@ -187,16 +187,12 @@ function( x, ..., groups = 10, plot.type = "calibration",
       function(x) FY.D1.trt(x)*(Pr.D1.trt) + FY.D0.trt(x)*(Pr.D0.trt) 
 
     } 
-    
 
     F.risk.t0 <- get.F.tmp( fittedrisk.c.t0, D.t0, trt.t0, rho, tmp.trt = 0)
     F.risk.t1 <- get.F.tmp( fittedrisk.c.t1, D.t1, trt.t1, rho, tmp.trt = 1)
     F.delta   <- get.F.stratified.case.control( fitteddelta, event, trt, rho, return.fun=TRUE)
-
-
-
-  
-  }else { stop("study.design not specified correctly") }
+  }else 
+    { stop("study.design not specified correctly") }
 
 
 
@@ -225,25 +221,31 @@ cut.t1      <- cut( fittedrisk.c.t1, breaks = breaks.t1, include.lowest = TRUE)
 cut.delta   <- cut( fitteddelta, breaks = breaks.delta, include.lowest = TRUE)
 
 #observed risk 
-if( x$model.fit$link == "time-to-event"){
+if( x$model.fit$family$family== "time-to-event"){
   
   sfit.t0 <- summary(survfit(Surv(stime[trt==0], event[trt==0]==1)~cut.t0, se.fit = TRUE ), extend = TRUE, times = x$prediction.time)
   sfit.t1 <- summary(survfit(Surv(stime[trt==1], event[trt==1]==1)~cut.t1, se.fit = TRUE ), extend = TRUE, times = x$prediction.time)
   obs.risk.t0 <- 1- sfit.t0$surv
   obs.risk.t1 <- 1- sfit.t1$surv
-
+  obs.sd.t0 <-  sfit.t0$std.err
+  obs.sd.t1 <- sfit.t1$std.err
+  
   sfit.t0.delta <- summary(survfit(Surv(stime[trt==0], event[trt==0]==1)~cut.delta[trt==0], se.fit = TRUE ), times = x$prediction.time)
   sfit.t1.delta <- summary(survfit(Surv(stime[trt==1], event[trt==1]==1)~cut.delta[trt==1], se.fit = TRUE ), times = x$prediction.time)
   obs.risk.t0.tmp <- 1- sfit.t0.delta$surv
   obs.risk.t1.tmp <- 1- sfit.t1.delta$surv
   
-
-  
-}else{
+}else
+  {
   obs.risk.t0 <- aggregate( D.t0, by = list(cut.t0), FUN = "mean")$x
   obs.risk.t1 <- aggregate( D.t1, by = list(cut.t1), FUN = "mean")$x
+  obs.sd.t0 <- aggregate( D.t0, by = list(cut.t0), FUN = "sd")$x
+  obs.sd.t1 <- aggregate( D.t1, by = list(cut.t1), FUN = "sd")$x
+  
   obs.risk.t1.tmp <- aggregate( D.t1, by = list(cut.delta[trt==1]), FUN = "mean")$x  
   obs.risk.t0.tmp <- aggregate( D.t0, by = list(cut.delta[trt==0]), FUN = "mean")$x
+  obs.var.t1.tmp <- aggregate( D.t1, by = list(cut.delta[trt==1]), FUN = "var")$x  
+  obs.var.t0.tmp <- aggregate( D.t0, by = list(cut.delta[trt==0]), FUN = "var")$x
   
 }
 
@@ -283,10 +285,7 @@ exp.delta   <- aggregate( fitteddelta, by = list(cut.delta), FUN = "mean")$x
                   expit(logit(obs.risk.t0.tmp)+ logit(rho[3]) - logit(mean(event)))
     
  }else if(substr(study.design, 1, 5) =="strat"){
-
    
-   
-
     Pr.D1.givT0 <- rho[3]/(rho[2]+rho[3])
     Pr.D1.givT1 <- rho[5]/(rho[4]+rho[5])
     obs.risk.t0 = expit(logit(obs.risk.t0) + logit(Pr.D1.givT0) - logit(mean(event[trt==0])))
@@ -296,17 +295,16 @@ exp.delta   <- aggregate( fitteddelta, by = list(cut.delta), FUN = "mean")$x
  }
 ##calculate Hosmer - Lemeshow test stastistitic a
 
-
-
-if(study.design=="randomized cohort"){
+if(study.design=="RCT"){
 
   hl.t0 <- sum( ng.t0 * ( obs.risk.t0 - exp.risk.t0)^2 / (exp.risk.t0*(1-exp.risk.t0))) 
   hl.t1 <- sum( ng.t1 * ( obs.risk.t1 - exp.risk.t1)^2 / (exp.risk.t1*(1-exp.risk.t1)))
 
 }else{
-  if(x$model.fit$link == "risks_provided") stop("cannot calculate Hosmer Lemeshow statistic when fitted risks are provided and study design is not cohort")
-  marker <- x$derived.data$marker
-  risk.naive.all <- fitted(glm(x$formula, family = binomial(link = x$model.fit$link)))
+  #other study design
+  if(x$model.fit$family$family == "risks_provided") stop("cannot calculate Hosmer Lemeshow statistic when fitted risks are provided and study design is not RCT")
+
+  risk.naive.all <- fitted(glm(x$formula, data = x$derived.data, family =  x$model.fit$family))
   
   risk.naive.t0.all <- risk.naive.all[trt==0]
   risk.naive.t1.all <- risk.naive.all[trt==1]
@@ -318,9 +316,6 @@ if(study.design=="randomized cohort"){
  
   hl.t0 <- sum( ng.t0 * ( obs.risk.t0 - exp.risk.t0)^2 / ( (exp.risk.t0^2*(1-exp.risk.t0)^2)/(exp.risk.naive.t0*(1-exp.risk.naive.t0)) ) )
   hl.t1 <- sum( ng.t1 * ( obs.risk.t1 - exp.risk.t1)^2 / ( (exp.risk.t1^2*(1-exp.risk.t1)^2)/(exp.risk.naive.t1*(1-exp.risk.naive.t1)) ) )
-
-  
-
 }
 
 Df <- groups - 2 
@@ -403,8 +398,6 @@ if(is.element(plot.type, "calibration")){
  print(p)
 }
   
-  
-  
 if( is.element(plot.type, "risk.t0")) { 
 # trt = 0
    
@@ -415,18 +408,30 @@ if( is.element(plot.type, "risk.t0")) {
    if(is.null(main)) main <- "Risk curve for non treated individuals"
    
    
-   data = data.frame(F.risk = F.risk.t0(sort(fittedrisk.c.t0))*100, risk = sort(fittedrisk.c.t0))
-   p <- ggplot() + geom_step( data = data, direction="vh", color = line.color,  aes(x = F.risk, y = risk))
+   data = data.frame(F.risk = F.risk.t0(sort(fittedrisk.c.t0))*100, 
+                     risk = sort(fittedrisk.c.t0))
+   p <- ggplot() + geom_step( data = data, direction="vh", color = line.color, 
+                              aes(x = F.risk, y = risk))
    
 
-   obsdata <- data.frame(x = (1:groups/groups - 1/(2*groups))*100, y= obs.risk.t0)
+   obsdata <- data.frame(x = (1:groups/groups - 1/(2*groups))*100, y = obs.risk.t0, sd = obs.sd.t0)
    
-   if( x$model.fit$link == "time-to-event"){
+   if( x$model.fit$outcome== "time-to-event"){
      obsdata$upper <- 1- sfit.t0$lower
      obsdata$lower <- 1- sfit.t0$upper
-   }else{
-     obsdata$upper <-  binom.confint(obsdata$y*ng.t0, ng.t0, methods = "wilson")$upper
-     obsdata$lower <- binom.confint(obsdata$y*ng.t0, ng.t0, methods = "wilson")$lower
+   }else if(x$model.fit$outcome == "binary"){
+  
+     obsdata$upper <- binom.confint(obsdata$y*ng.t0, ng.t0, methods = "wilson", conf.level = ci)$upper
+     
+     obsdata$lower <- binom.confint(obsdata$y*ng.t0, ng.t0, methods = "wilson", conf.level = ci)$lower
+     
+   }else if(x$model.fit$outcome == "continuous"){
+    
+    
+     obsdata$upper = obsdata$y + qnorm(1-(1-ci)/2)*obsdata$sd/sqrt(ng.t0)
+     obsdata$lower = obsdata$y - qnorm(1-(1-ci)/2)*obsdata$sd/sqrt(ng.t0)
+     
+     
    }
    
    p <- p +geom_errorbar(data = obsdata, color  = point.color,  aes(ymin = lower, ymax = upper, x = x), width = 2)+
@@ -455,14 +460,21 @@ p <- ggplot() + geom_step( data = data,  direction="vh", color = line.color, aes
 
 
 
-obsdata <- data.frame(x = (1:groups/groups - 1/(2*groups))*100, y= obs.risk.t1)
+obsdata <- data.frame(x = (1:groups/groups - 1/(2*groups))*100, y= obs.risk.t1,  sd = obs.sd.t1)
 
-if( x$model.fit$link == "time-to-event"){
+if( x$model.fit$family$family == "time-to-event"){
   obsdata$upper <- 1- sfit.t1$lower
   obsdata$lower <- 1- sfit.t1$upper
-}else{
+}else if(x$model.fit$outcome == "binary"){
   obsdata$upper <-  binom.confint(obsdata$y*ng.t1, ng.t1, methods = "wilson")$upper
   obsdata$lower <- binom.confint(obsdata$y*ng.t1, ng.t1, methods = "wilson")$lower
+}else if(x$model.fit$outcome == "continuous"){
+  
+  
+  obsdata$upper = obsdata$y + qnorm(1-(1-ci)/2)*obsdata$sd/sqrt(ng.t0)
+  obsdata$lower = obsdata$y - qnorm(1-(1-ci)/2)*obsdata$sd/sqrt(ng.t0)
+  
+  
 }
 
 p <- p +geom_errorbar(data = obsdata,  color  = point.color, aes(ymin = lower, ymax = upper, x = x), width = 2)+
@@ -492,17 +504,24 @@ p <-p <- ggplot() + geom_step( data = data,  direction="vh", color = line.color,
 
 obsdata <- data.frame(x = (1:groups/groups - 1/(2*groups))*100, y= obs.delta)
 
-if( x$model.fit$link == "time-to-event"){
+if( x$model.fit$family$family == "time-to-event"){
 
   obsdata$var <- sfit.t0.delta$std.err^2 + sfit.t1.delta$std.err^2
 
-}else{
-  obsdata$var <- obs.risk.t1.tmp*(1-obs.risk.t1.tmp)/ng.t1 + obs.risk.t0.tmp*(1-obs.risk.t0.tmp)/ng.t0
+}else if(x$model.fit$outcome == "binary"){
+   obsdata$var <- obs.risk.t1.tmp*(1-obs.risk.t1.tmp)/ng.t1 + obs.risk.t0.tmp*(1-obs.risk.t0.tmp)/ng.t0
+   
+ }else if(x$model.fit$outcome == "continuous"){
+  
+
+  obsdata$var <- obs.var.t1.tmp/ng.t1 + obs.var.t0.tmp/ng.t0
+  
 }
 
 
-obsdata$upper <- obsdata$y + qnorm(.975)*sqrt(obsdata$var)
-obsdata$lower <- obsdata$y + qnorm(.025)*sqrt(obsdata$var)
+
+obsdata$upper <- obsdata$y + qnorm(1-(1-ci)/2)*sqrt(obsdata$var)
+obsdata$lower <- obsdata$y + qnorm((1-ci)/2)*sqrt(obsdata$var)
 
 p <- p +geom_errorbar(data = obsdata,  color  = point.color, aes(ymin = lower, ymax = upper, x = x), width = 2)+
   geom_point(data = obsdata, aes(x = x, y = y),  color  = point.color)#, size = 4) 
@@ -511,25 +530,14 @@ p <- p + ylab(ylab) + xlab(xlab) + ggtitle(main) #+ theme( text = element_text(s
 if(!is.null(xlim)) p <- p + xlim(xlim)
 if(!is.null(ylim)) p <- p + ylim(ylim)
 print(p)
-
-
-
-
-
-
 } 
   
  #reset plot parameters
-if(is.element(plot.type, c("calibration", "risk.t0", "risk.t1", "treatment effect"))){
+if(!is.element(plot.type, c("calibration", "risk.t0", "risk.t1", "treatment effect"))) p = NULL
 
-# par(mar = old.mar)
-# plot.data <- data.frame(cbind("group" = rep(1:groups, 2), "F.risk"= rep(1:groups/groups - 1/(2*groups), 2), "observed" = c(obs.risk.t0, obs.risk.t1), "expected" = c(exp.risk.t0, exp.risk.t1), "treatment" = c(rep(0, length(obs.risk.t0)),rep(1, length(obs.risk.t1)) )))
- 
-}else{
- #plot.data=NULL
-  p = NULL
-}
-res <- list( "HL.TestStat" = c(trt0 = hl.t0, trt1 = hl.t1), "p.value" = c(trt0 = pval.t0, trt1 = pval.t1), "Df" = c(Df), "plot" = p)#, "plot.data" = data )
+res <- list( "HL.TestStat" = c(trt0 = hl.t0, trt1 = hl.t1), 
+             "p.value" = c(trt0 = pval.t0, trt1 = pval.t1), 
+             "Df" = c(Df), "plot" = p)#, "plot.data" = data )
 class(res) = "calibrate.trtsel"
 return( res )
 

@@ -24,7 +24,7 @@ function( x, plot.type,
         if(substr(myci, 1, 4) =="hori") {
            ## predcurve plot with horizontal ci bands
            fix.ind = 2:3    #fix risk_trt
-          if(x$model.fit$link == "risks_provided"){ 
+          if(x$model.fit$family$family == "risks_provided"){ 
             out.ind = c(4,4) #output F.delta 
           }else{
             out.ind = c(1,1) #output F.marker
@@ -32,7 +32,7 @@ function( x, plot.type,
                           
         }else if(substr(myci, 1, 4) =="vert"){
            ## predcurve plot with vertical ci bands
-          if(x$model.fit$link == "risks_provided"){ 
+          if(x$model.fit$family$family == "risks_provided"){ 
             fix.ind = c(4,4)  #fix F.delta
           }else{
             fix.ind = c(1,1) #fix F.marker

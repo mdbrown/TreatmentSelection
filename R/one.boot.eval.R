@@ -1,17 +1,19 @@
 one.boot.eval <-
-function(data, formula, treatment.name, rho, study.design, obe.boot.sample, obe.get.summary.measures, link, d, disc.rec.no.trt = NULL, provided_risk = NULL, prediction.time = NULL, bbc){
+function(data, formula, treatment.name, rho, study.design, obe.boot.sample, obe.get.summary.measures, family, d, disc.rec.no.trt = NULL, provided_risk = NULL, prediction.time = NULL, bbc){
 
 
-  if( link == "time-to-event"){
+  if( family$family == "time-to-event"){
     event.name = formula[[2]]
     mysurv <- with(data, eval(event.name))
     event <- mysurv[,2]
     stime <- mysurv[,1]
    
     data$prediction.time <- prediction.time
+   
   }else{
     event.name <- as.character(formula[[2]])
     event <- data[[event.name]]
+   
   }
   
   
@@ -26,13 +28,13 @@ function(data, formula, treatment.name, rho, study.design, obe.boot.sample, obe.
                       d = d, 
                       study.design = study.design, 
                       rho = rho.b, 
-                      link = link, 
+                      family = family, 
                       disc.rec.no.trt =  disc.rec.no.trt, 
                       provided_risk = provided_risk[ind,], 
                       prediction.time = prediction.time)
   if(bbc){ 
     
-    if(link == "time-to-event"){
+    if(family$family == "time-to-event"){
       
       coxfit <- do.call(coxph, list(formula, data[ind,]))
       
@@ -48,9 +50,9 @@ function(data, formula, treatment.name, rho, study.design, obe.boot.sample, obe.
       coef <- unname(get.coef(formula,treatment.name, data[ind,], 
                               study.design, 
                               rho.b, 
-                              link = link)[,1])
+                              family = family)[,1])
       
-      linkinvfun <- binomial(link = link)$linkinv
+      linkinvfun <- family$linkinv
       obsrisk.t0.f  <-  get.risk.t(coef, formula, treatment.name, data = data, linkinvfun, t = 0)
       obsrisk.t1.f  <-  get.risk.t(coef, formula, treatment.name, data = data, linkinvfun, t = 1)
       wi = 0
@@ -67,7 +69,7 @@ function(data, formula, treatment.name, rho, study.design, obe.boot.sample, obe.
                         d = d, 
                         study.design = study.design, 
                         rho = rho, 
-                        link = "risks_provided", 
+                        family = list(family = "risks_provided"), 
                         disc.rec.no.trt = disc.rec.no.trt, 
                         provided_risk = provided_risk.f, 
                         prediction.time = prediction.time)

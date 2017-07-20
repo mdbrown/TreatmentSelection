@@ -21,20 +21,25 @@ get.summary.measures.cohort <-
     B.neg.emp <- ifelse(length(event[trt==0 & neg==1]) > 0 & length(event[trt==1 & neg==1]) > 0, 
                         mean(event[trt==1 & neg==1]) - mean(event[trt==0 & neg==1]) ,
                         0)
+    ER.neg.emp <-  ifelse(length(event[trt==0 & neg==1]) > 0, 
+                          mean(event[trt==0 & neg==1]) ,
+                          0)
     
     #model based estimate
     B.neg.mod <- ifelse(sum(neg) >0, -mean(trt.effect[neg==1]), 0)
-    
+    ER.neg.mod <- ifelse(sum(neg)>0, mean(data$fittedrisk.t0[neg==1]), 0)
     #Average Benefit (B) of treatment among marker positives...
     
     #empirical estimate
     B.pos.emp <- ifelse(length(event[trt==0 & pos==1]) > 0 & length(event[trt==1 & pos==1]) > 0, 
                         mean(event[trt==0 & pos==1]) - mean(event[trt==1 & pos==1]), 
                         0)
+    ER.pos.emp <-    ifelse( length(event[trt==1 & pos==1]) > 0,
+                             mean(event[trt==1 & pos==1]), 0) 
     
     #model based estimate
     B.pos.mod <- ifelse(sum(pos)>0, mean(trt.effect[pos==1]), 0)
-    
+    ER.pos.mod <- ifelse(sum(pos)>0, mean(data$fittedrisk.t1[pos==1]), 0)
     #Theta
     
     if(is.null(data[["rec.trt"]])){
@@ -45,6 +50,8 @@ get.summary.measures.cohort <-
       Theta.emp <- B.pos.emp*p.rec.trt
       Theta.mod <- B.pos.mod*p.rec.trt
     }
+    
+    
     
     p0.hat <- mean(event[trt==0])
     p1.hat <- mean(event[trt==1])
@@ -64,14 +71,10 @@ get.summary.measures.cohort <-
     ER.trt1.emp = mean(event[trt==1])
     ER.trt1.mod = mean(data$fittedrisk.t1)
     
-    if(is.null(data[["rec.trt"]])){
-      #default is trt all
-      ER.mkrbased.emp = ER.trt1.emp - Theta.emp 
-      ER.mkrbased.mod = ER.trt1.mod - Theta.mod
-    }else{
-      ER.mkrbased.emp = ER.trt0.emp - Theta.emp 
-      ER.mkrbased.mod = ER.trt0.mod - Theta.mod    
-    }
+    #event rate under mkr based trt
+    ER.mkrbased.emp  = (ER.pos.emp*p.rec.trt + ER.neg.emp*p.rec.no.trt )
+    ER.mkrbased.mod  = (ER.pos.mod*p.rec.trt + ER.neg.mod*p.rec.no.trt )
+    
     
     
     list(     p.rec.no.trt = p.rec.no.trt,
@@ -129,7 +132,7 @@ get.summary.measures.cohort.survival <-
     #empirical estimate
     num <- (wi*I(stime < t0)*I(neg)); 
     den <- (wi*I(neg))
-
+    
     if(sum(den[trt==0])==0 | sum(den[trt==1]) ==0) {
       B.neg.emp <- 0
       ER.neg.emp <- 0 
@@ -197,16 +200,7 @@ get.summary.measures.cohort.survival <-
     ER.trt1.emp = p1.hat
     ER.trt1.mod = mean(data$fittedrisk.t1)
     
-    if(is.null(data[["rec.trt"]])){
-      ER.mkrbased.emp = ER.trt1.emp - Theta.emp 
-      ER.mkrbased.mod = ER.trt1.mod - Theta.mod 
-      
-    }else{
-      
-      ER.mkrbased.emp = ER.trt0.emp - Theta.emp 
-      ER.mkrbased.mod = ER.trt0.mod - Theta.mod 
-      
-    }
+
     
       ER.mkrbased.emp = ER.pos.emp*p.rec.trt + ER.neg.emp*p.rec.no.trt 
       ER.mkrbased.mod = ER.pos.mod*p.rec.trt + ER.neg.mod*p.rec.no.trt

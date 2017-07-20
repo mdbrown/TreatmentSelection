@@ -115,7 +115,7 @@ shade_gg <-
       return(p )
     }
     
-    
+  
     yend <- xend <- NULL #to appease check
     
     numbounds <- ncol(bounds)
@@ -124,7 +124,7 @@ shade_gg <-
       bounds <- matrix(bounds, ncol = 1)
     } 
     
-    mydatERRORBAR <- data.frame(t(bounds), fixed)
+    mydatERRORBAR <- data.frame(t(bounds), fixed, row.names = NULL)
     names(mydatERRORBAR) = c("low", "high", "fixed")
     
     mydat <- data.frame( c(bounds[1,], rev(bounds[2,])), c(fixed, rev(fixed)))

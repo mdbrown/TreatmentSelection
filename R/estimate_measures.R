@@ -87,6 +87,13 @@ trtsel_measures <- function(event, trt, trt.rule, trt.effect, time,
                       mean(event[trt==1 & neg==1]) - mean(event[trt==0 & neg==1]) ,
                       0)
   
+  ER.neg.emp <-  ifelse(length(event[trt==0 & neg==1]) > 0, 
+                        mean(event[trt==0 & neg==1]) ,
+                        0)
+ 
+ 
+  
+
   #model based estimate
   B.neg.mod <- ifelse(sum(neg) >0, -mean(trt.effect[neg==1]), 0)
   
@@ -97,6 +104,9 @@ trtsel_measures <- function(event, trt, trt.rule, trt.effect, time,
                       mean(event[trt==0 & pos==1]) - mean(event[trt==1 & pos==1]), 
                       0)
   
+  ER.pos.emp <-    ifelse( length(event[trt==1 & pos==1]) > 0,
+                          mean(event[trt==1 & pos==1]), 0) 
+
 
   #model based estimate
   B.pos.mod <- ifelse(sum(pos)>0, mean(trt.effect[pos==1]), 0)
@@ -111,6 +121,9 @@ trtsel_measures <- function(event, trt, trt.rule, trt.effect, time,
     Theta.emp <- B.pos.emp*p.marker.pos
     Theta.mod <- B.pos.mod*p.marker.pos
   }
+  
+  #event rate under mkr based trt
+  ER.mkrbased.emp  = (ER.pos.emp*p.marker.pos + ER.neg.emp*p.marker.neg )
   
 
   if(noModelBased){
@@ -134,20 +147,6 @@ trtsel_measures <- function(event, trt, trt.rule, trt.effect, time,
   ER.trt1.emp = mean(event[trt==1])
   
 
-  if(default.trt == "trt all"){
-    #default is trt all
-    ER.mkrbased.emp = ER.trt1.emp - Theta.emp 
-    
-   # ER.pos.emp <-  mean(event[trt==1 & pos==1])
-   # ER.neg.emp <-  mean(event[trt==0 & neg==1])
-    
-   # ER.trt1.emp - (ER.pos.emp*p.marker.pos + ER.neg.emp*p.marker.neg )
-    
-  }else{
-    ER.mkrbased.emp = ER.trt0.emp - Theta.emp    
-  }
-  
-  
   
   }else{
     ##time-to-event marker 
@@ -162,6 +161,7 @@ trtsel_measures <- function(event, trt, trt.rule, trt.effect, time,
     
     wi = numeric(length(event))
     #condition on trt arm to get sampling weights. 
+   
     wi[trt==1] <- get.censoring.weights(ti = prediction.time, 
                                         stime =  time[trt==1], 
                                         status = event[trt==1])
@@ -172,7 +172,7 @@ trtsel_measures <- function(event, trt, trt.rule, trt.effect, time,
     
    # wi <- get.censoring.weights(ti = prediction.time, status = event, stime = time)
     
-    status = event
+    status = event #naming convention
     
   
     #proportion marker negative
@@ -194,6 +194,9 @@ trtsel_measures <- function(event, trt, trt.rule, trt.effect, time,
       ER.neg.emp <- sum(num[trt==0])/sum(den[trt==0])
     }
     
+    ER.pos.emp <-    ifelse( length(event[trt==1 & pos==1]) > 0,
+                             mean(event[trt==1 & pos==1]), 0) 
+    
     
     #model based estimate
     B.neg.mod <- ifelse(sum(neg) > 0, -mean(trt.effect[neg==1]), 0)
@@ -207,6 +210,7 @@ trtsel_measures <- function(event, trt, trt.rule, trt.effect, time,
     #empirical estimate
     num <- (wi*I(stime < t0)*pos); 
     den <- (wi*pos)
+    
     if(sum(den[trt==0])==0 | sum(den[trt==1]) ==0) {
       B.pos.emp <- 0
       ER.pos.emp <- 0 
@@ -258,14 +262,7 @@ trtsel_measures <- function(event, trt, trt.rule, trt.effect, time,
     #ER.trt1.mod = mean(data$fittedrisk.t1)
     
 
-    #ER.mkrbased.emp = ER.pos.emp*p.marker.pos + ER.neg.emp*p.marker.neg 
-    
-    if(default.trt == "trt all"){
-       ER.mkrbased.emp = ER.trt1.emp - Theta.emp 
-    }else{
-      ER.mkrbased.emp = ER.trt0.emp - Theta.emp 
-    }
-   # ER.mkrbased.mod = ER.pos.mod*p.marker.pos + ER.neg.mod*p.marker.neg
+    ER.mkrbased.emp = ER.pos.emp*p.marker.pos + ER.neg.emp*p.marker.neg 
     
     
   }

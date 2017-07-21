@@ -86,7 +86,7 @@ trtsel_measures(event = tsdata$event, trt = tsdata$trt, trt.rule = 1- tsdata$Y1_
 
 An alternative to providing a pre-specified treatment rule the user can use the data to fit a risk model and to develop a treatment rule based on estimated treatment effect. 
 
-The user can do this by first creating a treatment selection R object using the function `trtsel`. Creating this object entails estimating risk of the clinical outcome given treatment and marker, i.e. fitting a "risk model".  Here, logistic regression is used (`link="logit"`) and the formula is specified in the first argument.  The default treatment strategy-- that which would be recommended in the absence of marker measurements-- is specified as `default.trt="trt all"`.  The methodology considers marker-specific treatment rules or policies that recommend treatment if the marker-specific treatment effect-- on the risk difference scale-- is above a specified `thresh`; the default is `thresh = 0`.  (Alternatively, see the tab on "additional features"" to see how an arbitrary user-specified treatment rule can be evaluated.)  The `study design="RCT"` indicates that the markers are measured on all RCT participants.   
+The user can do this by first creating a treatment selection R object using the function `trtsel`. Creating this object entails estimating risk of the clinical outcome given treatment and marker, i.e. fitting a "risk model".  Here, logistic regression is used (family = `binomial(link="logit")`) and the formula is specified in the first argument.  The default treatment strategy-- that which would be recommended in the absence of marker measurements-- is specified as `default.trt="trt all"`.  The methodology considers marker-specific treatment rules or policies that recommend treatment if the marker-specific treatment effect-- on the risk difference scale-- is above a specified `thresh`; the default is `thresh = 0`.  (Alternatively, see the tab on "additional features"" to see how an arbitrary user-specified treatment rule can be evaluated.)  The `study design="RCT"` indicates that the markers are measured on all RCT participants.   
 
 
 
@@ -95,6 +95,7 @@ The user can do this by first creating a treatment selection R object using the 
 trtsel.Y1 <- trtsel(event ~ Y1*trt, 
                     treatment.name = "trt", 
                     data = tsdata, 
+                    family = binomial(), 
                     study.design = "RCT", 
                     default.trt = "trt all")
 
@@ -163,7 +164,7 @@ Risk curves apply to individual markers.  They are plots of estimated risk of th
 ```{r}
 plot(trtsel.Y1, 
             main = "Y1: Oncotype-DX-like marker", 
-            plot.type = "selection impact", 
+            plot.type = "risk", 
             ci = "vertical", 
             conf.bands = TRUE, 
             bootstraps = 50,       #more bootstraps should be run than this in practice!
@@ -311,6 +312,10 @@ compare(x = trtsel.Y1_disc,
 
 See `?compare.trtsel` for more options.
 
+
+
+## Additional features 
+
 ### Continuous outcomes 
 
 ```{r}
@@ -341,7 +346,7 @@ trtsel.Y2c <- trtsel(event.c ~ (Y1+Y2)*trt,
 compare(x = trtsel.Yc, x2= trtsel.Y2c, bootstraps = 35)
 ```
 
-## Time to event outcome 
+### Time to event outcome 
 
 ```{r}
 library(survival)
@@ -372,8 +377,6 @@ trtsel.Y2surv <- trtsel(Surv(xi, di) ~ Y^2 + (Y)*trt,
 compare(x = trtsel.Ysurv, x2= trtsel.Y2surv, bootstraps = 10)
 ```
 
-
-## Additional features 
 
 ### Specifying fitted risks 
 

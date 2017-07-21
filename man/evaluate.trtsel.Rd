@@ -53,7 +53,7 @@ trtsel.Y1 <- trtsel(event ~ Y1*trt,
                    treatment.name = "trt", 
                    data = tsdata, 
                    study.design = "RCT",
-                   link = "logit", 
+                   family = binomial(link = "logit"), 
                    default.trt = "trt all")
 trtsel.Y1
 

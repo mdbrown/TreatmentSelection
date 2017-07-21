@@ -7,13 +7,12 @@
 trtsel(formula, treatment.name, data, fittedrisk.t0 = NULL,
   fittedrisk.t1 = NULL, thresh = 0, prediction.time = NULL,
   study.design = c("RCT", "nested case-control",
-  "stratified nested case-control"), cohort.attributes = NULL,
-  link = c("logit", "probit", "cauchit", "log", "cloglog"),
+  "stratified nested case-control"), cohort.attributes = NULL, family,
   default.trt = c("trt all", "trt none"))
 }
 \arguments{
 \item{formula}{a 'formula' object consisting of outcome ~ markers and marker by treatment interactions for
-the treatment selection model to be evaluated. The outcome can be either binary or a
+the treatment selection model to be evaluated. The outcome can be continuous, binary or a
  'Surv' object for time-to-event outcomes. Binary variable should equal 1 for cases and 0 for controls.}
 
 \item{treatment.name}{Name of the treatment variable in data.frame "data". The treatment variable must be coded 1 for
@@ -65,10 +64,11 @@ in cohort, \cr Pr(trt==1 & event==0) in cohort, \cr fraction of cases with
 trt == 0 sampled from cohort, \cr fraction of cases with trt == 1 sampled
 from cohort )\cr \cr}
 
-\item{link}{Link function used to fit the risk model for binary outcomes. Options are
-"logit"(default), "probit", "cauchit", "log" and "cloglog." Link functions
-other than "logit" are available only when the outcome is binary and study.design = "randomized
-cohort".}
+\item{family}{function passed to `glm` describing the error distribution and link 
+function to be used in the model. Defaults to binomial(link = "logit") when the outcome is
+numeric with two values {0,1} and gaussian(link = "identity") otherwise.
+Ignored for time-to-event outcomes.
+For non RCT study designs, methods only exist for family = binomial(link = "logit").}
 
 \item{default.trt}{The default treatment assignment to compare with
 marker-based treatment. Can either be set at "trt all" (default) or "trt

@@ -16,7 +16,7 @@ The methodology assumes that the data come from a randomized and controlled tria
 
 ## Install the package 
 
-This tutorial uses the Treatment Selection package (v 2.0.0) to analyze the example data provided in the package.
+This tutorial uses the Treatment Selection package (v 2.1.0) to analyze the example data provided in the package.
 
 
 The current version of the package is on github. Use the `devtools` package to install the package:
@@ -60,6 +60,8 @@ trtsel_measures(event = surv_tsdata$di,
                 prediction.time = 1, 
                 default.trt = "trt none" )
 
+
+
 ```
 
 
@@ -84,16 +86,16 @@ trtsel_measures(event = tsdata$event, trt = tsdata$trt, trt.rule = 1- tsdata$Y1_
 
 An alternative to providing a pre-specified treatment rule the user can use the data to fit a risk model and to develop a treatment rule based on estimated treatment effect. 
 
-The user can do this by first creating a treatment selection R object using the function `trtsel`. Creating this object entails estimating risk of the clinical outcome given treatment and marker, i.e. fitting a "risk model".  Here, logistic regression is used (`link="logit"`) and the formula is specified in the first argument.  The default treatment strategy-- that which would be recommended in the absence of marker measurements-- is specified as `default.trt="trt all"`.  The methodology considers marker-specific treatment rules or policies that recommend treatment if the marker-specific treatment effect-- on the risk difference scale-- is above a specified `thresh`; the default is `thresh = 0`.  (Alternatively, see the tab on "additional features"" to see how an arbitrary user-specified treatment rule can be evaluated.)  The `study design="RCT"` indicates that the markers are measured on all RCT participants.   
+The user can do this by first creating a treatment selection R object using the function `trtsel`. Creating this object entails estimating risk of the clinical outcome given treatment and marker, i.e. fitting a "risk model".  Here, logistic regression is used (family = `binomial(link="logit")`) and the formula is specified in the first argument.  The default treatment strategy-- that which would be recommended in the absence of marker measurements-- is specified as `default.trt="trt all"`.  The methodology considers marker-specific treatment rules or policies that recommend treatment if the marker-specific treatment effect-- on the risk difference scale-- is above a specified `thresh`; the default is `thresh = 0`.  (Alternatively, see the tab on "additional features"" to see how an arbitrary user-specified treatment rule can be evaluated.)  The `study design="RCT"` indicates that the markers are measured on all RCT participants.   
 
 
 
 ```{r}
 
-tsdata$event.c <- tsdata$event + rnorm( nrow(tsdata), mean = 0, sd = .1 )
-trtsel.Y1 <- trtsel(event.c ~ Y1*trt, 
+trtsel.Y1 <- trtsel(event ~ Y1*trt, 
                     treatment.name = "trt", 
                     data = tsdata, 
+                    family = binomial(), 
                     study.design = "RCT", 
                     default.trt = "trt all")
 
@@ -310,7 +312,50 @@ compare(x = trtsel.Y1_disc,
 
 See `?compare.trtsel` for more options.
 
+
+
 ## Additional features 
+
+
+### Other outcome types
+
+Version 2.1.0 of the package allows for continous and time-to-event outcomes. 
+
+#### Continuous  
+
+```{r}
+
+tsdata$event.c <- tsdata$event + rnorm( nrow(tsdata), mean = 0, sd = .1 )
+trtsel.Yc <- trtsel(event.c ~ Y1*trt, 
+                    treatment.name = "trt", 
+                    data = tsdata, 
+                    study.design = "RCT", 
+                    family = gaussian("identity"), #specify model error dist. 
+                    default.trt = "trt all")
+
+#plot, calibrate, evaluate and compare all work as usual 
+```
+
+#### Time-to-event
+
+When evaluating a time-to-event outcome, a landmark prediction time must be specified. Cox proportional hazards models are used for all model-based estimates. 
+
+```{r}
+library(survival)
+data("surv_tsdata") #simulated sample data set with time-to-event outcome
+
+trtsel.Ysurv <- trtsel(Surv(xi, di) ~ Y*trt, 
+                    treatment.name = "trt", 
+                    data = surv_tsdata,  
+                    prediction.time = 4, #landmark prediction time must be set
+                    study.design = "RCT", 
+                    default.trt = "trt all")
+
+#notice 'censoring weights' can now be found in trtsel.Ysurv$'derived.data' 
+
+#plot, calibrate, evaluate and compare all work as usual 
+```
+
 
 ### Specifying fitted risks 
 
@@ -332,6 +377,7 @@ myfitted.trtsel <- trtsel( event~trt, treatment.name = "trt",
                          study.design = "RCT", 
                          default.trt = "trt all")
 
+
 ```
 
 We can now use this `trtsel` object to plot and evaluate performance just as before, but confidence intervals are narrower because they are conditional on the fitted risk model. 
@@ -340,12 +386,6 @@ We can now use this `trtsel` object to plot and evaluate performance just as bef
 plot(myfitted.trtsel, bootstraps = 50, plot.type = "risk",
      ci = "vertical", show.marker.axis = FALSE)
 ```
-
-### Time-to-event outcomes
-
-
-
-
 
 
 ## References

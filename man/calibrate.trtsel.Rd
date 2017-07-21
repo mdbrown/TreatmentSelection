@@ -7,8 +7,8 @@
 \usage{
 \method{calibrate}{trtsel}(x, ..., groups = 10, plot.type = "calibration",
   trt.names = c("Treatment", "No Treatment"), line.color = "black",
-  point.color = "grey10", main = NULL, ylim = NULL, xlim = NULL,
-  ylab = NULL, xlab = NULL)
+  point.color = "grey10", ci = 0.95, main = NULL, ylim = NULL,
+  xlim = NULL, ylab = NULL, xlab = NULL)
 }
 \arguments{
 \item{x}{An object of class "trtsel", created by using the function

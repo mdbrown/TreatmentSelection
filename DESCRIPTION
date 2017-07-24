@@ -2,11 +2,11 @@ Package: TreatmentSelection
 Type: Package
 Title: Evaluate Treatment Selection Biomarkers
 Version: 2.1.0
-Date: 2017-7-20
+Date: 2017-7-24
 Author: Marshall Brown and Holly Janes
 Maintainer: Marshall Brown <mdbrown@fhcrc.org>
 Description: A suite of descriptive and inferential methods designed to evaluate one or more biomarkers for their ability to guide patient treatment recommendations.  Package includes functions to assess the calibration of risk models; and plot, evaluate, and compare markers.
-URL: http://mdbrown.github.io/TreatmentSelection/
+URL: http://rpubs.com/mdbrown/TreatmentSelection
 License: GPL-2
 Imports: ggplot2, survival, binom, grid
 RoxygenNote: 6.0.1

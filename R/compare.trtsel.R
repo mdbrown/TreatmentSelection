@@ -118,7 +118,6 @@ compare <- function(x, ...) UseMethod("compare")
 #'                    treatment.name = "trt", 
 #'                    data = tsdata, 
 #'                    study.design = "RCT",
-#'                    link = "logit", 
 #'                    default.trt = "trt all")
 #'
 #' trtsel.Y1

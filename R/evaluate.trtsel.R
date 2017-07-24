@@ -11,7 +11,7 @@ evaluate <- function(x, ...) UseMethod("evaluate")
 #'   (Bias-corrected) summary measures of marker performance are estimated and confidence intervals are provided.  
 #'   This function accepts as input an object of class "trtsel", created using the function "trtsel". 
 #' 
-#'@aliases evaluate evaluate.trtsel 
+#'@aliases evaluate.trtsel 
 #' 
 #'@param x An object of class "trtsel", created by using the function "trtsel."
 #'@param bootstraps Number of bootstrap replicates for creating confidence intervals for each performance measure. The default value is 1000. Set bootstraps = 0 if no confidence intervals are desired.

@@ -2,7 +2,6 @@
 % Please edit documentation in R/calibrate.trtsel.R
 \name{calibrate.trtsel}
 \alias{calibrate.trtsel}
-\alias{calibrate}
 \title{assess model calibration of a trtsel object}
 \usage{
 \method{calibrate}{trtsel}(x, ..., groups = 10, plot.type = "calibration",
@@ -38,6 +37,8 @@ c("Treatment", "No Treatment").}
 \item{line.color}{color for lines in calibration plots.}
 
 \item{point.color}{color for points in calibration plots.}
+
+\item{ci}{numeric value (default 0.95) specifying the level for confidence intervals.}
 
 \item{main}{The main title for the plot.  Only applies if plot.type is
 specified.}
@@ -82,7 +83,6 @@ trtsel.Y1 <- trtsel(event ~ Y1*trt,
                    treatment.name = "trt", 
                    data = tsdata, 
                    study.design = "RCT",
-                   link = "logit", 
                    default.trt = "trt all")
 
 trtsel.Y1

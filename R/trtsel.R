@@ -101,7 +101,7 @@
 #'                    treatment.name = "trt", 
 #'                    data = tsdata, 
 #'                    study.design = "RCT",
-#'                    link = "logit", 
+#'                    family = binomial("logit"), 
 #'                    default.trt = "trt all")
 #'
 #' trtsel.Y1

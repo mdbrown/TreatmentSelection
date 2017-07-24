@@ -14,7 +14,7 @@ calibrate <- function(x, ...){ UseMethod("calibrate")}
 #' supplying a data.frame containing marker, treatment, and event status
 #' information.
 #' 
-#' @aliases calibrate calibrate.trtsel
+#' @aliases calibrate.trtsel
 #' @param x An object of class "trtsel", created by using the function
 #' "trtsel."
 #' @param groups Number of groups; observations are split into groups based on
@@ -35,6 +35,7 @@ calibrate <- function(x, ...){ UseMethod("calibrate")}
 #' c("Treatment", "No Treatment").
 #' @param line.color color for lines in calibration plots. 
 #' @param point.color  color for points in calibration plots. 
+#' @param ci numeric value (default 0.95) specifying the level for confidence intervals.
 #' @param xlab A label for the x-axis. Default values depend on plot.type. Only
 #' applies if plot.type is specified.
 #' @param ylab A label for the y-axis. Default values depend on plot.type.
@@ -68,7 +69,6 @@ calibrate <- function(x, ...){ UseMethod("calibrate")}
 #'                    treatment.name = "trt", 
 #'                    data = tsdata, 
 #'                    study.design = "RCT",
-#'                    link = "logit", 
 #'                    default.trt = "trt all")
 #'
 #' trtsel.Y1

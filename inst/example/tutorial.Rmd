@@ -338,7 +338,7 @@ trtsel.Yc <- trtsel(event.c ~ Y1*trt,
 
 #### Time-to-event
 
-When evaluating a time-to-event outcome, a landmark prediction time must be specified. Cox proportional hazards models are used for all model-based estimates. 
+When evaluating a time-to-event outcome, a landmark prediction time must be specified. Cox proportional hazards models are used for all model-based estimates.  Absolute risk estimates are calculated by pairing the Cox model with the Nelson-Aalen baseline hazard estimate. 
 
 ```{r}
 library(survival)

@@ -10,7 +10,7 @@
 #' 
 #' @param formula a 'formula' object consisting of outcome ~ markers and marker by treatment interactions for
 #'  the treatment selection model to be evaluated. The outcome can be continuous, binary or a
-#'   'Surv' object for time-to-event outcomes. Binary variable should equal 1 for cases and 0 for controls.
+#'   'Surv' object for time-to-event outcomes. Binary variable should equal 1 for cases and 0 for controls. For continuous outcomes, we assume that larger values are associated with worse outcomes.  
 #' @param treatment.name  Name of the treatment variable in data.frame "data". The treatment variable must be coded 1 for
 #' "treated" and 0 for "un-treated."
 #' @param data data.frame object used to fit and evaluate the model. 

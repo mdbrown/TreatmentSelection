@@ -252,7 +252,7 @@ tmp <- evaluate(trtsel.Y1, bias.correct = TRUE, bootstraps = 50)
 tmp
 ```
 
-The `evaluate` function used this way both fit and evaluates a risk model using the same data, which is known to bias performance measure estimates to be overly optimistic. To correct for this bias, the evaluate function by default sets `bias.correct=TRUE`. This implements bootstrap bias correction via the ``refined bootstrap" method described in Efron and Tibshirani 1994. 
+The `evaluate` function used this way both fit and evaluates a risk model using the same data, which is known to bias performance measure estimates to be overly optimistic. To correct for this bias, the evaluate function by default sets `bias.correct=TRUE`. This implements bootstrap bias correction via the ``refined bootstrap" method described in chapter 17 of *An introduction to the Bootstrap* by Efron and Tibshirani 1994. 
 
 In short, we sample $B$ bootstrap datasets. For each, obtain a new treatment selection rule based on the re-fit model and calculate the difference in estimated performance of this rule using the bootstrap vs. original data.  The average of these differences estimates the bias.  We shift naive performance estimates and confidence intervals down by the estimated bias.
 
@@ -322,6 +322,8 @@ See `?compare.trtsel` for more options.
 Version 2.1.0 of the package allows for continous and time-to-event outcomes. 
 
 #### Continuous  
+
+When using a continuous outcome, it is assumed that higher values are associated with worse outcomes. 
 
 ```{r}
 

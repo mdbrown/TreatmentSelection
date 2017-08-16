@@ -16,12 +16,20 @@ The methodology assumes that the data come from a randomized and controlled tria
 
 ## Install the package 
 
-This tutorial uses the Treatment Selection package (v 2.1.0) to analyze the example data provided in the package.
+This tutorial uses the Treatment Selection package (v 2.1.1) to analyze the example data provided in the package.
 
 
-The current version of the package is on github. Use the `devtools` package to install the package:
+The current version of the package is on CRAN.
 
 ```{r, eval=FALSE}
+#download from CRAN
+install.packages("TreatmentSelection")
+```
+
+
+Alternatively, use the `devtools` package to install the developmental version of the package directly from github: 
+```{r eval = FALSE}
+#download from github (using the package 'devtools')
 if (!require("devtools")) install.packages("devtools")
 devtools::install_github("mdbrown/TreatmentSelection")
 ```

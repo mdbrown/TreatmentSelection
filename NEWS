@@ -55,3 +55,8 @@ Two key additions:
 One minor additions: 
 - updated the estimator of event rate under marker based treatment. 
 
+
+TreatmentSelection 2.1.1
+========================
+
+- Update trtsel man files specifying that larger values of a continuous outcome should be associated with worse outcomes. 

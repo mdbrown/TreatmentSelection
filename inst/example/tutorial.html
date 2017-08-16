@@ -129,9 +129,13 @@ $(document).ready(function () {
 </div>
 <div id="install-the-package" class="section level2">
 <h2>Install the package</h2>
-<p>This tutorial uses the Treatment Selection package (v 2.1.0) to analyze the example data provided in the package.</p>
-<p>The current version of the package is on github. Use the <code>devtools</code> package to install the package:</p>
-<pre class="r"><code>if (!require(&quot;devtools&quot;)) install.packages(&quot;devtools&quot;)
+<p>This tutorial uses the Treatment Selection package (v 2.1.1) to analyze the example data provided in the package.</p>
+<p>The current version of the package is on CRAN.</p>
+<pre class="r"><code>#download from CRAN
+install.packages(&quot;TreatmentSelection&quot;)</code></pre>
+<p>Alternatively, use the <code>devtools</code> package to install the developmental version of the package directly from github:</p>
+<pre class="r"><code>#download from github (using the package 'devtools')
+if (!require(&quot;devtools&quot;)) install.packages(&quot;devtools&quot;)
 devtools::install_github(&quot;mdbrown/TreatmentSelection&quot;)</code></pre>
 <p>First, load the example data set for this package called <code>tsdata</code>. Four markers are included in the data example, a ‘’weak’‘and a’‘strong’’ marker (<span class="math inline">\(Y1\)</span> and <span class="math inline">\(Y2\)</span> respectively), along with a weak/strong discrete markers.</p>
 </div>
